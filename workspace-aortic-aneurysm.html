@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surgical Command Center - Aortic Aneurysm</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --uga-red: #BA0C2F; --uga-red-dark: #8a0923; --uga-red-light: rgba(186, 12, 47, 0.12);
+      --black: #0A0A0A; --gray-900: #0D0D0D; --gray-800: #141414; --gray-700: #1A1A1A;
+      --gray-600: #222222; --gray-500: #333333; --gray-400: #555555; --gray-300: #777777;
+      --gray-200: #999999; --gray-100: #CCCCCC; --white: #FFFFFF;
+      --ready: #22C55E; --ready-bg: rgba(34, 197, 94, 0.12);
+      --warning: #F59E0B; --warning-bg: rgba(245, 158, 11, 0.12);
+      --danger: #EF4444; --danger-bg: rgba(239, 68, 68, 0.12);
+      --info: #3B82F6; --info-bg: rgba(59, 130, 246, 0.12);
+      --purple: #8B5CF6; --purple-bg: rgba(139, 92, 246, 0.12);
+      --orange: #F97316; --orange-bg: rgba(249, 115, 22, 0.12);
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--black); color: var(--white); min-height: 100vh; display: flex; flex-direction: column; }
+    
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid var(--gray-600); background: var(--gray-900); }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo { width: 36px; height: 36px; background: var(--uga-red); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .logo svg { width: 20px; height: 20px; }
+    .title { font-size: 13px; font-weight: 700; letter-spacing: 1.5px; }
+    .workspace-badge { padding: 4px 10px; font-size: 10px; font-weight: 700; background: var(--orange-bg); color: var(--orange); border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 4px; }
+    .nav-tabs { display: flex; gap: 2px; background: var(--gray-800); padding: 3px; border-radius: 6px; }
+    .nav-btn { padding: 6px 12px; font-size: 10px; font-weight: 600; color: var(--gray-300); background: transparent; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; }
+    .nav-btn:hover { color: var(--white); background: var(--gray-700); }
+    .nav-btn.active { color: var(--white); background: var(--uga-red); }
+    .logo { text-decoration: none; transition: transform 0.2s; }
+    .logo:hover { transform: scale(1.05); }
+    .patient-selector { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--gray-800); border: 1px solid var(--gray-500); border-radius: 6px; }
+    .patient-avatar { width: 26px; height: 26px; background: var(--orange-bg); border: 2px solid var(--orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--orange); }
+
+    .main { flex: 1; display: flex; overflow: hidden; }
+    .panel { display: flex; flex-direction: column; border-right: 1px solid var(--gray-600); }
+    .panel:last-child { border-right: none; }
+    .panel-input { width: 300px; }
+    .panel-anatomy { width: 280px; }
+    .panel-output { flex: 1; min-width: 300px; }
+    .panel-vqi { width: 280px; background: var(--gray-900); }
+
+    .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--gray-900); border-bottom: 1px solid var(--gray-600); }
+    .panel-title { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--gray-200); text-transform: uppercase; }
+    .panel-badge { padding: 2px 6px; font-size: 8px; font-weight: 700; background: var(--purple); color: var(--white); border-radius: 3px; margin-left: 6px; }
+    .panel-btn { padding: 4px 8px; font-size: 9px; font-weight: 600; color: var(--gray-300); background: var(--gray-700); border: 1px solid var(--gray-500); border-radius: 3px; cursor: pointer; }
+    .panel-btn:hover { background: var(--gray-600); color: var(--white); }
+    .panel-btn.primary { background: var(--uga-red); border-color: var(--uga-red); color: var(--white); }
+
+    .tabs { display: flex; background: var(--gray-800); border-bottom: 1px solid var(--gray-600); }
+    .tab { flex: 1; padding: 7px; font-size: 9px; font-weight: 600; color: var(--gray-400); background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; }
+    .tab:hover { color: var(--gray-200); }
+    .tab.active { color: var(--white); border-bottom-color: var(--uga-red); }
+
+    .paste-container { flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+    .paste-input { flex: 1; width: 100%; padding: 8px; font-family: 'JetBrains Mono', monospace; font-size: 9px; line-height: 1.5; color: var(--gray-100); background: var(--black); border: 1px solid var(--gray-600); border-radius: 6px; resize: none; }
+    .paste-input:focus { outline: none; border-color: var(--uga-red); }
+    .process-btn { padding: 10px; font-size: 11px; font-weight: 600; color: var(--white); background: var(--uga-red); border: none; border-radius: 6px; cursor: pointer; }
+
+    .anatomy-container { flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+    .anatomy-svg { width: 100%; max-height: 280px; }
+    .vessel-label { font-size: 7px; fill: var(--gray-300); }
+    .measurement-value { font-size: 9px; fill: var(--orange); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .critical-value { fill: var(--danger); }
+
+    .measurements-box { background: var(--black); border: 1px solid var(--gray-600); border-radius: 6px; overflow: hidden; }
+    .measurements-header { padding: 6px 10px; background: var(--gray-800); font-size: 9px; font-weight: 700; color: var(--orange); text-transform: uppercase; letter-spacing: 0.8px; }
+    .measurement-row { display: flex; justify-content: space-between; padding: 6px 10px; border-bottom: 1px solid var(--gray-700); font-size: 10px; }
+    .measurement-row:last-child { border-bottom: none; }
+    .measurement-name { color: var(--gray-200); }
+    .measurement-data { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+    .measurement-data.critical { color: var(--danger); background: var(--danger-bg); padding: 1px 5px; border-radius: 3px; }
+    .measurement-data.good { color: var(--ready); }
+    .measurement-data.warn { color: var(--warning); }
+
+    .growth-chart { background: var(--black); border: 1px solid var(--gray-600); border-radius: 6px; padding: 8px; }
+    .growth-title { font-size: 8px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+
+    .output-container { flex: 1; padding: 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .output-section { background: var(--black); border: 1px solid var(--gray-600); border-radius: 6px; overflow: hidden; }
+    .output-section-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--gray-800); border-bottom: 1px solid var(--gray-600); }
+    .output-section-title { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--uga-red); text-transform: uppercase; }
+    .output-section-status { font-size: 8px; font-weight: 600; padding: 2px 6px; border-radius: 3px; }
+    .status-valid { background: var(--ready-bg); color: var(--ready); }
+    .status-warn { background: var(--warning-bg); color: var(--warning); }
+    .output-section-body { padding: 8px; }
+
+    .code-tag { display: inline-block; padding: 2px 6px; font-size: 9px; font-weight: 500; background: var(--gray-700); border-radius: 3px; font-family: 'JetBrains Mono', monospace; margin: 2px; }
+    .code-tag.primary { background: var(--uga-red-light); color: var(--uga-red); border: 1px solid rgba(186, 12, 47, 0.3); }
+
+    .criteria-grid { display: flex; flex-direction: column; gap: 4px; }
+    .criteria-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--gray-100); }
+    .criteria-check { width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+    .criteria-met { background: var(--ready-bg); color: var(--ready); }
+    .criteria-unmet { background: var(--gray-700); color: var(--gray-400); }
+
+    .evar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+    .evar-field { background: var(--gray-800); padding: 6px 8px; border-radius: 4px; }
+    .evar-label { font-size: 8px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; }
+    .evar-value { font-size: 11px; font-weight: 600; color: var(--white); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+    .evar-value.good { color: var(--ready); }
+    .evar-value.warn { color: var(--warning); }
+
+    .vqi-container { flex: 1; padding: 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .vqi-section { background: var(--black); border: 1px solid var(--gray-600); border-radius: 6px; overflow: hidden; }
+    .vqi-section-header { padding: 6px 10px; background: var(--purple-bg); border-bottom: 1px solid rgba(139, 92, 246, 0.2); }
+    .vqi-section-title { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--purple); text-transform: uppercase; }
+    .vqi-section-body { padding: 8px; }
+    .vqi-field { margin-bottom: 8px; }
+    .vqi-field:last-child { margin-bottom: 0; }
+    .vqi-label { font-size: 8px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; display: block; }
+    .vqi-select, .vqi-input { width: 100%; padding: 5px 8px; font-size: 10px; color: var(--white); background: var(--gray-800); border: 1px solid var(--gray-600); border-radius: 4px; }
+    .vqi-select:focus, .vqi-input:focus { outline: none; border-color: var(--purple); }
+    .vqi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .vqi-autofill { display: inline-flex; padding: 1px 4px; font-size: 7px; font-weight: 600; color: var(--ready); background: var(--ready-bg); border-radius: 2px; margin-left: 4px; }
+
+    .action-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--gray-900); border-top: 1px solid var(--gray-600); }
+    .action-status { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--gray-300); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ready); }
+    .btn { padding: 7px 12px; font-size: 10px; font-weight: 600; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .btn-vqi { color: var(--white); background: var(--purple); border: 1px solid var(--purple); }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--gray-800); }
+    ::-webkit-scrollbar-thumb { background: var(--gray-600); border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <a href="ORCC-index.html" class="logo" title="Back to Hub"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 3v18M5 8c3-3 11-3 14 0M5 16c3 3 11 3 14 0"/></svg></a>
+      <h1 class="title">OR COMMAND CENTER</h1>
+      <span class="workspace-badge">🫀 AORTIC ANEURYSM</span>
+    </div>
+    <nav class="nav-tabs">
+      <a href="surgical-command-center-page1.html" class="nav-btn">LISTS</a>
+      <a href="surgical-command-center-tasks.html" class="nav-btn">TASKS</a>
+      <a href="workspace-aortic-aneurysm.html" class="nav-btn active">WORKSPACE</a>
+      <a href="ORCC-settings.html" class="nav-btn">SETTINGS</a>
+    </nav>
+    <div class="patient-selector">
+      <div class="patient-avatar">CB</div>
+      <span style="font-size: 11px; font-weight: 600;">Black, Claudia — AAA + LEFT TCAR</span>
+      <span style="color: var(--gray-400); font-size: 10px;">▼</span>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Input Panel -->
+    <div class="panel panel-input">
+      <div class="panel-header">
+        <span class="panel-title">📋 CTA Input</span>
+        <button class="panel-btn">Clear</button>
+      </div>
+      <div class="tabs">
+        <button class="tab active">CTA</button>
+        <button class="tab">Prior</button>
+        <button class="tab">Echo</button>
+        <button class="tab">Labs</button>
+      </div>
+      <div class="paste-container">
+        <textarea class="paste-input" placeholder="Paste CTA aorta report...">CTA ABDOMEN/PELVIS WITH RUNOFF:
+
+AORTA:
+- Infrarenal AAA: 5.6 cm (prior 5.2 cm, 8/2025)
+- Proximal neck: 22mm diameter, 15mm length
+- Neck angle: 35 degrees
+- Neck thrombus: None
+- Calcification: Moderate circumferential
+
+ILIAC ARTERIES:
+- Right CIA: 16mm, mild ectasia
+- Right EIA: 10mm
+- Left CIA: 14mm
+- Left EIA: 9mm
+
+ACCESS:
+- Bilateral CFA: Moderate calcification
+- Adequate caliber for standard access
+
+RENAL ARTERIES: Patent bilaterally
+
+IMPRESSION:
+1. 5.6cm infrarenal AAA with adequate neck
+2. Growth 0.4cm in 5 months
+3. Candidate for EVAR</textarea>
+        <button class="process-btn" id="process-btn">⚡ Extract Measurements</button>
+      </div>
+    </div>
+
+    <!-- Anatomy Panel -->
+    <div class="panel panel-anatomy">
+      <div class="panel-header">
+        <span class="panel-title">🫀 Aortic Anatomy</span>
+      </div>
+      <div class="anatomy-container">
+        <svg class="anatomy-svg" viewBox="0 0 180 300" fill="none">
+          <!-- Suprarenal Aorta -->
+          <path d="M90 15 L90 60" stroke="#22C55E" stroke-width="8" stroke-linecap="round"/>
+          <text x="105" y="40" class="vessel-label">Suprarenal</text>
+          
+          <!-- Renal Arteries -->
+          <path d="M90 60 L55 50" stroke="#22C55E" stroke-width="3"/>
+          <path d="M90 60 L125 50" stroke="#22C55E" stroke-width="3"/>
+          <text x="30" y="48" class="vessel-label">L Ren</text>
+          <text x="130" y="48" class="vessel-label">R Ren</text>
+          
+          <!-- Proximal Neck -->
+          <path d="M90 60 L90 80" stroke="#22C55E" stroke-width="8" stroke-linecap="round"/>
+          <text x="105" y="73" class="vessel-label">Neck 15mm</text>
+          <text x="105" y="83" class="measurement-value">22mm Ø</text>
+          
+          <!-- Aneurysm Sac -->
+          <ellipse cx="90" cy="140" rx="40" ry="55" fill="rgba(239, 68, 68, 0.15)" stroke="#EF4444" stroke-width="3"/>
+          <line x1="25" y1="140" x2="50" y2="140" stroke="#EF4444" stroke-width="1" stroke-dasharray="3"/>
+          <line x1="130" y1="140" x2="155" y2="140" stroke="#EF4444" stroke-width="1" stroke-dasharray="3"/>
+          <text x="140" y="135" class="measurement-value critical-value" style="font-size: 12px;">5.6cm</text>
+          <text x="140" y="148" class="vessel-label" style="fill: #EF4444;">⚠ >5.5</text>
+          
+          <!-- IMA -->
+          <path d="M70 160 L45 180" stroke="#555" stroke-width="2"/>
+          <text x="25" y="182" class="vessel-label">IMA</text>
+          
+          <!-- Bifurcation -->
+          <path d="M90 195 L90 210" stroke="#666" stroke-width="6"/>
+          
+          <!-- Iliacs -->
+          <path d="M90 210 L60 260" stroke="#22C55E" stroke-width="5"/>
+          <path d="M90 210 L120 260" stroke="#F59E0B" stroke-width="5"/>
+          <text x="35" y="245" class="vessel-label">L CIA</text>
+          <text x="35" y="256" class="measurement-value">14mm</text>
+          <text x="125" y="245" class="vessel-label">R CIA</text>
+          <text x="125" y="256" class="measurement-value" style="fill: #F59E0B;">16mm</text>
+          
+          <!-- EIAs -->
+          <path d="M60 260 L50 290" stroke="#22C55E" stroke-width="4"/>
+          <path d="M120 260 L130 290" stroke="#22C55E" stroke-width="4"/>
+        </svg>
+
+        <div class="measurements-box">
+          <div class="measurements-header">📏 Key Measurements</div>
+          <div class="measurement-row">
+            <span class="measurement-name">Max Diameter</span>
+            <span class="measurement-data critical">5.6 cm</span>
+          </div>
+          <div class="measurement-row">
+            <span class="measurement-name">Neck Length</span>
+            <span class="measurement-data good">15 mm ✓</span>
+          </div>
+          <div class="measurement-row">
+            <span class="measurement-name">Neck Diameter</span>
+            <span class="measurement-data">22 mm</span>
+          </div>
+          <div class="measurement-row">
+            <span class="measurement-name">Neck Angle</span>
+            <span class="measurement-data good">35° ✓</span>
+          </div>
+          <div class="measurement-row">
+            <span class="measurement-name">Growth Rate</span>
+            <span class="measurement-data warn">0.4cm/5mo</span>
+          </div>
+        </div>
+
+        <div class="growth-chart">
+          <div class="growth-title">📈 Size Over Time</div>
+          <svg viewBox="0 0 240 70" style="width: 100%; height: 60px;">
+            <line x1="25" y1="60" x2="230" y2="60" stroke="#333" stroke-width="1"/>
+            <line x1="25" y1="20" x2="230" y2="20" stroke="#F59E0B" stroke-width="1" stroke-dasharray="4 2"/>
+            <text x="2" y="23" fill="#F59E0B" font-size="7">5.5</text>
+            <polyline points="60,55 120,40 180,25 220,15" fill="none" stroke="#EF4444" stroke-width="2"/>
+            <circle cx="60" cy="55" r="3" fill="#EF4444"/>
+            <circle cx="120" cy="40" r="3" fill="#EF4444"/>
+            <circle cx="180" cy="25" r="3" fill="#EF4444"/>
+            <circle cx="220" cy="15" r="4" fill="#EF4444" stroke="#fff" stroke-width="1"/>
+            <text x="55" y="70" fill="#777" font-size="6">1/24</text>
+            <text x="115" y="70" fill="#777" font-size="6">6/24</text>
+            <text x="175" y="70" fill="#777" font-size="6">1/25</text>
+            <text x="215" y="70" fill="#777" font-size="6">Now</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Panel -->
+    <div class="panel panel-output">
+      <div class="panel-header">
+        <span class="panel-title">📄 Surgical Planning</span>
+        <div style="display: flex; gap: 4px;">
+          <button class="panel-btn">Copy</button>
+          <button class="panel-btn primary">PDF</button>
+        </div>
+      </div>
+      <div class="output-container">
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">Diagnosis (ICD-10)</span>
+            <span class="output-section-status status-valid">✓ Valid</span>
+          </div>
+          <div class="output-section-body">
+            <span class="code-tag primary">I71.4</span>
+            <span class="code-tag">AAA without rupture</span>
+          </div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">Repair Criteria</span>
+            <span class="output-section-status status-valid">✓ Indicated</span>
+          </div>
+          <div class="output-section-body">
+            <div class="criteria-grid">
+              <div class="criteria-item"><span class="criteria-check criteria-met">✓</span>Diameter ≥5.5cm (5.6cm)</div>
+              <div class="criteria-item"><span class="criteria-check criteria-met">✓</span>Rapid growth >0.5cm/6mo</div>
+              <div class="criteria-item"><span class="criteria-check criteria-unmet">—</span>Symptomatic</div>
+            </div>
+            <div style="margin-top: 8px; padding: 6px; background: var(--ready-bg); border-radius: 4px; font-size: 9px; color: var(--ready);">
+              ✓ Elective repair indicated — exceeds size threshold
+            </div>
+          </div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">EVAR Suitability (IFU)</span>
+            <span class="output-section-status status-valid">✓ Candidate</span>
+          </div>
+          <div class="output-section-body">
+            <div class="evar-grid">
+              <div class="evar-field"><div class="evar-label">Neck Length</div><div class="evar-value good">15mm ≥10mm ✓</div></div>
+              <div class="evar-field"><div class="evar-label">Neck Angle</div><div class="evar-value good">35° ≤60° ✓</div></div>
+              <div class="evar-field"><div class="evar-label">Neck Diameter</div><div class="evar-value good">22mm (17-32)</div></div>
+              <div class="evar-field"><div class="evar-label">Iliac Access</div><div class="evar-value good">Adequate ✓</div></div>
+              <div class="evar-field"><div class="evar-label">Thrombus</div><div class="evar-value good">None ✓</div></div>
+              <div class="evar-field"><div class="evar-label">Calcification</div><div class="evar-value warn">Moderate</div></div>
+            </div>
+            <div style="margin-top: 8px; padding: 6px; background: var(--info-bg); border-radius: 4px; font-size: 9px; color: var(--info);">
+              📋 Device: Bifurcated endograft 25mm × 14mm × 130mm
+            </div>
+          </div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">Procedure (CPT)</span>
+            <span class="output-section-status status-valid">✓ LCD Met</span>
+          </div>
+          <div class="output-section-body">
+            <span class="code-tag primary">34802</span><span class="code-tag">EVAR aorto-bi-iliac</span><br>
+            <span class="code-tag">34812</span><span class="code-tag">Open femoral exposure</span><br>
+            <span class="code-tag">75952</span><span class="code-tag">Endovascular imaging</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VQI Panel -->
+    <div class="panel panel-vqi">
+      <div class="panel-header">
+        <span class="panel-title">🏥 VQI AAA<span class="panel-badge">Auto</span></span>
+      </div>
+      <div class="vqi-container">
+        <div class="vqi-section">
+          <div class="vqi-section-header"><span class="vqi-section-title">Aneurysm</span></div>
+          <div class="vqi-section-body">
+            <div class="vqi-row">
+              <div class="vqi-field">
+                <label class="vqi-label">Max Diameter<span class="vqi-autofill">✓</span></label>
+                <input class="vqi-input" type="text" value="5.6 cm">
+              </div>
+              <div class="vqi-field">
+                <label class="vqi-label">Location</label>
+                <select class="vqi-select"><option selected>Infrarenal</option><option>Juxtarenal</option><option>Pararenal</option></select>
+              </div>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Presentation</label>
+              <select class="vqi-select"><option selected>Asymptomatic</option><option>Symptomatic</option><option>Ruptured</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="vqi-section">
+          <div class="vqi-section-header"><span class="vqi-section-title">Neck Anatomy<span class="vqi-autofill">✓</span></span></div>
+          <div class="vqi-section-body">
+            <div class="vqi-row">
+              <div class="vqi-field"><label class="vqi-label">Length</label><input class="vqi-input" value="15 mm"></div>
+              <div class="vqi-field"><label class="vqi-label">Diameter</label><input class="vqi-input" value="22 mm"></div>
+            </div>
+            <div class="vqi-row">
+              <div class="vqi-field"><label class="vqi-label">Angle</label><input class="vqi-input" value="35°"></div>
+              <div class="vqi-field"><label class="vqi-label">Thrombus</label><select class="vqi-select"><option selected>None</option><option>&lt;25%</option><option>25-50%</option><option>&gt;50%</option></select></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="vqi-section">
+          <div class="vqi-section-header"><span class="vqi-section-title">Procedure</span></div>
+          <div class="vqi-section-body">
+            <div class="vqi-field">
+              <label class="vqi-label">Type</label>
+              <select class="vqi-select"><option selected>EVAR - Bifurcated</option><option>EVAR - Aorto-uni-iliac</option><option>Open - Tube</option><option>Open - Bifurcated</option></select>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Device</label>
+              <select class="vqi-select"><option>Medtronic Endurant</option><option selected>Gore Excluder</option><option>Cook Zenith</option></select>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Urgency</label>
+              <select class="vqi-select"><option selected>Elective</option><option>Urgent</option><option>Emergent</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="action-bar">
+        <div class="action-status"><div class="status-dot"></div><span>VQI 85% complete</span></div>
+        <button class="btn btn-vqi">📤 Export</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+    document.getElementById('process-btn').addEventListener('click', function() {
+      this.innerHTML = '⏳ Processing...';
+      setTimeout(() => { this.innerHTML = '✓ Done!'; this.style.background = '#22C55E'; setTimeout(() => { this.innerHTML = '⚡ Extract Measurements'; this.style.background = ''; }, 1500); }, 1000);
+    });
+  </script>
+</body>
+</html>

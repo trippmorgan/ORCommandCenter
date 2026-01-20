@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surgical Command Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --uga-red: #BA0C2F;
+      --uga-red-light: rgba(186, 12, 47, 0.15);
+      --black: #0A0A0A;
+      --gray-900: #0D0D0D;
+      --gray-800: #111111;
+      --gray-700: #1A1A1A;
+      --gray-600: #222222;
+      --gray-500: #333333;
+      --gray-400: #555555;
+      --gray-300: #666666;
+      --gray-200: #888888;
+      --gray-100: #CCCCCC;
+      --white: #FFFFFF;
+      --green: #2E7D32;
+      --green-light: rgba(46, 125, 50, 0.15);
+      --yellow: #F9A825;
+      --yellow-light: rgba(249, 168, 37, 0.15);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--gray-600);
+      background-color: var(--gray-900);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--gray-200);
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .date {
+      font-size: 13px;
+      color: var(--gray-200);
+    }
+
+    .nav {
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-btn {
+      padding: 10px 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--gray-200);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      color: var(--white);
+      background: var(--gray-700);
+    }
+
+    .nav-btn.active {
+      color: var(--white);
+      background: var(--uga-red);
+      border-color: var(--uga-red);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    /* Main */
+    .main {
+      padding: 24px 32px;
+    }
+
+    /* Tabs */
+    .tab-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--gray-600);
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--gray-300);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: -1px;
+    }
+
+    .tab:hover {
+      color: var(--gray-100);
+    }
+
+    .tab.active {
+      color: var(--white);
+      border-bottom-color: var(--uga-red);
+    }
+
+    .tab-count {
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--gray-700);
+      border-radius: 10px;
+      color: var(--gray-300);
+    }
+
+    .tab.active .tab-count {
+      background: var(--uga-red);
+      color: var(--white);
+    }
+
+    .tab-spacer {
+      flex: 1;
+    }
+
+    .add-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: var(--uga-red);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .add-btn:hover {
+      background: #9a0a27;
+    }
+
+    .add-icon {
+      font-size: 16px;
+    }
+
+    /* List */
+    .list-container {
+      background: var(--gray-800);
+      border-radius: 8px;
+      border: 1px solid var(--gray-600);
+      overflow: hidden;
+    }
+
+    .list-header {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      background: var(--gray-900);
+      border-bottom: 1px solid var(--gray-600);
+    }
+
+    .col-header {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--gray-400);
+    }
+
+    .col-patient { width: 180px; }
+    .col-mrn { width: 90px; }
+    .col-location { width: 85px; }
+    .col-date { width: 80px; }
+    .col-procedure { width: 200px; }
+    .col-anatomy { flex: 1; }
+    .col-status { width: 130px; text-align: right; }
+
+    .location-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .location-hospital {
+      background: rgba(249, 115, 22, 0.15);
+      color: #F97316;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+
+    .location-asc {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22C55E;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    /* Location Filter Bar */
+    .location-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .location-filter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-300);
+      background: var(--gray-800);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .location-filter:hover {
+      border-color: var(--gray-500);
+      color: var(--white);
+    }
+
+    .location-filter.active {
+      color: var(--white);
+      background: var(--gray-700);
+      border-color: var(--uga-red);
+    }
+
+    .location-filter .count {
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--gray-700);
+      border-radius: 10px;
+    }
+
+    .location-filter.active .count {
+      background: var(--uga-red);
+    }
+
+    .patient-row {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--gray-700);
+      cursor: pointer;
+      transition: all 0.15s;
+      animation: fadeIn 0.3s ease forwards;
+      opacity: 0;
+    }
+
+    .patient-row:hover {
+      background: #151515;
+    }
+
+    .patient-row.selected {
+      background: var(--gray-700);
+      border-left: 3px solid var(--uga-red);
+    }
+
+    .patient-col {
+      font-size: 14px;
+      color: #DDD;
+      padding-right: 16px;
+    }
+
+    .patient-name {
+      font-weight: 600;
+      color: var(--white);
+      display: block;
+    }
+
+    .patient-diagnosis {
+      font-size: 11px;
+      color: var(--gray-300);
+      margin-top: 2px;
+      display: block;
+    }
+
+    .mrn {
+      font-family: monospace;
+    }
+
+    .procedure {
+      font-weight: 500;
+    }
+
+    .anatomy {
+      color: var(--gray-300);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+      border: 1px solid;
+    }
+
+    .status-ready {
+      background: var(--green-light);
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    .status-needs {
+      background: var(--uga-red-light);
+      color: var(--uga-red);
+      border-color: var(--uga-red);
+    }
+
+    .status-partial {
+      background: var(--yellow-light);
+      color: var(--yellow);
+      border-color: var(--yellow);
+    }
+
+    .status-dot {
+      font-size: 8px;
+    }
+
+    /* Expanded Card */
+    .expanded-card {
+      margin-top: 20px;
+      background: var(--gray-800);
+      border-radius: 8px;
+      border: 1px solid var(--uga-red);
+      padding: 24px;
+      animation: slideDown 0.2s ease;
+      display: none;
+    }
+
+    .expanded-card.visible {
+      display: block;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--gray-600);
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--gray-300);
+      margin-top: 4px;
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--gray-300);
+      background: transparent;
+      border: 1px solid var(--gray-500);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .card-section {
+      padding: 16px;
+      background: var(--black);
+      border-radius: 6px;
+      border: 1px solid var(--gray-700);
+    }
+
+    .section-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--uga-red);
+      margin-bottom: 12px;
+    }
+
+    .code-tag {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--gray-700);
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    .anatomy-text {
+      font-size: 14px;
+      color: var(--gray-100);
+      line-height: 1.5;
+    }
+
+    .procedure-text {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .lcd-status {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .lcd-supported {
+      color: var(--green);
+    }
+
+    .lcd-incomplete {
+      color: var(--uga-red);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .btn-secondary {
+      padding: 12px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      background: transparent;
+      border: 1px solid var(--gray-500);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-700);
+    }
+
+    .btn-primary {
+      padding: 12px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--uga-red);
+      border: 1px solid var(--uga-red);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #9a0a27;
+    }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+      font-size: 11px;
+      color: var(--gray-400);
+      border-top: 1px solid var(--gray-700);
+      margin-top: auto;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Animation delays for rows */
+    .patient-row:nth-child(1) { animation-delay: 0ms; }
+    .patient-row:nth-child(2) { animation-delay: 50ms; }
+    .patient-row:nth-child(3) { animation-delay: 100ms; }
+    .patient-row:nth-child(4) { animation-delay: 150ms; }
+    .patient-row:nth-child(5) { animation-delay: 200ms; }
+
+    .hidden { display: none; }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.visible {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--gray-800);
+      border: 1px solid var(--gray-600);
+      border-radius: 12px;
+      width: 95%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: modalSlideIn 0.2s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--gray-600);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--gray-300);
+      background: transparent;
+      border: 1px solid var(--gray-500);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      color: var(--white);
+      border-color: var(--gray-400);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--gray-300);
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--white);
+      background: var(--gray-900);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--uga-red);
+      box-shadow: 0 0 0 2px rgba(186, 12, 47, 0.2);
+    }
+
+    .form-input::placeholder {
+      color: var(--gray-400);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Sex Toggle */
+    .sex-toggle {
+      display: flex;
+      gap: 8px;
+    }
+
+    .sex-option {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-300);
+      background: var(--gray-900);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .sex-option:hover {
+      border-color: var(--gray-500);
+      color: var(--white);
+    }
+
+    .sex-option.selected {
+      background: var(--uga-red-light);
+      border-color: var(--uga-red);
+      color: var(--white);
+    }
+
+    /* Patient Type Checkboxes */
+    .patient-type-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .patient-type-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      background: var(--gray-900);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .patient-type-option:hover {
+      border-color: var(--gray-500);
+    }
+
+    .patient-type-option.selected {
+      border-color: var(--uga-red);
+      background: var(--uga-red-light);
+    }
+
+    .patient-type-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--gray-500);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .patient-type-option.selected .patient-type-checkbox {
+      background: var(--uga-red);
+      border-color: var(--uga-red);
+    }
+
+    .patient-type-checkbox svg {
+      width: 12px;
+      height: 12px;
+      stroke: var(--white);
+      stroke-width: 3;
+      opacity: 0;
+    }
+
+    .patient-type-option.selected .patient-type-checkbox svg {
+      opacity: 1;
+    }
+
+    .patient-type-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-200);
+    }
+
+    .patient-type-option.selected .patient-type-label {
+      color: var(--white);
+    }
+
+    .patient-type-icon {
+      width: 24px;
+      height: 24px;
+      margin-left: auto;
+      opacity: 0.6;
+    }
+
+    .patient-type-option.selected .patient-type-icon {
+      opacity: 1;
+    }
+
+    /* Notes Section */
+    .notes-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .note-tag {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-400);
+      background: var(--gray-900);
+      border: 1px solid var(--gray-600);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .note-tag:hover {
+      border-color: var(--gray-500);
+      color: var(--gray-200);
+    }
+
+    .note-tag.selected {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: #3B82F6;
+      color: #60A5FA;
+    }
+
+    .notes-textarea {
+      width: 100%;
+      min-height: 120px;
+      max-height: 400px;
+      padding: 12px 14px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--white);
+      background: var(--gray-900);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      resize: none;
+      overflow-y: auto;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      line-height: 1.5;
+    }
+
+    .notes-textarea:focus {
+      outline: none;
+      border-color: var(--uga-red);
+      box-shadow: 0 0 0 2px rgba(186, 12, 47, 0.2);
+    }
+
+    .notes-textarea::placeholder {
+      color: var(--gray-500);
+    }
+
+    .selected-tags-display {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+      min-height: 24px;
+    }
+
+    .selected-tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(59, 130, 246, 0.2);
+      color: #60A5FA;
+      border-radius: 4px;
+    }
+
+    .selected-tag-chip .remove-tag {
+      cursor: pointer;
+      opacity: 0.7;
+      font-size: 12px;
+    }
+
+    .selected-tag-chip .remove-tag:hover {
+      opacity: 1;
+    }
+
+    /* AI Model Selector */
+    .ai-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .ai-option {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-400);
+      background: var(--gray-900);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .ai-option:hover {
+      border-color: var(--gray-500);
+      color: var(--gray-200);
+    }
+
+    .ai-option.selected {
+      background: rgba(139, 92, 246, 0.15);
+      border-color: #8B5CF6;
+      color: #A78BFA;
+    }
+
+    /* Modal Footer */
+    .modal-footer {
+      padding: 16px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-generate {
+      width: 100%;
+      padding: 14px 24px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-generate:hover {
+      background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);
+      transform: translateY(-1px);
+    }
+
+    .btn-generate:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-generate svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-cancel {
+      width: 100%;
+      padding: 12px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-300);
+      background: transparent;
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+      background: var(--gray-700);
+      color: var(--white);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <a href="ORCC-index.html" class="logo" title="Back to Hub" style="text-decoration: none;">
+        <svg viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="14" stroke="#BA0C2F" stroke-width="2.5" fill="none"/>
+          <path d="M16 6 L16 26 M8 12 Q16 8 24 12 M8 20 Q16 24 24 20" stroke="#BA0C2F" stroke-width="2" fill="none"/>
+        </svg>
+      </a>
+      <div>
+        <h1 class="title">OR COMMAND CENTER</h1>
+        <p class="subtitle">Vascular Surgery Planning & Documentation</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="date" id="current-date"></div>
+      <nav class="nav">
+        <a href="surgical-command-center-page1.html" class="nav-btn active">PATIENT LISTS</a>
+        <a href="surgical-command-center-tasks.html" class="nav-btn">TASKS</a>
+        <a href="surgical-command-center-workspace.html" class="nav-btn">WORKSPACE</a>
+        <a href="ORCC-settings.html" class="nav-btn">SETTINGS</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Location Filter Bar -->
+    <div class="location-bar">
+      <button class="location-filter active" data-location="all">
+        All Locations <span class="count" id="count-all">10</span>
+      </button>
+      <button class="location-filter" data-location="hospital">
+        🏥 Hospital OR <span class="count" id="count-hospital">6</span>
+      </button>
+      <button class="location-filter" data-location="asc">
+        🏢 Albany ASC <span class="count" id="count-asc">4</span>
+      </button>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <button class="tab active" data-tab="preop">
+        <span>PRE-OP QUEUE</span>
+        <span class="tab-count" id="preop-count">5</span>
+      </button>
+      <button class="tab" data-tab="today">
+        <span>TODAY'S OR</span>
+        <span class="tab-count" id="today-count">3</span>
+      </button>
+      <button class="tab" data-tab="unsigned">
+        <span>UNSIGNED</span>
+        <span class="tab-count" id="unsigned-count">2</span>
+      </button>
+      <div class="tab-spacer"></div>
+      <button class="add-btn">
+        <span class="add-icon">+</span>
+        ADD PATIENT
+      </button>
+    </div>
+
+    <!-- List Container -->
+    <div class="list-container">
+      <div class="list-header">
+        <span class="col-header col-patient">PATIENT</span>
+        <span class="col-header col-mrn">MRN</span>
+        <span class="col-header col-location">LOCATION</span>
+        <span class="col-header col-date">DATE</span>
+        <span class="col-header col-procedure">PROCEDURE</span>
+        <span class="col-header col-anatomy">ANATOMY DEFINED</span>
+        <span class="col-header col-status">STATUS</span>
+      </div>
+
+      <!-- Pre-Op List -->
+      <div class="list-body" id="preop-list">
+        <div class="patient-row" data-id="1" data-location="asc">
+          <div class="patient-col col-patient">
+            <span class="patient-name">Smith, John</span>
+            <span class="patient-diagnosis">I70.25 - PAD w/ CLI</span>
+          </div>
+          <span class="patient-col col-mrn mrn">123456</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-asc">ASC</span>
+          </div>
+          <span class="patient-col col-date">01/22/25</span>
+          <span class="patient-col col-procedure procedure">SFA Angioplasty + Stent</span>
+          <span class="patient-col col-anatomy anatomy">SFA Occlusion, single vessel runoff</span>
+          <div class="patient-col col-status">
+            <span class="status-badge status-ready"><span class="status-dot">●</span> Ready</span>
+          </div>
+        </div>
+        <div class="patient-row" data-id="2" data-location="hospital">
+          <div class="patient-col col-patient">
+            <span class="patient-name">Adams, Mary</span>
+            <span class="patient-diagnosis">I65.21 - Carotid stenosis</span>
+          </div>
+          <span class="patient-col col-mrn mrn">234567</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-hospital">OR</span>
+          </div>
+          <span class="patient-col col-date">01/22/25</span>
+          <span class="patient-col col-procedure procedure">Carotid Endarterectomy</span>
+          <span class="patient-col col-anatomy anatomy">Pending imaging review</span>
+          <div class="patient-col col-status">
+            <span class="status-badge status-needs">Needs CTA</span>
+          </div>
+        </div>
+        <div class="patient-row" data-id="3" data-location="hospital">
+          <div class="patient-col col-patient">
+            <span class="patient-name">Chen, Robert</span>
+            <span class="patient-diagnosis">I70.25 - PAD w/ CLI</span>
+          </div>
+          <span class="patient-col col-mrn mrn">345678</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-hospital">OR</span>
+          </div>
+          <span class="patient-col col-date">01/23/25</span>
+          <span class="patient-col col-procedure procedure">Fem-Pop Bypass</span>
+          <span class="patient-col col-anatomy anatomy">SFA/Popliteal occlusion, 2-vessel runoff</span>
+          <div class="patient-col col-status">
+            <span class="status-badge status-needs">Needs Labs</span>
+          </div>
+        </div>
+        <div class="patient-row" data-id="4" data-location="hospital">
+          <div class="patient-col col-patient">
+            <span class="patient-name">Williams, Ana</span>
+            <span class="patient-diagnosis">N18.6 - ESRD</span>
+          </div>
+          <span class="patient-col col-mrn mrn">456789</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-hospital">OR</span>
+          </div>
+          <span class="patient-col col-date">01/24/25</span>
+          <span class="patient-col col-procedure procedure">AV Fistula Creation</span>
+          <span class="patient-col col-anatomy anatomy">Cephalic vein adequate, radial artery patent</span>
+          <div class="patient-col col-status">
+            <span class="status-badge status-ready"><span class="status-dot">●</span> Ready</span>
+          </div>
+        </div>
+        <div class="patient-row" data-id="5" data-location="hospital">
+          <div class="patient-col col-patient">
+            <span class="patient-name">Johnson, Marcus</span>
+            <span class="patient-diagnosis">I71.4 - AAA</span>
+          </div>
+          <span class="patient-col col-mrn mrn">567890</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-hospital">OR</span>
+          </div>
+          <span class="patient-col col-date">01/24/25</span>
+          <span class="patient-col col-procedure procedure">AAA Repair (EVAR)</span>
+          <span class="patient-col col-anatomy anatomy">5.8cm infrarenal, adequate neck</span>
+          <div class="patient-col col-status">
+            <span class="status-badge status-partial">Needs Cardiac</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's OR List -->
+      <div class="list-body hidden" id="today-list">
+        <div class="patient-row" data-id="6" data-location="asc">
+          <div class="patient-col col-patient">
+            <span class="patient-name">Davis, Patricia</span>
+            <span class="patient-diagnosis">I70.25 - PAD w/ CLI</span>
+          </div>
+          <span class="patient-col col-mrn mrn">678901</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-asc">ASC</span>
+          </div>
+          <span class="patient-col col-date">01/18/25</span>
+          <span class="patient-col col-procedure procedure">Tibial Angioplasty</span>
+          <span class="patient-col col-anatomy anatomy">PT occlusion, wound lateral malleolus</span>
+          <div class="patient-col col-status">
+            <span class="status-badge status-ready"><span class="status-dot">●</span> ASC - 0730</span>
+          </div>
+        </div>
+        <div class="patient-row" data-id="7" data-location="hospital">
+          <div class="patient-col col-patient">
+            <span class="patient-name">Brown, William</span>
+            <span class="patient-diagnosis">I65.21 - Carotid stenosis 85%</span>
+          </div>
+          <span class="patient-col col-mrn mrn">789012</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-hospital">OR</span>
+          </div>
+          <span class="patient-col col-date">01/18/25</span>
+          <span class="patient-col col-procedure procedure">TCAR</span>
+          <span class="patient-col col-anatomy anatomy">R ICA 85% stenosis, high bifurcation</span>
+          <div class="patient-col col-status">
+            <span class="status-badge status-ready"><span class="status-dot">●</span> OR 3 - 1100</span>
+          </div>
+        </div>
+        <div class="patient-row" data-id="8" data-location="asc">
+          <div class="patient-col col-patient">
+            <span class="patient-name">Garcia, Elena</span>
+            <span class="patient-diagnosis">I83.811 - Varicose veins w/ pain</span>
+          </div>
+          <span class="patient-col col-mrn mrn">890123</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-asc">ASC</span>
+          </div>
+          <span class="patient-col col-date">01/18/25</span>
+          <span class="patient-col col-procedure procedure">VenaSeal GSV</span>
+          <span class="patient-col col-anatomy anatomy">GSV reflux 4.2 sec, 8mm diameter</span>
+          <div class="patient-col col-status">
+            <span class="status-badge status-ready"><span class="status-dot">●</span> ASC - 1400</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unsigned List -->
+      <div class="list-body hidden" id="unsigned-list">
+        <div class="patient-row" data-id="9" data-location="asc">
+          <div class="patient-col col-patient">
+            <span class="patient-name">Miller, Thomas</span>
+            <span class="patient-diagnosis">I70.25</span>
+          </div>
+          <span class="patient-col col-mrn mrn">901234</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-asc">ASC</span>
+          </div>
+          <span class="patient-col col-date">01/17/25</span>
+          <span class="patient-col col-procedure procedure">Angiogram + Intervention</span>
+          <span class="patient-col col-anatomy anatomy">Completed</span>
+          <div class="patient-col col-status">
+            <span class="status-badge" style="background: rgba(117,117,117,0.15); color: #757575; border-color: #757575;">Awaiting signature</span>
+          </div>
+        </div>
+        <div class="patient-row" data-id="10" data-location="hospital">
+          <div class="patient-col col-patient">
+            <span class="patient-name">Wilson, Sandra</span>
+            <span class="patient-diagnosis">N18.6</span>
+          </div>
+          <span class="patient-col col-mrn mrn">012345</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-hospital">OR</span>
+          </div>
+          <span class="patient-col col-date">01/16/25</span>
+          <span class="patient-col col-procedure procedure">Perm Dialysis Catheter</span>
+          <span class="patient-col col-anatomy anatomy">Completed</span>
+          <div class="patient-col col-status">
+            <span class="status-badge" style="background: rgba(117,117,117,0.15); color: #757575; border-color: #757575;">Awaiting signature</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expanded Card -->
+    <div class="expanded-card" id="expanded-card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title" id="card-name">Smith, John <span id="card-location-badge" class="location-badge location-asc">ASC</span></h2>
+          <p class="card-subtitle" id="card-info">MRN: 123456 | DOS: 01/22/25</p>
+        </div>
+        <button class="close-btn" id="close-card">×</button>
+      </div>
+      
+      <div class="card-grid">
+        <div class="card-section">
+          <h3 class="section-title">DIAGNOSIS (ICD-10)</h3>
+          <span class="code-tag" id="card-diagnosis">I70.25 - PAD w/ CLI</span>
+        </div>
+        
+        <div class="card-section">
+          <h3 class="section-title">ANATOMY DEFINED</h3>
+          <p class="anatomy-text" id="card-anatomy">SFA Occlusion, single vessel runoff</p>
+        </div>
+        
+        <div class="card-section">
+          <h3 class="section-title">PLANNED PROCEDURE</h3>
+          <span class="procedure-text" id="card-procedure">SFA Angioplasty + Stent</span>
+        </div>
+        
+        <div class="card-section">
+          <h3 class="section-title">LCD STATUS</h3>
+          <span class="lcd-status lcd-supported" id="card-lcd">✓ Medical Necessity Supported</span>
+        </div>
+      </div>
+      
+      <div class="card-actions">
+        <button class="btn-secondary" onclick="viewPatientDetails()">View Details</button>
+        <button class="btn-secondary" onclick="editPatientPlanning()">Edit Planning</button>
+        <button class="btn-primary" id="open-workspace-btn" onclick="openInWorkspace()">Open in Workspace →</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add Patient Modal -->
+  <div class="modal-overlay" id="add-patient-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">ADD NEW PATIENT</h2>
+        <button class="modal-close" id="modal-close">×</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Patient Name -->
+        <div class="form-group">
+          <label class="form-label">PATIENT NAME</label>
+          <input type="text" class="form-input" id="patient-name" placeholder="Last, First">
+        </div>
+
+        <!-- MRN and DOB Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">MRN</label>
+            <input type="text" class="form-input" id="patient-mrn" placeholder="Medical Record #">
+          </div>
+          <div class="form-group">
+            <label class="form-label">DATE OF BIRTH</label>
+            <input type="date" class="form-input" id="patient-dob">
+          </div>
+        </div>
+
+        <!-- Sex Toggle -->
+        <div class="form-group">
+          <label class="form-label">SEX</label>
+          <div class="sex-toggle">
+            <button class="sex-option" data-sex="male">Male</button>
+            <button class="sex-option" data-sex="female">Female</button>
+          </div>
+        </div>
+
+        <!-- Patient Type -->
+        <div class="form-group">
+          <label class="form-label">PATIENT TYPE</label>
+          <div class="patient-type-grid">
+            <div class="patient-type-option" data-type="pad">
+              <div class="patient-type-checkbox">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span class="patient-type-label">PAD / CLI</span>
+              <svg class="patient-type-icon" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2">
+                <path d="M12 2 L12 22 M8 6 Q12 2 16 6 M8 18 Q12 22 16 18"/>
+              </svg>
+            </div>
+            <div class="patient-type-option" data-type="venous">
+              <div class="patient-type-checkbox">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span class="patient-type-label">Venous</span>
+              <svg class="patient-type-icon" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2">
+                <path d="M12 2 Q8 8 12 12 Q16 16 12 22"/>
+              </svg>
+            </div>
+            <div class="patient-type-option" data-type="aaa">
+              <div class="patient-type-checkbox">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span class="patient-type-label">AAA / Aortic</span>
+              <svg class="patient-type-icon" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2">
+                <ellipse cx="12" cy="12" rx="6" ry="8"/>
+              </svg>
+            </div>
+            <div class="patient-type-option" data-type="carotid">
+              <div class="patient-type-checkbox">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span class="patient-type-label">Carotid</span>
+              <svg class="patient-type-icon" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2">
+                <path d="M12 2 L12 8 M10 8 Q8 14 10 22 M14 8 Q16 14 14 22"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clinical Notes -->
+        <div class="form-group">
+          <label class="form-label">CLINICAL NOTES</label>
+          <div class="notes-tags">
+            <button class="note-tag" data-tag="HPI">HPI</button>
+            <button class="note-tag" data-tag="SOAP">SOAP Note</button>
+            <button class="note-tag" data-tag="Office Visit">Office Visit</button>
+            <button class="note-tag" data-tag="Phone Call">Phone Call</button>
+            <button class="note-tag" data-tag="Referral">Referral</button>
+            <button class="note-tag" data-tag="Consult">Consult</button>
+            <button class="note-tag" data-tag="Pre-Op">Pre-Op Note</button>
+            <button class="note-tag" data-tag="Imaging">Imaging Review</button>
+          </div>
+          <textarea class="notes-textarea" id="clinical-notes" placeholder="Paste or type clinical notes here...&#10;&#10;Example: Chief complaint, history of present illness, relevant imaging findings, physical exam, assessment & plan..."></textarea>
+          <div class="selected-tags-display" id="selected-tags-display"></div>
+        </div>
+
+        <!-- AI Model Selector -->
+        <div class="form-group">
+          <label class="form-label">AI MODEL FOR NOTE GENERATION</label>
+          <div class="ai-selector">
+            <button class="ai-option selected" data-ai="claude">Claude</button>
+            <button class="ai-option" data-ai="gemini">Gemini</button>
+            <button class="ai-option" data-ai="gpt">GPT-4</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-generate" id="btn-generate-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2 L12 6 M12 18 L12 22 M4.93 4.93 L7.76 7.76 M16.24 16.24 L19.07 19.07 M2 12 L6 12 M18 12 L22 12 M4.93 19.07 L7.76 16.24 M16.24 7.76 L19.07 4.93"/>
+          </svg>
+          Generate Searchable AI Note
+        </button>
+        <button class="btn-cancel" id="btn-cancel-modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span>© 2026 OR Command Center</span>
+    <span>|</span>
+    <span>v0.1.0</span>
+  </footer>
+
+  <script>
+    // Set current date
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { 
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+    });
+
+    // Patient data with location (hospital = Hospital OR, asc = Albany Vascular Surgery Center)
+    const patients = {
+      1: { name: 'Smith, John', mrn: '123456', dos: '01/22/25', procedure: 'SFA Angioplasty + Stent', diagnosis: 'I70.25 - PAD w/ CLI', anatomy: 'SFA Occlusion, single vessel runoff', ready: true, location: 'asc' },
+      2: { name: 'Adams, Mary', mrn: '234567', dos: '01/22/25', procedure: 'Carotid Endarterectomy', diagnosis: 'I65.21 - Carotid stenosis', anatomy: 'Pending imaging review', ready: false, location: 'hospital' },
+      3: { name: 'Chen, Robert', mrn: '345678', dos: '01/23/25', procedure: 'Fem-Pop Bypass', diagnosis: 'I70.25 - PAD w/ CLI', anatomy: 'SFA/Popliteal occlusion, 2-vessel runoff', ready: false, location: 'hospital' },
+      4: { name: 'Williams, Ana', mrn: '456789', dos: '01/24/25', procedure: 'AV Fistula Creation', diagnosis: 'N18.6 - ESRD', anatomy: 'Cephalic vein adequate, radial artery patent', ready: true, location: 'hospital' },
+      5: { name: 'Johnson, Marcus', mrn: '567890', dos: '01/24/25', procedure: 'AAA Repair (EVAR)', diagnosis: 'I71.4 - AAA', anatomy: '5.8cm infrarenal, adequate neck', ready: false, location: 'hospital' },
+      6: { name: 'Davis, Patricia', mrn: '678901', dos: '01/18/25', procedure: 'Tibial Angioplasty', diagnosis: 'I70.25 - PAD w/ CLI', anatomy: 'PT occlusion, wound lateral malleolus', ready: true, location: 'asc' },
+      7: { name: 'Brown, William', mrn: '789012', dos: '01/18/25', procedure: 'TCAR', diagnosis: 'I65.21 - Carotid stenosis 85%', anatomy: 'R ICA 85% stenosis, high bifurcation', ready: true, location: 'hospital' },
+      8: { name: 'Garcia, Elena', mrn: '890123', dos: '01/18/25', procedure: 'VenaSeal GSV', diagnosis: 'I83.811 - Varicose veins w/ pain', anatomy: 'GSV reflux 4.2 sec, 8mm diameter', ready: true, location: 'asc' },
+      9: { name: 'Miller, Thomas', mrn: '901234', dos: '01/17/25', procedure: 'Angiogram + Intervention', diagnosis: 'I70.25', anatomy: 'Completed', ready: true, location: 'asc' },
+      10: { name: 'Wilson, Sandra', mrn: '012345', dos: '01/16/25', procedure: 'Perm Dialysis Catheter', diagnosis: 'N18.6', anatomy: 'Completed', ready: true, location: 'hospital' },
+    };
+
+    // Current location filter
+    let currentLocationFilter = 'all';
+
+    // Location filter functionality
+    document.querySelectorAll('.location-filter').forEach(filter => {
+      filter.addEventListener('click', () => {
+        document.querySelectorAll('.location-filter').forEach(f => f.classList.remove('active'));
+        filter.classList.add('active');
+        currentLocationFilter = filter.dataset.location;
+
+        // Filter patient rows
+        document.querySelectorAll('.patient-row').forEach(row => {
+          const rowLocation = row.dataset.location;
+          if (currentLocationFilter === 'all' || rowLocation === currentLocationFilter) {
+            row.style.display = 'flex';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+
+        // Update counts for current tab
+        updateTabCounts();
+
+        // Hide expanded card when filtering
+        document.getElementById('expanded-card').classList.remove('visible');
+        document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
+      });
+    });
+
+    // Update tab counts based on location filter
+    function updateTabCounts() {
+      const lists = ['preop', 'today', 'unsigned'];
+      lists.forEach(listId => {
+        const list = document.getElementById(`${listId}-list`);
+        const visibleRows = list.querySelectorAll('.patient-row').length;
+        const filteredRows = Array.from(list.querySelectorAll('.patient-row'))
+          .filter(row => currentLocationFilter === 'all' || row.dataset.location === currentLocationFilter).length;
+        const countEl = document.getElementById(`${listId}-count`);
+        if (countEl) {
+          countEl.textContent = filteredRows;
+        }
+      });
+    }
+
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        const tabId = tab.dataset.tab;
+        document.querySelectorAll('.list-body').forEach(list => list.classList.add('hidden'));
+        document.getElementById(`${tabId}-list`).classList.remove('hidden');
+        
+        // Reset animations
+        document.querySelectorAll(`#${tabId}-list .patient-row`).forEach(row => {
+          row.style.animation = 'none';
+          row.offsetHeight;
+          row.style.animation = null;
+        });
+        
+        // Hide expanded card
+        document.getElementById('expanded-card').classList.remove('visible');
+        document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
+      });
+    });
+
+    // Patient row click
+    document.querySelectorAll('.patient-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const id = row.dataset.id;
+        const patient = patients[id];
+        const card = document.getElementById('expanded-card');
+        
+        // Toggle selection
+        if (row.classList.contains('selected')) {
+          row.classList.remove('selected');
+          card.classList.remove('visible');
+        } else {
+          document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
+          row.classList.add('selected');
+          
+          // Update card
+          const cardName = document.getElementById('card-name');
+          cardName.innerHTML = patient.name + ' <span id="card-location-badge" class="location-badge ' +
+            (patient.location === 'hospital' ? 'location-hospital">OR' : 'location-asc">ASC') + '</span>';
+          document.getElementById('card-info').textContent = `MRN: ${patient.mrn} | DOS: ${patient.dos} | ${patient.location === 'hospital' ? 'Hospital OR' : 'Albany ASC'}`;
+          document.getElementById('card-diagnosis').textContent = patient.diagnosis;
+          document.getElementById('card-anatomy').textContent = patient.anatomy;
+          document.getElementById('card-procedure').textContent = patient.procedure;
+
+          const lcd = document.getElementById('card-lcd');
+          if (patient.ready) {
+            lcd.textContent = '✓ Medical Necessity Supported';
+            lcd.className = 'lcd-status lcd-supported';
+          } else {
+            lcd.textContent = '⚠ Incomplete Documentation';
+            lcd.className = 'lcd-status lcd-incomplete';
+          }
+
+          card.classList.add('visible');
+        }
+      });
+    });
+
+    // Close card button
+    document.getElementById('close-card').addEventListener('click', () => {
+      document.getElementById('expanded-card').classList.remove('visible');
+      document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
+    });
+
+    // Store selected patient for workspace
+    let selectedPatientId = null;
+
+    // Update selected patient when row is clicked
+    document.querySelectorAll('.patient-row').forEach(row => {
+      row.addEventListener('click', () => {
+        selectedPatientId = row.dataset.id;
+      });
+    });
+
+    // Open in Workspace button
+    function openInWorkspace() {
+      if (selectedPatientId) {
+        const patient = patients[selectedPatientId];
+        // Store patient data in localStorage for workspace to use
+        localStorage.setItem('selectedPatient', JSON.stringify({
+          id: selectedPatientId,
+          ...patient
+        }));
+        // Navigate to appropriate workspace based on procedure
+        const procedure = patient.procedure.toLowerCase();
+        if (procedure.includes('carotid') || procedure.includes('tcar') || procedure.includes('cea')) {
+          window.location.href = 'workspace-carotid.html';
+        } else if (procedure.includes('aaa') || procedure.includes('evar') || procedure.includes('aneurysm')) {
+          window.location.href = 'workspace-aortic-aneurysm.html';
+        } else if (procedure.includes('vein') || procedure.includes('venaseal') || procedure.includes('ablation')) {
+          window.location.href = 'workspace-venous.html';
+        } else {
+          window.location.href = 'surgical-command-center-workspace.html';
+        }
+      }
+    }
+
+    // View patient details (opens expanded view for now)
+    function viewPatientDetails() {
+      if (selectedPatientId) {
+        alert('View Details: Patient ' + patients[selectedPatientId].name + '\n\nFull chart view coming soon.');
+      }
+    }
+
+    // Edit planning - routes to appropriate planning template based on procedure type
+    function editPatientPlanning() {
+      if (selectedPatientId) {
+        const patient = patients[selectedPatientId];
+        localStorage.setItem('selectedPatient', JSON.stringify({
+          id: selectedPatientId,
+          ...patient
+        }));
+
+        // Route to appropriate planning template based on procedure
+        const procedure = patient.procedure.toLowerCase();
+        if (procedure.includes('angioplasty') || procedure.includes('stent') || procedure.includes('atherectomy') ||
+            procedure.includes('angiogram') || procedure.includes('arteriogram') || procedure.includes('tibial') ||
+            (procedure.includes('pad') || patient.diagnosis.toLowerCase().includes('pad') || patient.diagnosis.toLowerCase().includes('i70'))) {
+          // Endovascular PAD cases go to the endovascular planning template
+          window.location.href = 'planning-endovascular.html';
+        } else if (procedure.includes('carotid') || procedure.includes('tcar') || procedure.includes('cea')) {
+          window.location.href = 'workspace-carotid.html';
+        } else if (procedure.includes('aaa') || procedure.includes('evar') || procedure.includes('aneurysm')) {
+          window.location.href = 'workspace-aortic-aneurysm.html';
+        } else if (procedure.includes('vein') || procedure.includes('venaseal') || procedure.includes('ablation')) {
+          window.location.href = 'workspace-venous.html';
+        } else {
+          // Default to endovascular planning for PAD-type cases
+          window.location.href = 'planning-endovascular.html';
+        }
+      }
+    }
+
+    // ========== ADD PATIENT MODAL ==========
+    const modal = document.getElementById('add-patient-modal');
+    const addBtn = document.querySelector('.add-btn');
+    const modalClose = document.getElementById('modal-close');
+    const btnCancel = document.getElementById('btn-cancel-modal');
+    const btnGenerate = document.getElementById('btn-generate-note');
+
+    // Form state
+    let selectedSex = null;
+    let selectedPatientTypes = [];
+    let selectedAI = 'claude';
+
+    // Open modal
+    addBtn.addEventListener('click', () => {
+      modal.classList.add('visible');
+      document.getElementById('patient-name').focus();
+    });
+
+    // Close modal functions
+    function closeModal() {
+      modal.classList.remove('visible');
+      resetForm();
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    btnCancel.addEventListener('click', closeModal);
+
+    // Close on overlay click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('visible')) {
+        closeModal();
+      }
+    });
+
+    // Sex toggle
+    document.querySelectorAll('.sex-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.sex-option').forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+        selectedSex = option.dataset.sex;
+      });
+    });
+
+    // Patient type selection (multi-select)
+    document.querySelectorAll('.patient-type-option').forEach(option => {
+      option.addEventListener('click', () => {
+        const typeValue = option.dataset.type;
+        if (option.classList.contains('selected')) {
+          option.classList.remove('selected');
+          selectedPatientTypes = selectedPatientTypes.filter(t => t !== typeValue);
+        } else {
+          option.classList.add('selected');
+          selectedPatientTypes.push(typeValue);
+        }
+      });
+    });
+
+    // AI model selection
+    document.querySelectorAll('.ai-option').forEach(option => {
+      option.addEventListener('click', () => {
+        document.querySelectorAll('.ai-option').forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+        selectedAI = option.dataset.ai;
+      });
+    });
+
+    // Note tags selection (multi-select)
+    let selectedNoteTags = [];
+
+    function updateTagsDisplay() {
+      const display = document.getElementById('selected-tags-display');
+      display.innerHTML = selectedNoteTags.map(tag =>
+        `<span class="selected-tag-chip">${tag}<span class="remove-tag" data-tag="${tag}">×</span></span>`
+      ).join('');
+
+      // Add click handlers for remove buttons
+      display.querySelectorAll('.remove-tag').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const tagToRemove = btn.dataset.tag;
+          selectedNoteTags = selectedNoteTags.filter(t => t !== tagToRemove);
+          document.querySelector(`.note-tag[data-tag="${tagToRemove}"]`).classList.remove('selected');
+          updateTagsDisplay();
+        });
+      });
+    }
+
+    document.querySelectorAll('.note-tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        const tagName = tag.dataset.tag;
+        if (tag.classList.contains('selected')) {
+          tag.classList.remove('selected');
+          selectedNoteTags = selectedNoteTags.filter(t => t !== tagName);
+        } else {
+          tag.classList.add('selected');
+          selectedNoteTags.push(tagName);
+        }
+        updateTagsDisplay();
+      });
+    });
+
+    // Auto-expand textarea
+    const notesTextarea = document.getElementById('clinical-notes');
+    notesTextarea.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 400) + 'px';
+    });
+
+    // Reset form
+    function resetForm() {
+      document.getElementById('patient-name').value = '';
+      document.getElementById('patient-mrn').value = '';
+      document.getElementById('patient-dob').value = '';
+      const notesEl = document.getElementById('clinical-notes');
+      notesEl.value = '';
+      notesEl.style.height = 'auto';
+      document.getElementById('selected-tags-display').innerHTML = '';
+      document.querySelectorAll('.sex-option').forEach(o => o.classList.remove('selected'));
+      document.querySelectorAll('.patient-type-option').forEach(o => o.classList.remove('selected'));
+      document.querySelectorAll('.note-tag').forEach(o => o.classList.remove('selected'));
+      document.querySelectorAll('.ai-option').forEach(o => o.classList.remove('selected'));
+      document.querySelector('.ai-option[data-ai="claude"]').classList.add('selected');
+      selectedSex = null;
+      selectedPatientTypes = [];
+      selectedNoteTags = [];
+      selectedAI = 'claude';
+    }
+
+    // Generate AI Note
+    btnGenerate.addEventListener('click', () => {
+      const name = document.getElementById('patient-name').value.trim();
+      const mrn = document.getElementById('patient-mrn').value.trim();
+      const dob = document.getElementById('patient-dob').value;
+      const clinicalNotes = document.getElementById('clinical-notes').value.trim();
+
+      // Validation
+      if (!name) {
+        alert('Please enter patient name');
+        document.getElementById('patient-name').focus();
+        return;
+      }
+      if (!mrn) {
+        alert('Please enter MRN');
+        document.getElementById('patient-mrn').focus();
+        return;
+      }
+      if (!dob) {
+        alert('Please enter date of birth');
+        document.getElementById('patient-dob').focus();
+        return;
+      }
+      if (!selectedSex) {
+        alert('Please select patient sex');
+        return;
+      }
+      if (selectedPatientTypes.length === 0) {
+        alert('Please select at least one patient type');
+        return;
+      }
+
+      // Get patient type labels
+      const typeLabels = {
+        'pad': 'PAD / CLI',
+        'venous': 'Venous Disease',
+        'aaa': 'AAA / Aortic Aneurysm',
+        'carotid': 'Carotid Stenosis'
+      };
+
+      const selectedTypeLabels = selectedPatientTypes.map(t => typeLabels[t]);
+
+      // Workspace routes for each patient type
+      const workspaceRoutes = {
+        'pad': { url: 'surgical-command-center-workspace.html', name: 'PAD/CLI Workspace' },
+        'venous': { url: 'workspace-venous.html', name: 'Venous Workspace' },
+        'aaa': { url: 'workspace-aortic-aneurysm.html', name: 'Aortic Workspace' },
+        'carotid': { url: 'workspace-carotid.html', name: 'Carotid Workspace' }
+      };
+
+      // Get workspaces for selected patient types
+      const patientWorkspaces = selectedPatientTypes.map(type => ({
+        type: type,
+        ...workspaceRoutes[type]
+      }));
+
+      // Create patient object
+      const newPatient = {
+        name: name,
+        mrn: mrn,
+        dob: dob,
+        sex: selectedSex,
+        patientTypes: [...selectedPatientTypes],
+        patientTypeLabels: selectedTypeLabels,
+        workspaces: patientWorkspaces,
+        clinicalNotes: clinicalNotes,
+        noteTags: [...selectedNoteTags],
+        aiModel: selectedAI,
+        createdAt: new Date().toISOString()
+      };
+
+      // Store in localStorage for now (would be API call in production)
+      const savedPatients = JSON.parse(localStorage.getItem('orcc_patients') || '[]');
+      savedPatients.push(newPatient);
+      localStorage.setItem('orcc_patients', JSON.stringify(savedPatients));
+
+      // Show confirmation with AI note simulation
+      const aiNames = { 'claude': 'Claude', 'gemini': 'Gemini', 'gpt': 'GPT-4' };
+      const tagsText = selectedNoteTags.length > 0 ? `Tags: ${selectedNoteTags.join(', ')}\n` : '';
+      const notesPreview = clinicalNotes ? `Notes: ${clinicalNotes.substring(0, 50)}${clinicalNotes.length > 50 ? '...' : ''}\n` : '';
+
+      alert(`Patient Added Successfully!\n\n` +
+        `Name: ${name}\n` +
+        `MRN: ${mrn}\n` +
+        `DOB: ${dob}\n` +
+        `Sex: ${selectedSex.charAt(0).toUpperCase() + selectedSex.slice(1)}\n` +
+        `Type: ${selectedTypeLabels.join(', ')}\n` +
+        `${tagsText}${notesPreview}\n` +
+        `Generating searchable note with ${aiNames[selectedAI]}...\n` +
+        `(AI integration coming in Phase 3)`);
+
+      // Close modal and reset
+      closeModal();
+
+      // Store patient for workspace
+      localStorage.setItem('selectedPatient', JSON.stringify({
+        id: 'new-' + Date.now(),
+        name: name,
+        mrn: mrn,
+        dos: 'TBD',
+        procedure: 'Planning',
+        diagnosis: selectedTypeLabels.join(', '),
+        patientTypes: [...selectedPatientTypes],
+        workspaces: patientWorkspaces,
+        anatomy: 'Not yet defined',
+        ready: false,
+        location: 'asc',
+        sex: selectedSex,
+        dob: dob,
+        clinicalNotes: clinicalNotes,
+        noteTags: [...selectedNoteTags]
+      }));
+    });
+  </script>
+</body>
+</html>

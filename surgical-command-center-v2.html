@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surgical Command Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --uga-red: #BA0C2F;
+      --uga-red-dark: #8a0923;
+      --uga-red-light: rgba(186, 12, 47, 0.12);
+      --black: #0A0A0A;
+      --gray-900: #0D0D0D;
+      --gray-850: #101010;
+      --gray-800: #141414;
+      --gray-700: #1A1A1A;
+      --gray-600: #222222;
+      --gray-500: #333333;
+      --gray-400: #555555;
+      --gray-300: #777777;
+      --gray-200: #999999;
+      --gray-100: #CCCCCC;
+      --white: #FFFFFF;
+      
+      /* Status Colors */
+      --ready: #22C55E;
+      --ready-bg: rgba(34, 197, 94, 0.12);
+      --near: #84CC16;
+      --near-bg: rgba(132, 204, 22, 0.12);
+      --workup: #F59E0B;
+      --workup-bg: rgba(245, 158, 11, 0.12);
+      --hold: #EF4444;
+      --hold-bg: rgba(239, 68, 68, 0.12);
+      --nonsurg: #6B7280;
+      --nonsurg-bg: rgba(107, 114, 128, 0.12);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--gray-600);
+      background: linear-gradient(180deg, var(--gray-900) 0%, var(--black) 100%);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      background: var(--uga-red);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(186, 12, 47, 0.3);
+    }
+
+    .logo svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--white);
+    }
+
+    .subtitle {
+      font-size: 11px;
+      color: var(--gray-300);
+      letter-spacing: 0.3px;
+    }
+
+    .header-center {
+      display: flex;
+      gap: 2px;
+      background: var(--gray-800);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--gray-600);
+    }
+
+    .nav-btn {
+      padding: 8px 18px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      color: var(--gray-300);
+      background: transparent;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      color: var(--white);
+      background: var(--gray-700);
+    }
+
+    .nav-btn.active {
+      color: var(--white);
+      background: var(--uga-red);
+      box-shadow: 0 2px 6px rgba(186, 12, 47, 0.3);
+    }
+
+    .logo {
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .date-display {
+      text-align: right;
+    }
+
+    .date-day {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .date-full {
+      font-size: 10px;
+      color: var(--gray-300);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--gray-700);
+      border: 2px solid var(--gray-500);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-200);
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      gap: 12px;
+    }
+
+    .stat-card {
+      flex: 1;
+      padding: 14px 18px;
+      background: var(--gray-800);
+      border: 1px solid var(--gray-600);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--gray-500);
+      transform: translateY(-1px);
+    }
+
+    .stat-card.active {
+      border-color: var(--uga-red);
+      background: var(--gray-700);
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .stat-icon.ready { background: var(--ready-bg); }
+    .stat-icon.near { background: var(--near-bg); }
+    .stat-icon.workup { background: var(--workup-bg); }
+    .stat-icon.hold { background: var(--hold-bg); }
+    .stat-icon.nonsurg { background: var(--nonsurg-bg); }
+
+    .stat-info {
+      flex: 1;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--gray-300);
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.1;
+    }
+
+    .stat-sub {
+      font-size: 10px;
+      color: var(--gray-400);
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 2px;
+      background: var(--gray-800);
+      padding: 3px;
+      border-radius: 6px;
+      border: 1px solid var(--gray-600);
+    }
+
+    .view-btn {
+      padding: 6px 14px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--gray-300);
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .view-btn.active {
+      color: var(--white);
+      background: var(--gray-600);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-ghost {
+      color: var(--gray-200);
+      background: transparent;
+      border: 1px solid var(--gray-500);
+    }
+
+    .btn-ghost:hover {
+      background: var(--gray-700);
+      border-color: var(--gray-400);
+    }
+
+    .btn-primary {
+      color: var(--white);
+      background: var(--uga-red);
+      border: 1px solid var(--uga-red);
+    }
+
+    .btn-primary:hover {
+      background: var(--uga-red-dark);
+    }
+
+    /* Patient List */
+    .list-container {
+      flex: 1;
+      background: var(--gray-850);
+      border: 1px solid var(--gray-600);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .list-header {
+      display: grid;
+      grid-template-columns: 24px 200px 140px 200px 1fr 140px;
+      gap: 12px;
+      padding: 10px 16px;
+      background: var(--gray-900);
+      border-bottom: 1px solid var(--gray-600);
+      align-items: center;
+    }
+
+    .col-header {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: var(--gray-400);
+      text-transform: uppercase;
+    }
+
+    .list-body {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* Status Group */
+    .status-group {
+      border-bottom: 1px solid var(--gray-700);
+    }
+
+    .status-group:last-child {
+      border-bottom: none;
+    }
+
+    .group-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--gray-800);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .group-header:hover {
+      background: var(--gray-750);
+    }
+
+    .group-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .group-indicator.ready { background: var(--ready); }
+    .group-indicator.near { background: var(--near); }
+    .group-indicator.workup { background: var(--workup); }
+    .group-indicator.hold { background: var(--hold); }
+
+    .group-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: var(--white);
+    }
+
+    .group-count {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray-400);
+      background: var(--gray-700);
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .group-chevron {
+      margin-left: auto;
+      color: var(--gray-400);
+      transition: transform 0.2s;
+    }
+
+    .group-header.collapsed .group-chevron {
+      transform: rotate(-90deg);
+    }
+
+    .group-patients {
+      display: block;
+    }
+
+    .group-patients.collapsed {
+      display: none;
+    }
+
+    /* Patient Row */
+    .patient-row {
+      display: grid;
+      grid-template-columns: 24px 200px 140px 200px 1fr 140px;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--gray-700);
+      cursor: pointer;
+      transition: all 0.1s;
+      align-items: center;
+    }
+
+    .patient-row:hover {
+      background: var(--gray-800);
+    }
+
+    .patient-row.selected {
+      background: var(--gray-700);
+      border-left: 3px solid var(--uga-red);
+      padding-left: 13px;
+    }
+
+    .patient-row:last-child {
+      border-bottom: none;
+    }
+
+    .row-number {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-400);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .patient-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .patient-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .patient-dob {
+      font-size: 10px;
+      color: var(--gray-400);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .procedure-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .procedure-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-100);
+    }
+
+    .procedure-side {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--uga-red);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .scheduled-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .scheduled-date {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ready);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .scheduled-location {
+      font-size: 10px;
+      color: var(--gray-400);
+    }
+
+    .no-schedule {
+      font-size: 11px;
+      color: var(--gray-500);
+      font-style: italic;
+    }
+
+    .barriers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .barrier-tag {
+      font-size: 9px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .barrier-done {
+      background: var(--ready-bg);
+      color: var(--ready);
+    }
+
+    .barrier-pending {
+      background: var(--workup-bg);
+      color: var(--workup);
+    }
+
+    .barrier-blocked {
+      background: var(--hold-bg);
+      color: var(--hold);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border-radius: 5px;
+      justify-self: end;
+    }
+
+    .status-ready {
+      background: var(--ready-bg);
+      color: var(--ready);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .status-near {
+      background: var(--near-bg);
+      color: var(--near);
+      border: 1px solid rgba(132, 204, 22, 0.3);
+    }
+
+    .status-workup {
+      background: var(--workup-bg);
+      color: var(--workup);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-hold {
+      background: var(--hold-bg);
+      color: var(--hold);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Expanded Card */
+    .expanded-card {
+      margin-top: 16px;
+      background: var(--gray-800);
+      border: 1px solid var(--uga-red);
+      border-radius: 10px;
+      padding: 20px;
+      display: none;
+      animation: slideUp 0.2s ease;
+    }
+
+    .expanded-card.visible {
+      display: block;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--gray-600);
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .card-meta {
+      font-size: 12px;
+      color: var(--gray-300);
+      margin-top: 4px;
+    }
+
+    .close-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--gray-400);
+      background: transparent;
+      border: 1px solid var(--gray-500);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      background: var(--gray-700);
+      color: var(--white);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card-section {
+      background: var(--black);
+      border: 1px solid var(--gray-700);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: var(--uga-red);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .section-value {
+      font-size: 13px;
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    .section-value.mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .check-done {
+      color: var(--ready);
+    }
+
+    .check-pending {
+      color: var(--workup);
+    }
+
+    .check-blocked {
+      color: var(--hold);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      padding-top: 16px;
+      border-top: 1px solid var(--gray-700);
+    }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px;
+      font-size: 10px;
+      color: var(--gray-500);
+      border-top: 1px solid var(--gray-700);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <a href="ORCC-index.html" class="logo" title="Back to Hub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M12 3v18M5 8c3-3 11-3 14 0M5 16c3 3 11 3 14 0"/>
+        </svg>
+      </a>
+      <div class="brand">
+        <h1 class="title">OR COMMAND CENTER</h1>
+        <p class="subtitle">Vascular Surgery Pre-Op Planning</p>
+      </div>
+    </div>
+
+    <nav class="header-center">
+      <a href="surgical-command-center-v2.html" class="nav-btn active">PATIENT LISTS</a>
+      <a href="surgical-command-center-tasks.html" class="nav-btn">TASKS</a>
+      <a href="surgical-command-center-workspace.html" class="nav-btn">WORKSPACE</a>
+      <a href="ORCC-settings.html" class="nav-btn">SETTINGS</a>
+    </nav>
+
+    <div class="header-right">
+      <div class="date-display">
+        <div class="date-day" id="date-day"></div>
+        <div class="date-full" id="date-full"></div>
+      </div>
+      <div class="user-avatar">TM</div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+    
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-card active" data-filter="all">
+        <div class="stat-icon" style="background: var(--uga-red-light);">📋</div>
+        <div class="stat-info">
+          <div class="stat-label">Total Pre-Op</div>
+          <div class="stat-value">11</div>
+          <div class="stat-sub">surgical candidates</div>
+        </div>
+      </div>
+      <div class="stat-card" data-filter="ready">
+        <div class="stat-icon ready">🟢</div>
+        <div class="stat-info">
+          <div class="stat-label">Ready / Near-Ready</div>
+          <div class="stat-value">2</div>
+          <div class="stat-sub">can schedule now</div>
+        </div>
+      </div>
+      <div class="stat-card" data-filter="near">
+        <div class="stat-icon near">🟡</div>
+        <div class="stat-info">
+          <div class="stat-label">One Step Left</div>
+          <div class="stat-value">2</div>
+          <div class="stat-sub">likely ready soon</div>
+        </div>
+      </div>
+      <div class="stat-card" data-filter="workup">
+        <div class="stat-icon workup">🟠</div>
+        <div class="stat-info">
+          <div class="stat-label">Workup in Progress</div>
+          <div class="stat-value">3</div>
+          <div class="stat-sub">multiple steps</div>
+        </div>
+      </div>
+      <div class="stat-card" data-filter="hold">
+        <div class="stat-icon hold">🔴</div>
+        <div class="stat-info">
+          <div class="stat-label">On Hold</div>
+          <div class="stat-value">4</div>
+          <div class="stat-sub">not ready</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="view-toggle">
+        <button class="view-btn active">Grouped</button>
+        <button class="view-btn">Flat List</button>
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost">
+          <span>↓</span> Export
+        </button>
+        <button class="btn btn-ghost">
+          <span>⟳</span> Refresh
+        </button>
+        <button class="btn btn-primary">
+          <span>+</span> Add Patient
+        </button>
+      </div>
+    </div>
+
+    <!-- Patient List -->
+    <div class="list-container">
+      <div class="list-header">
+        <span class="col-header">#</span>
+        <span class="col-header">Patient</span>
+        <span class="col-header">Scheduled</span>
+        <span class="col-header">Procedure</span>
+        <span class="col-header">Workup Status</span>
+        <span class="col-header" style="text-align: right;">Readiness</span>
+      </div>
+
+      <div class="list-body">
+        
+        <!-- Ready Group -->
+        <div class="status-group" data-group="ready">
+          <div class="group-header">
+            <div class="group-indicator ready"></div>
+            <span class="group-title">READY OR NEAR-READY FOR SURGERY</span>
+            <span class="group-count">2</span>
+            <span class="group-chevron">▼</span>
+          </div>
+          <div class="group-patients">
+            <div class="patient-row" data-id="1">
+              <span class="row-number">1</span>
+              <div class="patient-info">
+                <span class="patient-name">Roberts, Larry</span>
+                <span class="patient-dob">DOB: 11/17/1953</span>
+              </div>
+              <div class="scheduled-info">
+                <span class="scheduled-date">1/23/26</span>
+                <span class="scheduled-location">@ CRH</span>
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">Femoral–Peroneal Bypass</span>
+                <span class="procedure-side">Left</span>
+              </div>
+              <div class="barriers">
+                <span class="barrier-tag barrier-done">✓ Stress</span>
+                <span class="barrier-tag barrier-done">✓ Cards Cleared</span>
+              </div>
+              <span class="status-badge status-ready"><span class="status-dot"></span>READY</span>
+            </div>
+            <div class="patient-row" data-id="2">
+              <span class="row-number">2</span>
+              <div class="patient-info">
+                <span class="patient-name">Zoellick, Johnathan</span>
+                <span class="patient-dob">DOB: 03/20/1960</span>
+              </div>
+              <div class="scheduled-info">
+                <span class="scheduled-date">2/6/26</span>
+                <span class="scheduled-location">Rescheduled</span>
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">TCAR</span>
+                <span class="procedure-side">Left</span>
+              </div>
+              <div class="barriers">
+                <span class="barrier-tag barrier-done">✓ Workup Complete</span>
+                <span class="barrier-tag barrier-pending">URI Resolved?</span>
+              </div>
+              <span class="status-badge status-near"><span class="status-dot"></span>NEAR-READY</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Near Ready Group -->
+        <div class="status-group" data-group="near">
+          <div class="group-header">
+            <div class="group-indicator near"></div>
+            <span class="group-title">LIKELY READY SOON (One Step Left)</span>
+            <span class="group-count">2</span>
+            <span class="group-chevron">▼</span>
+          </div>
+          <div class="group-patients">
+            <div class="patient-row" data-id="3">
+              <span class="row-number">3</span>
+              <div class="patient-info">
+                <span class="patient-name">Romanesk, Alan</span>
+                <span class="patient-dob">DOB: --</span>
+              </div>
+              <div class="scheduled-info">
+                <span class="no-schedule">Pending clearance</span>
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">TCAR</span>
+                <span class="procedure-side">Left</span>
+              </div>
+              <div class="barriers">
+                <span class="barrier-tag barrier-done">✓ Stress (abnl)</span>
+                <span class="barrier-tag barrier-pending">Cards 12/30</span>
+                <span class="barrier-tag barrier-pending">ECHO + Cath</span>
+              </div>
+              <span class="status-badge status-near"><span class="status-dot"></span>AWAITING CARDS</span>
+            </div>
+            <div class="patient-row" data-id="4">
+              <span class="row-number">4</span>
+              <div class="patient-info">
+                <span class="patient-name">Covin, John</span>
+                <span class="patient-dob">DOB: --</span>
+              </div>
+              <div class="scheduled-info">
+                <span class="no-schedule">After 1/20 f/u</span>
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">Fem-Pop Bypass + Endarterectomy</span>
+                <span class="procedure-side">Left</span>
+              </div>
+              <div class="barriers">
+                <span class="barrier-tag barrier-done">✓ Arteriogram</span>
+                <span class="barrier-tag barrier-done">✓ Stress</span>
+                <span class="barrier-tag barrier-pending">Vein Planning</span>
+              </div>
+              <span class="status-badge status-near"><span class="status-dot"></span>NEAR-READY</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workup Group -->
+        <div class="status-group" data-group="workup">
+          <div class="group-header">
+            <div class="group-indicator workup"></div>
+            <span class="group-title">WORKUP IN PROGRESS (Multiple Steps)</span>
+            <span class="group-count">3</span>
+            <span class="group-chevron">▼</span>
+          </div>
+          <div class="group-patients">
+            <div class="patient-row" data-id="5">
+              <span class="row-number">5</span>
+              <div class="patient-info">
+                <span class="patient-name">Porter, Rosalind</span>
+                <span class="patient-dob">DOB: --</span>
+              </div>
+              <div class="scheduled-info">
+                <span class="no-schedule">Not scheduled</span>
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">Femoral–Distal Bypass</span>
+                <span class="procedure-side">Left</span>
+              </div>
+              <div class="barriers">
+                <span class="barrier-tag barrier-done">✓ Arteriogram</span>
+                <span class="barrier-tag barrier-pending">Stress Pending</span>
+                <span class="barrier-tag barrier-pending">Vein Map 1/28</span>
+              </div>
+              <span class="status-badge status-workup"><span class="status-dot"></span>WORKUP</span>
+            </div>
+            <div class="patient-row" data-id="6">
+              <span class="row-number">6</span>
+              <div class="patient-info">
+                <span class="patient-name">Bivens, Bessie</span>
+                <span class="patient-dob">DOB: --</span>
+              </div>
+              <div class="scheduled-info">
+                <span class="no-schedule">Not scheduled</span>
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">Femoral–Distal Bypass</span>
+                <span class="procedure-side">Right</span>
+              </div>
+              <div class="barriers">
+                <span class="barrier-tag barrier-pending">Cards Eval Needed</span>
+              </div>
+              <span class="status-badge status-workup"><span class="status-dot"></span>WORKUP</span>
+            </div>
+            <div class="patient-row" data-id="7">
+              <span class="row-number">7</span>
+              <div class="patient-info">
+                <span class="patient-name">Taylor, Larry</span>
+                <span class="patient-dob">DOB: --</span>
+              </div>
+              <div class="scheduled-info">
+                <span class="no-schedule">Wound care</span>
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">Femoral–Distal Bypass</span>
+                <span class="procedure-side">Left</span>
+              </div>
+              <div class="barriers">
+                <span class="barrier-tag barrier-done">✓ Stress</span>
+                <span class="barrier-tag barrier-pending">HBO / Wound Opt</span>
+              </div>
+              <span class="status-badge status-workup"><span class="status-dot"></span>WOUND CARE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- On Hold Group -->
+        <div class="status-group" data-group="hold">
+          <div class="group-header">
+            <div class="group-indicator hold"></div>
+            <span class="group-title">NOT READY / ON HOLD</span>
+            <span class="group-count">4</span>
+            <span class="group-chevron">▼</span>
+          </div>
+          <div class="group-patients">
+            <div class="patient-row" data-id="8">
+              <span class="row-number">8</span>
+              <div class="patient-info">
+                <span class="patient-name">Black, Claudia</span>
+                <span class="patient-dob">DOB: --</span>
+              </div>
+              <div class="scheduled-info">
+                <span class="no-schedule">—</span>
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">TCAR + AAA</span>
+                <span class="procedure-side">Left</span>
+              </div>
+              <div class="barriers">
+                <span class="barrier-tag barrier-blocked">Pending Decision</span>
+              </div>
+              <span class="status-badge status-hold"><span class="status-dot"></span>ON HOLD</span>
+            </div>
+            <div class="patient-row" data-id="9">
+              <span class="row-number">9</span>
+              <div class="patient-info">
+                <span class="patient-name">Nutt, Roger</span>
+                <span class="patient-dob">DOB: --</span>
+              </div>
+              <div class="scheduled-info">
+                <span class="no-schedule">—</span>
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">TCAR</span>
+                <span class="procedure-side">Left</span>
+              </div>
+              <div class="barriers">
+                <span class="barrier-tag barrier-blocked">Unable to Contact</span>
+              </div>
+              <span class="status-badge status-hold"><span class="status-dot"></span>NO CONTACT</span>
+            </div>
+            <div class="patient-row" data-id="10">
+              <span class="row-number">10</span>
+              <div class="patient-info">
+                <span class="patient-name">Hall, Charles</span>
+                <span class="patient-dob">DOB: --</span>
+              </div>
+              <div class="scheduled-info">
+                <span class="no-schedule">—</span>
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">TCAR</span>
+                <span class="procedure-side">—</span>
+              </div>
+              <div class="barriers">
+                <span class="barrier-tag barrier-blocked">High Troponins</span>
+                <span class="barrier-tag barrier-blocked">Cards Stabilize</span>
+              </div>
+              <span class="status-badge status-hold"><span class="status-dot"></span>NOT CLEARED</span>
+            </div>
+            <div class="patient-row" data-id="11">
+              <span class="row-number">11</span>
+              <div class="patient-info">
+                <span class="patient-name">Kimsey, Sidney</span>
+                <span class="patient-dob">DOB: --</span>
+              </div>
+              <div class="scheduled-info">
+                <span class="no-schedule">—</span>
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">TCAR</span>
+                <span class="procedure-side">—</span>
+              </div>
+              <div class="barriers">
+                <span class="barrier-tag barrier-blocked">Lost to F/U</span>
+              </div>
+              <span class="status-badge status-hold"><span class="status-dot"></span>LOST</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Expanded Card -->
+    <div class="expanded-card" id="expanded-card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title" id="card-name">Roberts, Larry</h2>
+          <p class="card-meta" id="card-meta">DOB: 11/17/1953 | MRN: ---</p>
+        </div>
+        <button class="close-btn" id="close-card">×</button>
+      </div>
+      
+      <div class="card-grid">
+        <div class="card-section">
+          <div class="section-label">Procedure</div>
+          <div class="section-value" id="card-procedure">LEFT Femoral–Peroneal Bypass</div>
+        </div>
+        <div class="card-section">
+          <div class="section-label">Scheduled</div>
+          <div class="section-value mono" id="card-scheduled">1/23/26 @ CRH</div>
+        </div>
+        <div class="card-section">
+          <div class="section-label">Status</div>
+          <div class="section-value" id="card-status">✅ READY FOR SURGERY</div>
+        </div>
+      </div>
+
+      <div class="card-grid">
+        <div class="card-section" style="grid-column: span 2;">
+          <div class="section-label">Pre-Op Checklist</div>
+          <div class="checklist" id="card-checklist">
+            <div class="checklist-item check-done">✓ Stress test completed</div>
+            <div class="checklist-item check-done">✓ Cardiology clearance</div>
+            <div class="checklist-item check-done">✓ Anatomy defined (arteriogram)</div>
+            <div class="checklist-item check-done">✓ Vein mapping</div>
+          </div>
+        </div>
+        <div class="card-section">
+          <div class="section-label">Next Action</div>
+          <div class="section-value" id="card-action">Proceed to surgery</div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn btn-ghost">View Full Chart</button>
+        <button class="btn btn-ghost">Edit Planning</button>
+        <button class="btn btn-primary">Open in Workspace →</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span>© 2025 Surgical Command Center</span>
+    <span>•</span>
+    <span>v2.0.0</span>
+    <span>•</span>
+    <span>Last sync: just now</span>
+  </footer>
+
+  <script>
+    // Set date
+    const now = new Date();
+    document.getElementById('date-day').textContent = now.toLocaleDateString('en-US', { weekday: 'long' });
+    document.getElementById('date-full').textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+    // Group collapse toggle
+    document.querySelectorAll('.group-header').forEach(header => {
+      header.addEventListener('click', () => {
+        header.classList.toggle('collapsed');
+        header.nextElementSibling.classList.toggle('collapsed');
+      });
+    });
+
+    // Patient data for expanded card
+    const patients = {
+      1: { name: 'Roberts, Larry', dob: '11/17/1953', procedure: 'LEFT Femoral–Peroneal Bypass', scheduled: '1/23/26 @ CRH', status: '✅ READY FOR SURGERY', checklist: ['✓ Stress test completed', '✓ Cardiology clearance', '✓ Anatomy defined', '✓ Vein mapping'], action: 'Proceed to surgery' },
+      2: { name: 'Zoellick, Johnathan', dob: '03/20/1960', procedure: 'LEFT TCAR', scheduled: '2/6/26 (rescheduled)', status: '🟡 NEAR-READY', checklist: ['✓ Workup complete', '✓ Prior URI canceled 1/9', '? Confirm URI resolved'], action: 'Confirm URI resolved, proceed' },
+      3: { name: 'Romanesk, Alan', dob: '--', procedure: 'LEFT TCAR', scheduled: 'Pending clearance', status: '🟡 AWAITING CARDIOLOGY', checklist: ['✓ Stress (abnormal 12/15)', '→ Cards visit 12/30', '→ Pending ECHO + Cath'], action: 'Await cardiology clearance' },
+      4: { name: 'Covin, John', dob: '--', procedure: 'LEFT Fem-Pop Bypass + Endarterectomy', scheduled: 'After 1/20 f/u', status: '🟡 NEAR-READY', checklist: ['✓ Arteriogram 12/2', '✓ Stress done', '→ Vein + endarterectomy planning'], action: 'Complete planning at 1/20 visit' },
+      5: { name: 'Porter, Rosalind', dob: '--', procedure: 'LEFT Femoral–Distal Bypass', scheduled: 'Not scheduled', status: '🟠 WORKUP IN PROGRESS', checklist: ['✓ Arteriogram done', '→ Stress pending', '→ Vein map + duplex 1/28'], action: 'Schedule stress, await vein map' },
+      6: { name: 'Bivens, Bessie', dob: '--', procedure: 'RIGHT Femoral–Distal Bypass', scheduled: 'Not scheduled', status: '🟠 WORKUP IN PROGRESS', checklist: ['→ Cardiology evaluation needed', '→ Awaiting decision after clearance'], action: 'Refer to cardiology' },
+      7: { name: 'Taylor, Larry', dob: '--', procedure: 'LEFT Femoral–Distal Bypass', scheduled: 'Not scheduled', status: '🟠 WOUND OPTIMIZATION', checklist: ['✓ Stress completed', '→ Currently in wound care / HBO'], action: 'Continue wound optimization' },
+      8: { name: 'Black, Claudia', dob: '--', procedure: 'LEFT TCAR + AAA', scheduled: '—', status: '🔴 ON HOLD', checklist: ['→ Pending clearance / decision'], action: 'Await multidisciplinary decision' },
+      9: { name: 'Nutt, Roger', dob: '--', procedure: 'LEFT TCAR', scheduled: '—', status: '🔴 UNABLE TO CONTACT', checklist: ['✗ Cannot reach patient'], action: 'Continue contact attempts' },
+      10: { name: 'Hall, Charles', dob: '--', procedure: 'TCAR', scheduled: '—', status: '🔴 NOT CLEARED', checklist: ['✗ High troponins', '→ Requires cardiology stabilization'], action: 'Cardiology must stabilize first' },
+      11: { name: 'Kimsey, Sidney', dob: '--', procedure: 'TCAR', scheduled: '—', status: '🔴 LOST TO FOLLOW-UP', checklist: ['✗ Patient lost to follow-up'], action: 'Attempt to re-engage patient' },
+    };
+
+    // Patient row click
+    document.querySelectorAll('.patient-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const id = row.dataset.id;
+        const patient = patients[id];
+        const card = document.getElementById('expanded-card');
+
+        // Toggle selection
+        if (row.classList.contains('selected')) {
+          row.classList.remove('selected');
+          card.classList.remove('visible');
+        } else {
+          document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
+          row.classList.add('selected');
+
+          document.getElementById('card-name').textContent = patient.name;
+          document.getElementById('card-meta').textContent = `DOB: ${patient.dob} | MRN: ---`;
+          document.getElementById('card-procedure').textContent = patient.procedure;
+          document.getElementById('card-scheduled').textContent = patient.scheduled;
+          document.getElementById('card-status').textContent = patient.status;
+          document.getElementById('card-action').textContent = patient.action;
+
+          const checklist = document.getElementById('card-checklist');
+          checklist.innerHTML = patient.checklist.map(item => {
+            let cls = 'check-pending';
+            if (item.startsWith('✓')) cls = 'check-done';
+            if (item.startsWith('✗')) cls = 'check-blocked';
+            return `<div class="checklist-item ${cls}">${item}</div>`;
+          }).join('');
+
+          card.classList.add('visible');
+        }
+      });
+    });
+
+    // Close button
+    document.getElementById('close-card').addEventListener('click', () => {
+      document.getElementById('expanded-card').classList.remove('visible');
+      document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
+    });
+
+    // Stat card filter (visual only for now)
+    document.querySelectorAll('.stat-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

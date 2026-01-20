@@ -1,0 +1,2477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surgical Command Center - Task List</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --uga-red: #BA0C2F;
+      --uga-red-dark: #8a0923;
+      --uga-red-light: rgba(186, 12, 47, 0.12);
+      --black: #0A0A0A;
+      --gray-900: #0D0D0D;
+      --gray-850: #101010;
+      --gray-800: #141414;
+      --gray-700: #1A1A1A;
+      --gray-600: #222222;
+      --gray-500: #333333;
+      --gray-400: #555555;
+      --gray-300: #777777;
+      --gray-200: #999999;
+      --gray-100: #CCCCCC;
+      --white: #FFFFFF;
+
+      --ready: #22C55E;
+      --ready-bg: rgba(34, 197, 94, 0.12);
+      --warning: #F59E0B;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --danger: #EF4444;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --info: #3B82F6;
+      --info-bg: rgba(59, 130, 246, 0.12);
+      --purple: #8B5CF6;
+      --purple-bg: rgba(139, 92, 246, 0.12);
+      --cyan: #06B6D4;
+      --cyan-bg: rgba(6, 182, 212, 0.12);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--gray-600);
+      background: linear-gradient(180deg, var(--gray-900) 0%, var(--black) 100%);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      background: var(--uga-red);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(186, 12, 47, 0.3);
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .logo svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--white);
+    }
+
+    .subtitle {
+      font-size: 11px;
+      color: var(--gray-300);
+      letter-spacing: 0.3px;
+    }
+
+    .header-center {
+      display: flex;
+      gap: 2px;
+      background: var(--gray-800);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--gray-600);
+    }
+
+    .nav-btn {
+      padding: 8px 18px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      color: var(--gray-300);
+      background: transparent;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      color: var(--white);
+      background: var(--gray-700);
+    }
+
+    .nav-btn.active {
+      color: var(--white);
+      background: var(--uga-red);
+      box-shadow: 0 2px 6px rgba(186, 12, 47, 0.3);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-date {
+      text-align: right;
+    }
+
+    .header-day {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .header-full {
+      font-size: 10px;
+      color: var(--gray-300);
+    }
+
+    .print-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--gray-700);
+      border: 1px solid var(--gray-500);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .print-btn:hover {
+      background: var(--gray-600);
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      padding: 20px 24px;
+      overflow-y: auto;
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--gray-300);
+      margin-top: 4px;
+    }
+
+    .page-stats {
+      display: flex;
+      gap: 20px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .stat-number.urgent {
+      color: var(--danger);
+    }
+
+    .stat-number.pending {
+      color: var(--warning);
+    }
+
+    .stat-number.done {
+      color: var(--ready);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      color: var(--gray-400);
+      text-transform: uppercase;
+    }
+
+    /* Status Filter Bar */
+    .status-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .status-filter {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-300);
+      background: var(--gray-800);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .status-filter:hover {
+      border-color: var(--gray-500);
+      color: var(--white);
+    }
+
+    .status-filter.active {
+      color: var(--white);
+      background: var(--gray-700);
+      border-color: var(--uga-red);
+    }
+
+    .status-filter .count {
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      background: var(--gray-700);
+      border-radius: 8px;
+    }
+
+    .status-filter.active .count {
+      background: var(--uga-red);
+    }
+
+    /* Location Filter Bar */
+    .location-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .location-filter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-300);
+      background: var(--gray-800);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .location-filter:hover {
+      border-color: var(--gray-500);
+      color: var(--white);
+    }
+
+    .location-filter.active {
+      color: var(--white);
+      background: var(--gray-700);
+      border-color: var(--uga-red);
+    }
+
+    .location-filter .count {
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      background: var(--gray-700);
+      border-radius: 8px;
+    }
+
+    .location-filter.active .count {
+      background: var(--uga-red);
+    }
+
+    /* Task Cards */
+    .task-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .task-card {
+      background: var(--gray-850);
+      border: 1px solid var(--gray-600);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: all 0.15s;
+    }
+
+    .task-card:hover {
+      border-color: var(--gray-500);
+    }
+
+    .task-card.urgent {
+      border-left: 4px solid var(--danger);
+    }
+
+    .task-card.pending {
+      border-left: 4px solid var(--warning);
+    }
+
+    .task-card.scheduled {
+      border-left: 4px solid var(--ready);
+    }
+
+    .task-card.hold {
+      border-left: 4px solid var(--purple);
+    }
+
+    .task-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      background: var(--gray-800);
+      border-bottom: 1px solid var(--gray-700);
+    }
+
+    .patient-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .patient-avatar {
+      width: 40px;
+      height: 40px;
+      background: var(--gray-700);
+      border: 2px solid var(--gray-500);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gray-200);
+    }
+
+    .patient-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .patient-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .patient-procedure {
+      font-size: 11px;
+      color: var(--gray-300);
+    }
+
+    .patient-procedure .side {
+      color: var(--uga-red);
+      font-weight: 600;
+    }
+
+    /* Location badges */
+    .location-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .location-hospital {
+      background: rgba(249, 115, 22, 0.15);
+      color: #F97316;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+
+    .location-asc {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22C55E;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    /* Status badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .status-scheduled {
+      background: var(--ready-bg);
+      color: var(--ready);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .status-pending-cards {
+      background: var(--warning-bg);
+      color: var(--warning);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-needs-workup {
+      background: var(--info-bg);
+      color: var(--info);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .status-unable-contact {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .status-medical-hold {
+      background: var(--purple-bg);
+      color: var(--purple);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .status-not-cleared {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .surgery-date {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .surgery-date-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      color: var(--gray-400);
+      text-transform: uppercase;
+    }
+
+    .surgery-date-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ready);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .surgery-date-value.pending {
+      color: var(--warning);
+    }
+
+    .surgery-date-value.none {
+      color: var(--gray-500);
+      font-weight: 400;
+    }
+
+    /* Pre-Op Workup Checklist */
+    .workup-section {
+      padding: 12px 16px;
+      background: var(--gray-900);
+      border-bottom: 1px solid var(--gray-700);
+    }
+
+    .workup-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .workup-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .workup-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      background: var(--gray-800);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .workup-item:hover {
+      border-color: var(--gray-500);
+    }
+
+    .workup-item.completed {
+      background: var(--ready-bg);
+      border-color: var(--ready);
+    }
+
+    .workup-item.pending {
+      background: var(--warning-bg);
+      border-color: var(--warning);
+    }
+
+    .workup-item.na {
+      opacity: 0.4;
+    }
+
+    .workup-checkbox {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--gray-500);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .workup-item.completed .workup-checkbox {
+      background: var(--ready);
+      border-color: var(--ready);
+    }
+
+    .workup-item.completed .workup-checkbox::after {
+      content: '✓';
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .workup-item.pending .workup-checkbox {
+      border-color: var(--warning);
+      background: transparent;
+    }
+
+    .workup-item.pending .workup-checkbox::after {
+      content: '•';
+      color: var(--warning);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .workup-text {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray-200);
+    }
+
+    .workup-item.completed .workup-text {
+      color: var(--ready);
+    }
+
+    .workup-item.pending .workup-text {
+      color: var(--warning);
+    }
+
+    .workup-detail {
+      font-size: 9px;
+      color: var(--gray-400);
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .workup-item.completed .workup-detail {
+      color: var(--ready);
+    }
+
+    .workup-item.pending .workup-detail {
+      color: var(--warning);
+    }
+
+    .task-card-body {
+      padding: 16px;
+    }
+
+    /* Task List */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      background: var(--black);
+      border: 1px solid var(--gray-700);
+      border-radius: 8px;
+      transition: all 0.15s;
+    }
+
+    .task-item:hover {
+      border-color: var(--gray-600);
+    }
+
+    .task-item.completed {
+      opacity: 0.5;
+      border-style: dashed;
+    }
+
+    .task-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--gray-500);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .task-checkbox:hover {
+      border-color: var(--uga-red);
+    }
+
+    .task-checkbox.checked {
+      background: var(--ready);
+      border-color: var(--ready);
+    }
+
+    .task-checkbox.checked::after {
+      content: '✓';
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .task-content {
+      flex: 1;
+    }
+
+    .task-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .task-detail {
+      font-size: 11px;
+      color: var(--gray-300);
+      line-height: 1.5;
+    }
+
+    .task-meta {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .task-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      font-size: 9px;
+      font-weight: 600;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .tag-call {
+      background: var(--info-bg);
+      color: var(--info);
+    }
+
+    .tag-schedule {
+      background: var(--purple-bg);
+      color: var(--purple);
+    }
+
+    .tag-order {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .tag-review {
+      background: var(--ready-bg);
+      color: var(--ready);
+    }
+
+    .tag-urgent {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .task-due {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    .task-due-label {
+      font-size: 9px;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .task-due-date {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-200);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .task-due-date.overdue {
+      color: var(--danger);
+    }
+
+    .task-due-date.today {
+      color: var(--warning);
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--gray-700);
+    }
+
+    .quick-btn {
+      padding: 6px 12px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray-300);
+      background: var(--gray-700);
+      border: 1px solid var(--gray-600);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .quick-btn:hover {
+      background: var(--gray-600);
+      color: var(--white);
+    }
+
+    .quick-btn.primary {
+      background: var(--uga-red);
+      border-color: var(--uga-red);
+      color: var(--white);
+    }
+
+    .quick-btn.primary:hover {
+      background: var(--uga-red-dark);
+    }
+
+    /* No Tasks Message */
+    .no-tasks {
+      display: none;
+      padding: 40px;
+      text-align: center;
+      color: var(--gray-400);
+    }
+
+    .no-tasks.visible {
+      display: block;
+    }
+
+    /* Summary Section */
+    .summary-section {
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--gray-850);
+      border: 1px solid var(--gray-600);
+      border-radius: 10px;
+    }
+
+    .summary-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .summary-card {
+      padding: 16px;
+      background: var(--black);
+      border: 1px solid var(--gray-700);
+      border-radius: 8px;
+    }
+
+    .summary-card-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .summary-card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .summary-card-item {
+      font-size: 12px;
+      color: var(--gray-100);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .summary-card-count {
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px;
+      font-size: 10px;
+      color: var(--gray-500);
+      border-top: 1px solid var(--gray-700);
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      .header, .status-bar, .location-bar, .footer {
+        display: none;
+      }
+      .task-card {
+        break-inside: avoid;
+        border: 1px solid #ccc;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <a href="ORCC-index.html" class="logo" title="Back to Hub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M12 3v18M5 8c3-3 11-3 14 0M5 16c3 3 11 3 14 0"/>
+        </svg>
+      </a>
+      <div class="brand">
+        <h1 class="title">OR COMMAND CENTER</h1>
+        <p class="subtitle">Pre-Op Task List — Kellie's View</p>
+      </div>
+    </div>
+
+    <nav class="header-center">
+      <a href="surgical-command-center-page1.html" class="nav-btn">PATIENT LISTS</a>
+      <a href="surgical-command-center-tasks.html" class="nav-btn active">TASKS</a>
+      <a href="surgical-command-center-workspace.html" class="nav-btn">WORKSPACE</a>
+      <a href="ORCC-settings.html" class="nav-btn">SETTINGS</a>
+    </nav>
+
+    <div class="header-right">
+      <div class="header-date">
+        <div class="header-day" id="header-day"></div>
+        <div class="header-full" id="header-full"></div>
+      </div>
+      <button class="print-btn" onclick="window.print()">
+        <span>🖨️</span> Print List
+      </button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Pre-Op Task List</h1>
+        <p class="page-subtitle">What needs to happen for each patient to be surgery-ready</p>
+      </div>
+      <div class="page-stats">
+        <div class="stat-item">
+          <div class="stat-number urgent" id="stat-urgent">3</div>
+          <div class="stat-label">Urgent</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number pending" id="stat-pending">8</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number done" id="stat-scheduled">4</div>
+          <div class="stat-label">Scheduled</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Filter Bar -->
+    <div class="status-bar">
+      <button class="status-filter active" data-status="all">
+        All Patients <span class="count" id="count-all">15</span>
+      </button>
+      <button class="status-filter" data-status="scheduled">
+        Scheduled <span class="count" id="count-scheduled">4</span>
+      </button>
+      <button class="status-filter" data-status="needs-workup">
+        Needs Workup <span class="count" id="count-workup">3</span>
+      </button>
+      <button class="status-filter" data-status="pending-cards">
+        Pending Cards <span class="count" id="count-cards">3</span>
+      </button>
+      <button class="status-filter" data-status="unable-contact">
+        Unable to Contact <span class="count" id="count-contact">2</span>
+      </button>
+      <button class="status-filter" data-status="medical-hold">
+        Medical Hold <span class="count" id="count-hold">3</span>
+      </button>
+    </div>
+
+    <!-- Location Filter Bar -->
+    <div class="location-bar">
+      <button class="location-filter active" data-location="all">
+        All Locations <span class="count" id="loc-all">15</span>
+      </button>
+      <button class="location-filter" data-location="hospital">
+        Hospital OR <span class="count" id="loc-hospital">13</span>
+      </button>
+      <button class="location-filter" data-location="asc">
+        Albany ASC <span class="count" id="loc-asc">2</span>
+      </button>
+    </div>
+
+    <!-- Task Cards -->
+    <div class="task-grid" id="task-grid">
+
+      <!-- ===== SCHEDULED PATIENTS ===== -->
+
+      <!-- Ricky Green - Right TCAR Symptomatic - Scheduled 12/5 -->
+      <div class="task-card scheduled" data-location="hospital" data-status="scheduled">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">RG</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Green, Ricky
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">RIGHT</span> TCAR — Symptomatic</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-scheduled">Scheduled</span>
+            <span class="surgery-date-value">12/5 @ CRH</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">CTA</span>
+              <span class="workup-detail">11/20</span>
+            </div>
+            <div class="workup-item completed" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail">11/25</span>
+            </div>
+            <div class="workup-item completed" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail">Cleared</span>
+            </div>
+            <div class="workup-item completed" data-workup="anesthesia">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Anesthesia Pre-Op</span>
+              <span class="workup-detail">12/1</span>
+            </div>
+            <div class="workup-item completed" data-workup="labs">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Labs</span>
+              <span class="workup-detail">12/2</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Confirm surgery with patient</div>
+                <div class="task-detail">Call to confirm 12/5 surgery date, NPO instructions, arrival time 5:30 AM</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Call</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Due</span>
+                <span class="task-due-date">12/3</span>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Patient</button>
+            <button class="quick-btn">📄 View Chart</button>
+            <button class="quick-btn primary">✅ Ready for OR</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chuck Young - EVAR + Fem Endart - Scheduled 12/12 -->
+      <div class="task-card scheduled" data-location="hospital" data-status="scheduled">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">CY</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Young, Chuck
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure">EVAR + Femoral Endarterectomy</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-scheduled">Scheduled</span>
+            <span class="surgery-date-value">12/12 @ CRH</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">CTA</span>
+              <span class="workup-detail">11/15</span>
+            </div>
+            <div class="workup-item completed" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail">Normal</span>
+            </div>
+            <div class="workup-item completed" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail">Cleared</span>
+            </div>
+            <div class="workup-item pending" data-workup="anesthesia">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Anesthesia Pre-Op</span>
+              <span class="workup-detail">12/8</span>
+            </div>
+            <div class="workup-item completed" data-workup="labs">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Labs</span>
+              <span class="workup-detail">12/1</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Confirm anesthesia pre-op appointment</div>
+                <div class="task-detail">Patient scheduled for anesthesia eval 12/8. Confirm he's aware.</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Call</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Due</span>
+                <span class="task-due-date">12/6</span>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Patient</button>
+            <button class="quick-btn">📄 View CTA</button>
+            <button class="quick-btn primary">✅ Mark Ready</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jonathan Zoellick - Left TCAR - Scheduled 2/6 -->
+      <div class="task-card scheduled" data-location="hospital" data-status="scheduled">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">JZ</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Zoellick, Jonathan
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">LEFT</span> TCAR</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-scheduled">Scheduled</span>
+            <span class="surgery-date-value">2/6/26</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">CTA</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item completed" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail">Normal</span>
+            </div>
+            <div class="workup-item completed" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail">Cleared</span>
+            </div>
+            <div class="workup-item completed" data-workup="anesthesia">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Anesthesia Pre-Op</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item completed" data-workup="labs">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Labs</span>
+              <span class="workup-detail">1/2</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Confirm URI resolved before surgery</div>
+                <div class="task-detail">Was canceled 1/9 due to upper respiratory infection. Need to confirm symptoms fully resolved before 2/6.</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Call</span>
+                  <span class="task-tag tag-urgent">⚠️ Verify Health</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Due</span>
+                <span class="task-due-date">2/3</span>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Patient</button>
+            <button class="quick-btn primary">✅ URI Resolved</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Larry Roberts - Left Fem-Peroneal Bypass - Scheduled 1/23 -->
+      <div class="task-card scheduled" data-location="hospital" data-status="scheduled">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">LR</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Roberts, Larry
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">LEFT</span> Femoral–Peroneal Bypass</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-scheduled">Scheduled</span>
+            <span class="surgery-date-value">1/23/26 @ CRH</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Arteriogram</span>
+              <span class="workup-detail">12/10</span>
+            </div>
+            <div class="workup-item completed" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail">1/10</span>
+            </div>
+            <div class="workup-item completed" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail">Cleared 1/12</span>
+            </div>
+            <div class="workup-item completed" data-workup="veinmap">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Vein Map</span>
+              <span class="workup-detail">GSV 3.5mm</span>
+            </div>
+            <div class="workup-item completed" data-workup="anesthesia">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Anesthesia Pre-Op</span>
+              <span class="workup-detail">1/15</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Confirm surgery with patient</div>
+                <div class="task-detail">Call to confirm 1/23 surgery date, NPO instructions, arrival time</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Call</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Due</span>
+                <span class="task-due-date">1/21</span>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Patient</button>
+            <button class="quick-btn">📄 View Chart</button>
+            <button class="quick-btn primary">✅ Ready for OR</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PENDING CARDIOLOGY ===== -->
+
+      <!-- Alan Romanesk - Left TCAR - Pending Cards (Abnormal Stress) -->
+      <div class="task-card pending" data-location="hospital" data-status="pending-cards">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">AR</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Romanesk, Alan
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">LEFT</span> TCAR</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-pending-cards">Pending Cards</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">CTA</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item completed" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail" style="color: var(--danger);">ABNORMAL</span>
+            </div>
+            <div class="workup-item pending" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail">Awaiting</span>
+            </div>
+            <div class="workup-item" data-workup="anesthesia">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Anesthesia Pre-Op</span>
+            </div>
+            <div class="workup-item" data-workup="labs">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Labs</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Follow up on cardiology visit 12/30</div>
+                <div class="task-detail">Call cardiology to get results of ECHO + Heart Cath decision. Abnormal stress test requires further evaluation before TCAR clearance.</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Call Cardiology</span>
+                  <span class="task-tag tag-urgent">⚠️ Overdue</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Due</span>
+                <span class="task-due-date overdue">1/3</span>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Schedule ECHO or Heart Cath if ordered</div>
+                <div class="task-detail">Pending cardiology recommendations</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-schedule">📅 Schedule</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Cardiology</button>
+            <button class="quick-btn">📄 View Stress Results</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bessie Bivins - Right TCAR - Pending Cards -->
+      <div class="task-card pending" data-location="hospital" data-status="pending-cards">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">BB</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Bivins, Bessie
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">RIGHT</span> TCAR</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-pending-cards">Pending Cards</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">CTA</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item completed" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail">Normal</span>
+            </div>
+            <div class="workup-item pending" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail">1/22 Appt</span>
+            </div>
+            <div class="workup-item" data-workup="anesthesia">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Anesthesia Pre-Op</span>
+            </div>
+            <div class="workup-item" data-workup="labs">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Labs</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Awaiting cardiology clearance 1/22</div>
+                <div class="task-detail">Has cardiology appointment scheduled for 1/22. Follow up after visit for clearance status.</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Follow Up</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Appt</span>
+                <span class="task-due-date">1/22</span>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Patient</button>
+            <button class="quick-btn">📞 Call Cardiology</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Joyce Jones - AAA Surveillance → EVAR - Pending Cards -->
+      <div class="task-card pending" data-location="hospital" data-status="pending-cards">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">JJ</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Jones, Joyce
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure">EVAR — AAA 5.5cm</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-pending-cards">Pending Cards</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">CTA</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item pending" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail">Scheduled</span>
+            </div>
+            <div class="workup-item pending" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail">After Stress</span>
+            </div>
+            <div class="workup-item" data-workup="anesthesia">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Anesthesia Pre-Op</span>
+            </div>
+            <div class="workup-item" data-workup="labs">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Labs</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Confirm stress test completed</div>
+                <div class="task-detail">Call to verify stress test was done. Then get cardiology risk stratification before scheduling EVAR.</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Call</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Patient</button>
+            <button class="quick-btn">📄 View CTA</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== NEEDS WORKUP ===== -->
+
+      <!-- John Covin - Left Fem-Pop Bypass + Endarterectomy - Needs Vein Map -->
+      <div class="task-card pending" data-location="hospital" data-status="needs-workup">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">JC</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Covin, John
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">LEFT</span> Fem-Pop Bypass + Endarterectomy</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-needs-workup">Needs Workup</span>
+            <span class="surgery-date-value pending">After 1/20 F/U</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Arteriogram</span>
+              <span class="workup-detail">12/2</span>
+            </div>
+            <div class="workup-item completed" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail">Normal</span>
+            </div>
+            <div class="workup-item completed" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail">Cleared</span>
+            </div>
+            <div class="workup-item" data-workup="veinmap">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Vein Map</span>
+              <span class="workup-detail" style="color: var(--danger);">NEEDED</span>
+            </div>
+            <div class="workup-item" data-workup="anesthesia">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Anesthesia Pre-Op</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Order vein mapping</div>
+                <div class="task-detail">Need to order vein mapping for bypass conduit planning before 1/20 follow-up visit</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-order">🏥 Order</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Due</span>
+                <span class="task-due-date">Before 1/20</span>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Schedule surgery after 1/20 follow-up</div>
+                <div class="task-detail">Dr. Morgan will finalize surgical plan at 1/20 visit</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-schedule">📅 Schedule</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">🏥 Order Vein Map</button>
+            <button class="quick-btn">📄 View Arteriogram</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rosalind Porter - Left Fem-Distal Bypass - Needs Stress Test -->
+      <div class="task-card pending" data-location="hospital" data-status="needs-workup">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">RP</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Porter, Rosalind
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">LEFT</span> Femoral–Distal Bypass</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-needs-workup">Needs Workup</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Arteriogram</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail" style="color: var(--danger);">NEEDED</span>
+            </div>
+            <div class="workup-item" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+            </div>
+            <div class="workup-item pending" data-workup="veinmap">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Vein Map + Duplex</span>
+              <span class="workup-detail">1/28</span>
+            </div>
+            <div class="workup-item" data-workup="anesthesia">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Anesthesia Pre-Op</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Order stress test</div>
+                <div class="task-detail">Pre-op cardiac evaluation needed for fem-distal bypass</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-order">🏥 Order</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Due</span>
+                <span class="task-due-date">ASAP</span>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Confirm vein map appointment 1/28</div>
+                <div class="task-detail">Vein map + duplex scheduled 1/28 — confirm patient aware</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Confirm Appt</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Appt</span>
+                <span class="task-due-date">1/28</span>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">🏥 Order Stress</button>
+            <button class="quick-btn">📞 Call Patient</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Henry Marshall - Fem Endart + Profundaplasty - Needs Workup -->
+      <div class="task-card pending" data-location="hospital" data-status="needs-workup">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">HM</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Marshall, Henry
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">LEFT</span> Femoral Endarterectomy + Profundaplasty</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-needs-workup">Needs Workup</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Arteriogram</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail" style="color: var(--danger);">NEEDED</span>
+            </div>
+            <div class="workup-item" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+            </div>
+            <div class="workup-item" data-workup="anesthesia">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Anesthesia Pre-Op</span>
+            </div>
+            <div class="workup-item" data-workup="labs">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Labs</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Order stress test and schedule cardiology</div>
+                <div class="task-detail">Needs cardiac workup before surgical planning can proceed</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-order">🏥 Order</span>
+                  <span class="task-tag tag-schedule">📅 Schedule</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Due</span>
+                <span class="task-due-date">ASAP</span>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">🏥 Order Stress</button>
+            <button class="quick-btn">📅 Schedule Cards</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== UNABLE TO CONTACT ===== -->
+
+      <!-- Roger Nutt - Left TCAR - Unable to Contact -->
+      <div class="task-card urgent" data-location="hospital" data-status="unable-contact">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">RN</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Nutt, Roger
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">LEFT</span> TCAR</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-unable-contact">Unable to Contact</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">CTA</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail">?</span>
+            </div>
+            <div class="workup-item" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail">?</span>
+            </div>
+            <div class="workup-item" data-workup="anesthesia">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Anesthesia Pre-Op</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Contact patient — multiple attempts failed</div>
+                <div class="task-detail">
+                  <strong>Previous attempts:</strong><br>
+                  • 1/5 — No answer, left voicemail<br>
+                  • 1/8 — No answer, left voicemail<br>
+                  • 1/12 — Phone disconnected?<br>
+                  <br>
+                  Try alternate contact, emergency contact, or send certified letter.
+                </div>
+                <div class="task-meta">
+                  <span class="task-tag tag-urgent">⚠️ Urgent</span>
+                  <span class="task-tag tag-call">📞 Call</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Attempts</span>
+                <span class="task-due-date overdue">3</span>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Try Again</button>
+            <button class="quick-btn">📧 Send Letter</button>
+            <button class="quick-btn">👥 Emergency Contact</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- William Tucker - Right TCAR - Unable to Contact / Noncompliant -->
+      <div class="task-card urgent" data-location="hospital" data-status="unable-contact">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">WT</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Tucker, William
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">RIGHT</span> TCAR</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-unable-contact">Unable to Contact</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">CTA</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail" style="color: var(--danger);">Missed Appt</span>
+            </div>
+            <div class="workup-item" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Patient missed stress test — reschedule</div>
+                <div class="task-detail">
+                  Missed scheduled stress test. Multiple attempts to reach. Known history of noncompliance with appointments. Consider letter or reaching out through family.
+                </div>
+                <div class="task-meta">
+                  <span class="task-tag tag-urgent">⚠️ Noncompliant</span>
+                  <span class="task-tag tag-call">📞 Call</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Patient</button>
+            <button class="quick-btn">📧 Send Letter</button>
+            <button class="quick-btn">📅 Reschedule Stress</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== MEDICAL HOLD ===== -->
+
+      <!-- Charles Hall - TCAR - Not Cleared (Elevated Troponins) -->
+      <div class="task-card hold" data-location="hospital" data-status="medical-hold">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">CH</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Hall, Charles
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure">TCAR</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-medical-hold">Medical Hold</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">CTA</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+            </div>
+            <div class="workup-item" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail" style="color: var(--danger);">NOT CLEARED</span>
+            </div>
+            <div class="workup-item" data-workup="labs">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Labs</span>
+              <span class="workup-detail" style="color: var(--danger);">↑ Troponins</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Cardiology must stabilize — elevated troponins</div>
+                <div class="task-detail">
+                  Patient has elevated troponins on pre-op labs. Requires cardiology workup and stabilization before any elective surgery can proceed. <strong>Cannot schedule until cleared.</strong>
+                </div>
+                <div class="task-meta">
+                  <span class="task-tag tag-urgent">⚠️ Medical Hold</span>
+                </div>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Follow up with cardiology</div>
+                <div class="task-detail">Check status of cardiac workup and when patient may be cleared</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Call Cardiology</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Cardiology</button>
+            <button class="quick-btn">📄 View Labs</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bobby Pierce - Fem-Pop Bypass - Medical Hold (Cardiac Issues) -->
+      <div class="task-card hold" data-location="hospital" data-status="medical-hold">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">BP</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Pierce, Bobby
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">RIGHT</span> Fem-Pop Bypass</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-medical-hold">Medical Hold</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Arteriogram</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item completed" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail" style="color: var(--danger);">ABNORMAL</span>
+            </div>
+            <div class="workup-item" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail" style="color: var(--danger);">Needs Cath</span>
+            </div>
+            <div class="workup-item" data-workup="veinmap">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Vein Map</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Awaiting heart cath results</div>
+                <div class="task-detail">
+                  Abnormal stress test, cardiology recommended heart cath. On hold until cardiac risk is better defined. May need PCI before bypass surgery.
+                </div>
+                <div class="task-meta">
+                  <span class="task-tag tag-urgent">⚠️ Medical Hold</span>
+                </div>
+              </div>
+            </div>
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Follow up on heart cath scheduling</div>
+                <div class="task-detail">Check if cath has been scheduled and when results expected</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Call Cardiology</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Cardiology</button>
+            <button class="quick-btn">📄 View Stress Results</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- James Davis - VA Patient - Medical/Admin Hold -->
+      <div class="task-card hold" data-location="hospital" data-status="medical-hold">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">JD</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Davis, James
+                <span class="location-badge location-hospital">OR</span>
+              </span>
+              <span class="patient-procedure"><span class="side">LEFT</span> TCAR — VA Patient</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-medical-hold">VA Auth Hold</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">CTA</span>
+              <span class="workup-detail">Done</span>
+            </div>
+            <div class="workup-item completed" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail">Normal</span>
+            </div>
+            <div class="workup-item completed" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail">Cleared</span>
+            </div>
+            <div class="workup-item" data-workup="vaauth">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">VA Authorization</span>
+              <span class="workup-detail" style="color: var(--warning);">Pending</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Awaiting VA Community Care authorization</div>
+                <div class="task-detail">
+                  Patient medically ready but waiting for VA approval for community care. Follow up with VA patient coordinator.
+                </div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Call VA</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call VA Coordinator</button>
+            <button class="quick-btn">📄 View Authorization</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ASC PATIENTS ===== -->
+
+      <!-- David Thompson - ASC PAD Case -->
+      <div class="task-card scheduled" data-location="asc" data-status="scheduled">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">DT</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Thompson, David
+                <span class="location-badge location-asc">ASC</span>
+              </span>
+              <span class="patient-procedure"><span class="side">RIGHT</span> SFA Angioplasty + Stent</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-scheduled">Scheduled</span>
+            <span class="surgery-date-value">1/25/26 @ ASC</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="cta">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Arteriogram</span>
+              <span class="workup-detail">1/10</span>
+            </div>
+            <div class="workup-item na" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail">N/A</span>
+            </div>
+            <div class="workup-item na" data-workup="cardiology">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Cardiology</span>
+              <span class="workup-detail">N/A</span>
+            </div>
+            <div class="workup-item completed" data-workup="labs">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Labs</span>
+              <span class="workup-detail">1/20</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Confirm patient for procedure</div>
+                <div class="task-detail">Call to confirm 1/25 date at ASC, arrival time, meds (hold metformin)</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Call</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Due</span>
+                <span class="task-due-date">1/23</span>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Patient</button>
+            <button class="quick-btn primary">✅ Mark Ready</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sofia Martinez - ASC Venous Case -->
+      <div class="task-card scheduled" data-location="asc" data-status="scheduled">
+        <div class="task-card-header">
+          <div class="patient-info">
+            <div class="patient-avatar">SM</div>
+            <div class="patient-details">
+              <span class="patient-name">
+                Martinez, Sofia
+                <span class="location-badge location-asc">ASC</span>
+              </span>
+              <span class="patient-procedure"><span class="side">LEFT</span> VenaSeal GSV Ablation</span>
+            </div>
+          </div>
+          <div class="surgery-date">
+            <span class="status-badge status-scheduled">Scheduled</span>
+            <span class="surgery-date-value">1/24/26 @ ASC</span>
+          </div>
+        </div>
+        <div class="workup-section">
+          <div class="workup-label">Pre-Op Workup</div>
+          <div class="workup-grid">
+            <div class="workup-item completed" data-workup="duplex">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Venous Duplex</span>
+              <span class="workup-detail">GSV 9mm</span>
+            </div>
+            <div class="workup-item completed" data-workup="auth">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Insurance Auth</span>
+              <span class="workup-detail">Approved</span>
+            </div>
+            <div class="workup-item na" data-workup="stress">
+              <div class="workup-checkbox"></div>
+              <span class="workup-text">Stress Test</span>
+              <span class="workup-detail">N/A</span>
+            </div>
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-checkbox"></div>
+              <div class="task-content">
+                <div class="task-title">Pre-op call</div>
+                <div class="task-detail">Confirm arrival time, compression stockings, no lotions on legs</div>
+                <div class="task-meta">
+                  <span class="task-tag tag-call">📞 Call</span>
+                </div>
+              </div>
+              <div class="task-due">
+                <span class="task-due-label">Due</span>
+                <span class="task-due-date">1/22</span>
+              </div>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-btn">📞 Call Patient</button>
+            <button class="quick-btn primary">✅ Mark Ready</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- No Tasks Message -->
+    <div class="no-tasks" id="no-tasks">
+      No patients match the current filters.
+    </div>
+
+    <!-- Summary Section -->
+    <div class="summary-section">
+      <div class="summary-title">📊 Today's Action Summary</div>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-card-title">📞 Calls to Make</div>
+          <div class="summary-card-list">
+            <div class="summary-card-item">
+              <span>Patients</span>
+              <span class="summary-card-count">8</span>
+            </div>
+            <div class="summary-card-item">
+              <span>Cardiology</span>
+              <span class="summary-card-count">4</span>
+            </div>
+            <div class="summary-card-item">
+              <span>VA Coordinator</span>
+              <span class="summary-card-count">1</span>
+            </div>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-card-title">🏥 Orders Needed</div>
+          <div class="summary-card-list">
+            <div class="summary-card-item">
+              <span>Stress tests</span>
+              <span class="summary-card-count">2</span>
+            </div>
+            <div class="summary-card-item">
+              <span>Vein maps</span>
+              <span class="summary-card-count">1</span>
+            </div>
+            <div class="summary-card-item">
+              <span>Labs</span>
+              <span class="summary-card-count">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-card-title">📅 Status Summary</div>
+          <div class="summary-card-list">
+            <div class="summary-card-item">
+              <span>Scheduled</span>
+              <span class="summary-card-count" style="color: var(--ready);">6</span>
+            </div>
+            <div class="summary-card-item">
+              <span>Pending Cards</span>
+              <span class="summary-card-count" style="color: var(--warning);">3</span>
+            </div>
+            <div class="summary-card-item">
+              <span>Needs Workup</span>
+              <span class="summary-card-count" style="color: var(--info);">3</span>
+            </div>
+          </div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-card-title">⚠️ Attention Required</div>
+          <div class="summary-card-list">
+            <div class="summary-card-item">
+              <span>Unable to Contact</span>
+              <span class="summary-card-count" style="color: var(--danger);">2</span>
+            </div>
+            <div class="summary-card-item">
+              <span>Medical Hold</span>
+              <span class="summary-card-count" style="color: var(--purple);">3</span>
+            </div>
+            <div class="summary-card-item">
+              <span>Overdue Tasks</span>
+              <span class="summary-card-count" style="color: var(--danger);">1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span>© 2026 OR Command Center</span>
+    <span>•</span>
+    <span>v0.1.0</span>
+    <span>•</span>
+    <span>Last updated: just now</span>
+  </footer>
+
+  <script>
+    // Set date
+    const now = new Date();
+    document.getElementById('header-day').textContent = now.toLocaleDateString('en-US', { weekday: 'long' });
+    document.getElementById('header-full').textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+    // State
+    let currentStatusFilter = 'all';
+    let currentLocationFilter = 'all';
+
+    // Task checkbox toggle
+    document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('click', (e) => {
+        e.stopPropagation();
+        checkbox.classList.toggle('checked');
+        const taskItem = checkbox.closest('.task-item');
+        taskItem.classList.toggle('completed');
+      });
+    });
+
+    // Workup item toggle
+    document.querySelectorAll('.workup-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        if (item.classList.contains('na')) return; // Don't toggle N/A items
+
+        // Cycle through states: default -> pending -> completed -> default
+        if (item.classList.contains('completed')) {
+          item.classList.remove('completed');
+        } else if (item.classList.contains('pending')) {
+          item.classList.remove('pending');
+          item.classList.add('completed');
+        } else {
+          item.classList.add('pending');
+        }
+      });
+    });
+
+    // Status filter functionality
+    document.querySelectorAll('.status-filter').forEach(filter => {
+      filter.addEventListener('click', () => {
+        document.querySelectorAll('.status-filter').forEach(f => f.classList.remove('active'));
+        filter.classList.add('active');
+        currentStatusFilter = filter.dataset.status;
+        applyFilters();
+      });
+    });
+
+    // Location filter functionality
+    document.querySelectorAll('.location-filter').forEach(filter => {
+      filter.addEventListener('click', () => {
+        document.querySelectorAll('.location-filter').forEach(f => f.classList.remove('active'));
+        filter.classList.add('active');
+        currentLocationFilter = filter.dataset.location;
+        applyFilters();
+      });
+    });
+
+    // Apply both filters
+    function applyFilters() {
+      let visibleCount = 0;
+
+      document.querySelectorAll('.task-card').forEach(card => {
+        const cardStatus = card.dataset.status;
+        const cardLocation = card.dataset.location;
+
+        const statusMatch = currentStatusFilter === 'all' || cardStatus === currentStatusFilter;
+        const locationMatch = currentLocationFilter === 'all' || cardLocation === currentLocationFilter;
+
+        if (statusMatch && locationMatch) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Show/hide no tasks message
+      const noTasksMsg = document.getElementById('no-tasks');
+      if (visibleCount === 0) {
+        noTasksMsg.classList.add('visible');
+      } else {
+        noTasksMsg.classList.remove('visible');
+      }
+    }
+
+    // Update counts on load
+    function updateCounts() {
+      const cards = document.querySelectorAll('.task-card');
+      let counts = {
+        all: 0,
+        scheduled: 0,
+        'needs-workup': 0,
+        'pending-cards': 0,
+        'unable-contact': 0,
+        'medical-hold': 0
+      };
+      let locationCounts = {
+        all: 0,
+        hospital: 0,
+        asc: 0
+      };
+
+      cards.forEach(card => {
+        counts.all++;
+        counts[card.dataset.status]++;
+        locationCounts.all++;
+        locationCounts[card.dataset.location]++;
+      });
+
+      // Update status filter counts
+      document.getElementById('count-all').textContent = counts.all;
+      document.getElementById('count-scheduled').textContent = counts.scheduled;
+      document.getElementById('count-workup').textContent = counts['needs-workup'];
+      document.getElementById('count-cards').textContent = counts['pending-cards'];
+      document.getElementById('count-contact').textContent = counts['unable-contact'];
+      document.getElementById('count-hold').textContent = counts['medical-hold'];
+
+      // Update location filter counts
+      document.getElementById('loc-all').textContent = locationCounts.all;
+      document.getElementById('loc-hospital').textContent = locationCounts.hospital;
+      document.getElementById('loc-asc').textContent = locationCounts.asc;
+
+      // Update header stats
+      document.getElementById('stat-urgent').textContent = counts['unable-contact'] + counts['medical-hold'];
+      document.getElementById('stat-pending').textContent = counts['needs-workup'] + counts['pending-cards'];
+      document.getElementById('stat-scheduled').textContent = counts.scheduled;
+    }
+
+    // Initialize
+    updateCounts();
+  </script>
+</body>
+</html>

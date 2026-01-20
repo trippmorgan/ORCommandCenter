@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surgical Command Center - Workspace + VQI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --uga-red: #BA0C2F;
+      --uga-red-dark: #8a0923;
+      --uga-red-light: rgba(186, 12, 47, 0.12);
+      --black: #0A0A0A;
+      --gray-900: #0D0D0D;
+      --gray-850: #101010;
+      --gray-800: #141414;
+      --gray-700: #1A1A1A;
+      --gray-600: #222222;
+      --gray-500: #333333;
+      --gray-400: #555555;
+      --gray-300: #777777;
+      --gray-200: #999999;
+      --gray-100: #CCCCCC;
+      --white: #FFFFFF;
+      
+      --ready: #22C55E;
+      --ready-bg: rgba(34, 197, 94, 0.12);
+      --warning: #F59E0B;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --danger: #EF4444;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --info: #3B82F6;
+      --info-bg: rgba(59, 130, 246, 0.12);
+      --purple: #8B5CF6;
+      --purple-bg: rgba(139, 92, 246, 0.12);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--gray-600);
+      background: linear-gradient(180deg, var(--gray-900) 0%, var(--black) 100%);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      background: var(--uga-red);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--white);
+    }
+
+    .header-center {
+      display: flex;
+      gap: 2px;
+      background: var(--gray-800);
+      padding: 3px;
+      border-radius: 6px;
+      border: 1px solid var(--gray-600);
+    }
+
+    .nav-btn {
+      padding: 6px 14px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      color: var(--gray-300);
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      color: var(--white);
+      background: var(--gray-700);
+    }
+
+    .nav-btn.active {
+      color: var(--white);
+      background: var(--uga-red);
+    }
+
+    .logo {
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .patient-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px;
+      background: var(--gray-800);
+      border: 1px solid var(--gray-500);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .patient-avatar {
+      width: 28px;
+      height: 28px;
+      background: var(--uga-red-light);
+      border: 2px solid var(--uga-red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--uga-red);
+    }
+
+    .patient-name-header {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    /* Main Layout */
+    .main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Panels */
+    .panel {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--gray-600);
+    }
+
+    .panel:last-child {
+      border-right: none;
+    }
+
+    .panel-input {
+      width: 340px;
+      flex-shrink: 0;
+    }
+
+    .panel-anatomy {
+      width: 220px;
+      flex-shrink: 0;
+    }
+
+    .panel-output {
+      flex: 1;
+      min-width: 350px;
+    }
+
+    .panel-vqi {
+      width: 320px;
+      flex-shrink: 0;
+      background: var(--gray-900);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--gray-900);
+      border-bottom: 1px solid var(--gray-600);
+    }
+
+    .panel-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--gray-200);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .panel-badge {
+      padding: 2px 6px;
+      font-size: 9px;
+      font-weight: 700;
+      background: var(--purple);
+      color: var(--white);
+      border-radius: 4px;
+    }
+
+    .panel-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .panel-btn {
+      padding: 4px 8px;
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--gray-300);
+      background: var(--gray-700);
+      border: 1px solid var(--gray-500);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .panel-btn:hover {
+      background: var(--gray-600);
+      color: var(--white);
+    }
+
+    .panel-btn.primary {
+      background: var(--uga-red);
+      border-color: var(--uga-red);
+      color: var(--white);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: var(--gray-800);
+      border-bottom: 1px solid var(--gray-600);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--gray-400);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+    }
+
+    .tab:hover {
+      color: var(--gray-200);
+    }
+
+    .tab.active {
+      color: var(--white);
+      border-bottom-color: var(--uga-red);
+    }
+
+    /* Paste Area */
+    .paste-container {
+      flex: 1;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .paste-input {
+      flex: 1;
+      width: 100%;
+      padding: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      line-height: 1.6;
+      color: var(--gray-100);
+      background: var(--black);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      resize: none;
+    }
+
+    .paste-input:focus {
+      outline: none;
+      border-color: var(--uga-red);
+    }
+
+    .paste-input::placeholder {
+      color: var(--gray-500);
+    }
+
+    .process-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--uga-red);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .process-btn:hover {
+      background: var(--uga-red-dark);
+    }
+
+    /* Anatomy */
+    .anatomy-container {
+      flex: 1;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .anatomy-toggle {
+      display: flex;
+      gap: 2px;
+      background: var(--gray-800);
+      padding: 2px;
+      border-radius: 4px;
+      border: 1px solid var(--gray-600);
+    }
+
+    .anatomy-toggle-btn {
+      padding: 4px 10px;
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--gray-400);
+      background: transparent;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .anatomy-toggle-btn.active {
+      color: var(--white);
+      background: var(--uga-red);
+    }
+
+    .anatomy-svg {
+      width: 100%;
+      max-height: 400px;
+    }
+
+    .vessel-segment {
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .vessel-segment:hover {
+      filter: brightness(1.3);
+    }
+
+    .vessel-label {
+      font-size: 7px;
+      fill: var(--gray-300);
+      pointer-events: none;
+    }
+
+    .anatomy-legend {
+      display: flex;
+      gap: 10px;
+      padding: 6px 10px;
+      background: var(--gray-800);
+      border-radius: 4px;
+      font-size: 9px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--gray-300);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.patent { background: var(--ready); }
+    .legend-dot.stenosis { background: var(--warning); }
+    .legend-dot.occluded { background: var(--danger); }
+
+    /* Output Panel */
+    .output-container {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .output-section {
+      background: var(--black);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .output-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--gray-800);
+      border-bottom: 1px solid var(--gray-600);
+    }
+
+    .output-section-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--uga-red);
+      text-transform: uppercase;
+    }
+
+    .output-section-status {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 8px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .status-valid {
+      background: var(--ready-bg);
+      color: var(--ready);
+    }
+
+    .output-section-body {
+      padding: 10px;
+    }
+
+    .code-tag {
+      display: inline-block;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 500;
+      background: var(--gray-700);
+      border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace;
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+
+    .code-tag.primary {
+      background: var(--uga-red-light);
+      color: var(--uga-red);
+      border: 1px solid rgba(186, 12, 47, 0.3);
+    }
+
+    /* Findings Mini Table */
+    .findings-mini {
+      width: 100%;
+      font-size: 10px;
+    }
+
+    .findings-mini th {
+      text-align: left;
+      padding: 4px 6px;
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      background: var(--gray-800);
+    }
+
+    .findings-mini td {
+      padding: 6px;
+      border-bottom: 1px solid var(--gray-700);
+    }
+
+    .finding-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 9px;
+      font-weight: 600;
+      border-radius: 3px;
+    }
+
+    .finding-patent { background: var(--ready-bg); color: var(--ready); }
+    .finding-stenosis { background: var(--warning-bg); color: var(--warning); }
+    .finding-occluded { background: var(--danger-bg); color: var(--danger); }
+
+    /* VQI Panel */
+    .vqi-container {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .vqi-section {
+      background: var(--black);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .vqi-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--purple-bg);
+      border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .vqi-section-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--purple);
+      text-transform: uppercase;
+    }
+
+    .vqi-section-body {
+      padding: 10px;
+    }
+
+    .vqi-field {
+      margin-bottom: 10px;
+    }
+
+    .vqi-field:last-child {
+      margin-bottom: 0;
+    }
+
+    .vqi-label {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .vqi-value {
+      font-size: 12px;
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    .vqi-value.mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+
+    .vqi-select {
+      width: 100%;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: var(--white);
+      background: var(--gray-800);
+      border: 1px solid var(--gray-600);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .vqi-select:focus {
+      outline: none;
+      border-color: var(--purple);
+    }
+
+    .vqi-checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .vqi-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--gray-100);
+      cursor: pointer;
+    }
+
+    .vqi-checkbox input {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--purple);
+    }
+
+    .vqi-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .vqi-input {
+      width: 100%;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--white);
+      background: var(--gray-800);
+      border: 1px solid var(--gray-600);
+      border-radius: 4px;
+    }
+
+    .vqi-input:focus {
+      outline: none;
+      border-color: var(--purple);
+    }
+
+    .vqi-autofill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      font-size: 8px;
+      font-weight: 600;
+      color: var(--ready);
+      background: var(--ready-bg);
+      border-radius: 3px;
+      margin-left: 6px;
+    }
+
+    /* Action Bar */
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: var(--gray-900);
+      border-top: 1px solid var(--gray-600);
+    }
+
+    .action-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--gray-300);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ready);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-ghost {
+      color: var(--gray-200);
+      background: transparent;
+      border: 1px solid var(--gray-500);
+    }
+
+    .btn-ghost:hover {
+      background: var(--gray-700);
+    }
+
+    .btn-primary {
+      color: var(--white);
+      background: var(--uga-red);
+      border: 1px solid var(--uga-red);
+    }
+
+    .btn-vqi {
+      color: var(--white);
+      background: var(--purple);
+      border: 1px solid var(--purple);
+    }
+
+    /* Op Note Preview */
+    .op-note-mini {
+      padding: 10px;
+      background: var(--gray-900);
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      line-height: 1.6;
+      color: var(--gray-200);
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .op-note-mini strong {
+      color: var(--white);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--gray-800);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gray-600);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <a href="ORCC-index.html" class="logo" title="Back to Hub">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M12 3v18M5 8c3-3 11-3 14 0M5 16c3 3 11 3 14 0"/>
+        </svg>
+      </a>
+      <h1 class="title">OR COMMAND CENTER</h1>
+    </div>
+
+    <nav class="header-center">
+      <a href="surgical-command-center-page1.html" class="nav-btn">LISTS</a>
+      <a href="surgical-command-center-tasks.html" class="nav-btn">TASKS</a>
+      <a href="surgical-command-center-workspace-vqi.html" class="nav-btn active">WORKSPACE</a>
+      <a href="ORCC-settings.html" class="nav-btn">SETTINGS</a>
+    </nav>
+
+    <div class="patient-selector">
+      <div class="patient-avatar">LR</div>
+      <span class="patient-name-header">Roberts, Larry — LEFT Fem-Peroneal</span>
+      <span style="color: var(--gray-400); font-size: 10px;">▼</span>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+    
+    <!-- Input Panel -->
+    <div class="panel panel-input">
+      <div class="panel-header">
+        <span class="panel-title">📋 Paste Input</span>
+        <button class="panel-btn">Clear</button>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab active">Notes</button>
+        <button class="tab">CTA/MRA</button>
+        <button class="tab">Duplex</button>
+        <button class="tab">Labs</button>
+      </div>
+
+      <div class="paste-container">
+        <textarea class="paste-input" placeholder="Paste clinical data here...
+
+Example CTA Report:
+LEFT LOWER EXTREMITY CTA:
+- CFA: Patent
+- SFA: Occluded from origin
+- Popliteal: Reconstitutes at P1
+- ATA: Occluded
+- PTA: Patent to ankle
+- Peroneal: Occluded
+
+ABI: 0.45 left, 1.02 right
+Rutherford: 5 (tissue loss)">LEFT LOWER EXTREMITY CTA:
+FINDINGS:
+- Left CFA: Patent, mild calcification
+- Left Profunda: Patent
+- Left SFA: Complete occlusion from origin extending through adductor canal
+- Left Popliteal: Reconstitutes at P1 segment via collaterals
+- Left ATA: Occluded throughout
+- Left PTA: Patent, single vessel runoff to ankle
+- Left Peroneal: Occluded
+
+IMPRESSION: Left SFA occlusion with single vessel tibial runoff (PTA). Findings consistent with TASC C lesion. Surgical revascularization recommended.
+
+PHYSIOLOGIC DATA:
+ABI: 0.45 left, 1.02 right
+Toe pressure: 35 mmHg left
+Rutherford Classification: 5 (minor tissue loss)</textarea>
+        
+        <button class="process-btn" id="process-btn">
+          <span>⚡</span> Process with AI
+        </button>
+      </div>
+    </div>
+
+    <!-- Anatomy Panel -->
+    <div class="panel panel-anatomy">
+      <div class="panel-header">
+        <span class="panel-title">🦵 Anatomy</span>
+      </div>
+
+      <div class="anatomy-container">
+        <div class="anatomy-toggle">
+          <button class="anatomy-toggle-btn active">Art</button>
+          <button class="anatomy-toggle-btn">Ven</button>
+        </div>
+
+        <svg class="anatomy-svg" viewBox="0 0 100 360" fill="none">
+          <!-- Left Leg Arterial Tree -->
+          <path d="M50 10 L50 40" stroke="#555" stroke-width="6" stroke-linecap="round"/>
+          <text x="60" y="25" class="vessel-label">Aorta</text>
+          
+          <path d="M50 40 L35 65" stroke="#555" stroke-width="4" stroke-linecap="round"/>
+          <path d="M50 40 L65 65" stroke="#555" stroke-width="4" stroke-linecap="round" opacity="0.3"/>
+          
+          <!-- EIA -->
+          <path d="M35 65 L32 95" stroke="#22C55E" stroke-width="4" stroke-linecap="round"/>
+          <text x="10" y="80" class="vessel-label">EIA</text>
+          
+          <!-- CFA -->
+          <path d="M32 95 L32 120" stroke="#22C55E" stroke-width="4" stroke-linecap="round"/>
+          <text x="10" y="110" class="vessel-label">CFA ✓</text>
+          
+          <!-- Profunda -->
+          <path d="M32 115 L22 145" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="5" y="140" class="vessel-label">Prof</text>
+          
+          <!-- SFA - OCCLUDED -->
+          <path d="M32 120 L35 200" stroke="#EF4444" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="4 2"/>
+          <text x="42" y="160" class="vessel-label" style="fill: #EF4444; font-weight: 600;">SFA</text>
+          <text x="42" y="170" class="vessel-label" style="fill: #EF4444;">OCCL</text>
+          
+          <!-- Popliteal -->
+          <path d="M35 200 L37 240" stroke="#22C55E" stroke-width="3" stroke-linecap="round"/>
+          <text x="44" y="220" class="vessel-label">Pop ✓</text>
+          
+          <!-- TPT -->
+          <path d="M37 240 L38 260" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
+          
+          <!-- ATA - OCCLUDED -->
+          <path d="M37 240 L28 300" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 2"/>
+          <text x="10" y="280" class="vessel-label" style="fill: #EF4444;">ATA ✗</text>
+          
+          <!-- PTA - PATENT (TARGET) -->
+          <path d="M38 260 L40 320" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="46" y="295" class="vessel-label" style="fill: #22C55E; font-weight: 600;">PTA ✓</text>
+          <text x="46" y="305" class="vessel-label" style="fill: #22C55E;">TARGET</text>
+          
+          <!-- Peroneal - OCCLUDED -->
+          <path d="M38 260 L48 310" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 2"/>
+          <text x="52" y="290" class="vessel-label" style="fill: #EF4444;">Per ✗</text>
+          
+          <!-- Side Label -->
+          <text x="25" y="345" style="font-size: 9px; font-weight: 700; fill: #BA0C2F;">LEFT</text>
+          
+          <!-- Right leg dimmed -->
+          <g opacity="0.2">
+            <path d="M65 65 L68 95 L68 120 L68 200 L68 240" stroke="#555" stroke-width="3" stroke-linecap="round"/>
+          </g>
+        </svg>
+
+        <div class="anatomy-legend">
+          <div class="legend-item"><div class="legend-dot patent"></div>Patent</div>
+          <div class="legend-item"><div class="legend-dot stenosis"></div>Stenosis</div>
+          <div class="legend-item"><div class="legend-dot occluded"></div>Occluded</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Panel -->
+    <div class="panel panel-output">
+      <div class="panel-header">
+        <span class="panel-title">📄 Structured Output</span>
+        <div class="panel-actions">
+          <button class="panel-btn">Copy</button>
+          <button class="panel-btn primary">PDF</button>
+        </div>
+      </div>
+
+      <div class="output-container">
+        
+        <!-- Diagnosis -->
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">Diagnosis (ICD-10)</span>
+            <span class="output-section-status status-valid">✓ Valid</span>
+          </div>
+          <div class="output-section-body">
+            <span class="code-tag primary">I70.25</span>
+            <span class="code-tag">PAD with ulceration, left</span><br>
+            <span class="code-tag">E11.51</span>
+            <span class="code-tag">T2DM with PAD</span>
+          </div>
+        </div>
+
+        <!-- Anatomy -->
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">Anatomy Defined</span>
+            <span class="output-section-status status-valid">✓ Complete</span>
+          </div>
+          <div class="output-section-body">
+            <table class="findings-mini">
+              <tr><th>Segment</th><th>Status</th><th>Source</th></tr>
+              <tr><td>L CFA</td><td><span class="finding-badge finding-patent">Patent</span></td><td>CTA</td></tr>
+              <tr><td>L SFA</td><td><span class="finding-badge finding-occluded">Occluded</span></td><td>CTA</td></tr>
+              <tr><td>L Popliteal</td><td><span class="finding-badge finding-patent">Reconst</span></td><td>CTA</td></tr>
+              <tr><td>L ATA</td><td><span class="finding-badge finding-occluded">Occluded</span></td><td>CTA</td></tr>
+              <tr><td>L PTA</td><td><span class="finding-badge finding-patent">Patent</span></td><td>CTA</td></tr>
+              <tr><td>L Peroneal</td><td><span class="finding-badge finding-occluded">Occluded</span></td><td>CTA</td></tr>
+            </table>
+            <div style="margin-top: 8px; font-size: 10px;">
+              <span class="code-tag primary">INFLOW + OUTFLOW</span>
+              <span class="code-tag">Single Vessel Runoff (PTA)</span>
+              <span class="code-tag">TASC C</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Procedure -->
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">Procedure (CPT)</span>
+            <span class="output-section-status status-valid">✓ LCD Met</span>
+          </div>
+          <div class="output-section-body">
+            <span class="code-tag primary">35566</span>
+            <span class="code-tag">Fem-tibial/peroneal bypass</span>
+            <div style="margin-top: 8px; padding: 8px; background: var(--ready-bg); border-radius: 4px; font-size: 10px; color: var(--ready);">
+              ✓ Medical necessity met — CLI + tissue loss + single vessel runoff
+            </div>
+          </div>
+        </div>
+
+        <!-- Op Note Preview -->
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">Op Note Preview</span>
+          </div>
+          <div class="output-section-body">
+            <div class="op-note-mini">
+<strong>INDICATION:</strong> 71 y/o male with CLI, Rutherford 5, non-healing ulcer left foot.
+
+<strong>ANATOMY:</strong> CTA shows L SFA occlusion, reconstitution at popliteal. Single vessel runoff via PTA. ABI 0.45.
+
+<strong>PROCEDURE:</strong> Left femoral to posterior tibial bypass with reversed GSV.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- VQI Panel -->
+    <div class="panel panel-vqi">
+      <div class="panel-header">
+        <span class="panel-title">
+          🏥 VQI Registry
+          <span class="panel-badge">Auto-Fill</span>
+        </span>
+        <button class="panel-btn">Export</button>
+      </div>
+
+      <div class="vqi-container">
+        
+        <!-- Patient Demographics -->
+        <div class="vqi-section">
+          <div class="vqi-section-header">
+            <span class="vqi-section-title">Patient Demographics</span>
+          </div>
+          <div class="vqi-section-body">
+            <div class="vqi-row">
+              <div class="vqi-field">
+                <label class="vqi-label">Age</label>
+                <span class="vqi-value mono">71 <span class="vqi-autofill">✓ Auto</span></span>
+              </div>
+              <div class="vqi-field">
+                <label class="vqi-label">Sex</label>
+                <span class="vqi-value">Male</span>
+              </div>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Comorbidities</label>
+              <div class="vqi-checkbox-group">
+                <label class="vqi-checkbox"><input type="checkbox" checked> Diabetes</label>
+                <label class="vqi-checkbox"><input type="checkbox" checked> Hypertension</label>
+                <label class="vqi-checkbox"><input type="checkbox"> CHF</label>
+                <label class="vqi-checkbox"><input type="checkbox" checked> CAD</label>
+                <label class="vqi-checkbox"><input type="checkbox"> COPD</label>
+                <label class="vqi-checkbox"><input type="checkbox" checked> CKD</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Indication -->
+        <div class="vqi-section">
+          <div class="vqi-section-header">
+            <span class="vqi-section-title">Indication</span>
+          </div>
+          <div class="vqi-section-body">
+            <div class="vqi-field">
+              <label class="vqi-label">Rutherford Class</label>
+              <select class="vqi-select">
+                <option>1 - Mild claudication</option>
+                <option>2 - Moderate claudication</option>
+                <option>3 - Severe claudication</option>
+                <option>4 - Rest pain</option>
+                <option selected>5 - Minor tissue loss</option>
+                <option>6 - Major tissue loss</option>
+              </select>
+            </div>
+            <div class="vqi-row">
+              <div class="vqi-field">
+                <label class="vqi-label">ABI <span class="vqi-autofill">✓ Auto</span></label>
+                <input class="vqi-input" type="text" value="0.45">
+              </div>
+              <div class="vqi-field">
+                <label class="vqi-label">Toe Pressure</label>
+                <input class="vqi-input" type="text" value="35 mmHg">
+              </div>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Prior Intervention (Ipsilateral)</label>
+              <select class="vqi-select">
+                <option selected>None</option>
+                <option>Prior PTA/Stent</option>
+                <option>Prior Bypass</option>
+                <option>Prior Endarterectomy</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Anatomy -->
+        <div class="vqi-section">
+          <div class="vqi-section-header">
+            <span class="vqi-section-title">Anatomy <span class="vqi-autofill">✓ Auto-Populated</span></span>
+          </div>
+          <div class="vqi-section-body">
+            <div class="vqi-field">
+              <label class="vqi-label">Inflow Artery</label>
+              <select class="vqi-select">
+                <option>Aorta</option>
+                <option>Iliac</option>
+                <option selected>Common Femoral</option>
+                <option>Superficial Femoral</option>
+              </select>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Target Artery</label>
+              <select class="vqi-select">
+                <option>Above-knee Popliteal</option>
+                <option>Below-knee Popliteal</option>
+                <option>Anterior Tibial</option>
+                <option selected>Posterior Tibial</option>
+                <option>Peroneal</option>
+                <option>Dorsalis Pedis</option>
+              </select>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">TASC Classification</label>
+              <select class="vqi-select">
+                <option>A</option>
+                <option>B</option>
+                <option selected>C</option>
+                <option>D</option>
+              </select>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Runoff Score</label>
+              <select class="vqi-select">
+                <option>3 vessel</option>
+                <option>2 vessel</option>
+                <option selected>1 vessel (PTA)</option>
+                <option>0 vessel</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Procedure -->
+        <div class="vqi-section">
+          <div class="vqi-section-header">
+            <span class="vqi-section-title">Procedure Details</span>
+          </div>
+          <div class="vqi-section-body">
+            <div class="vqi-field">
+              <label class="vqi-label">Procedure Type</label>
+              <select class="vqi-select">
+                <option>Endovascular - PTA</option>
+                <option>Endovascular - Stent</option>
+                <option>Endovascular - Atherectomy</option>
+                <option selected>Open - Infrainguinal Bypass</option>
+                <option>Open - Endarterectomy</option>
+                <option>Hybrid</option>
+              </select>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Conduit</label>
+              <select class="vqi-select">
+                <option selected>Reversed GSV</option>
+                <option>In-situ GSV</option>
+                <option>Non-reversed translocated vein</option>
+                <option>Arm vein</option>
+                <option>Prosthetic (PTFE)</option>
+                <option>Composite</option>
+              </select>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Urgency</label>
+              <select class="vqi-select">
+                <option selected>Elective</option>
+                <option>Urgent</option>
+                <option>Emergent</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- VQI Action Bar -->
+      <div class="action-bar">
+        <div class="action-status">
+          <div class="status-dot"></div>
+          <span>VQI form 85% complete</span>
+        </div>
+        <button class="btn btn-vqi">
+          <span>📤</span> Export VQI
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+
+    // Process button
+    document.getElementById('process-btn').addEventListener('click', () => {
+      const btn = document.getElementById('process-btn');
+      btn.innerHTML = '<span>⏳</span> Processing...';
+      btn.disabled = true;
+      
+      setTimeout(() => {
+        btn.innerHTML = '<span>✓</span> Complete!';
+        btn.style.background = '#22C55E';
+        
+        setTimeout(() => {
+          btn.innerHTML = '<span>⚡</span> Process with AI';
+          btn.style.background = '';
+          btn.disabled = false;
+        }, 1500);
+      }, 1200);
+    });
+
+    // Anatomy toggle
+    document.querySelectorAll('.anatomy-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.anatomy-toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OR Command Center - Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #050505;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .hub-container {
+      text-align: center;
+      max-width: 900px;
+      width: 100%;
+      padding: 40px;
+    }
+    .logo-circle {
+      width: 80px;
+      height: 80px;
+      background: #BA0C2F;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 0 30px rgba(186, 12, 47, 0.3);
+    }
+    h1 { letter-spacing: 2px; font-size: 32px; margin-bottom: 8px; }
+    p.subtitle { color: #888; margin-bottom: 40px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #111;
+      border: 1px solid #333;
+      padding: 24px;
+      border-radius: 12px;
+      text-align: left;
+      text-decoration: none;
+      color: white;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: #555;
+      transform: translateY(-4px);
+      background: #161616;
+    }
+
+    .card-icon { font-size: 24px; }
+    .card-title { font-weight: 700; font-size: 16px; color: #fff; }
+    .card-desc { font-size: 12px; color: #666; line-height: 1.4; }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      width: fit-content;
+    }
+    .badge-core { background: rgba(186, 12, 47, 0.15); color: #BA0C2F; border: 1px solid rgba(186, 12, 47, 0.3); }
+    .badge-spec { background: rgba(59, 130, 246, 0.15); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-util { background: rgba(139, 92, 246, 0.15); color: #8B5CF6; border: 1px solid rgba(139, 92, 246, 0.3); }
+
+    /* Hover accent colors */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 4px; height: 100%;
+      background: #333;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .card:hover::before { opacity: 1; }
+
+    /* Specific hover colors matching badges */
+    .card[data-color="red"]:hover::before { background: #BA0C2F; }
+    .card[data-color="blue"]:hover::before { background: #3B82F6; }
+    .card[data-color="cyan"]:hover::before { background: #06B6D4; }
+    .card[data-color="orange"]:hover::before { background: #F97316; }
+    .card[data-color="indigo"]:hover::before { background: #6366F1; }
+    .card[data-color="purple"]:hover::before { background: #8B5CF6; }
+
+    .version {
+      margin-top: 40px;
+      font-size: 11px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="hub-container">
+    <div class="logo-circle">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+        <path d="M12 3v18M5 8c3-3 11-3 14 0M5 16c3 3 11 3 14 0"/>
+      </svg>
+    </div>
+    <h1>OR COMMAND CENTER</h1>
+    <p class="subtitle">Surgical Intelligence & Planning Suite</p>
+
+    <div class="grid">
+      <!-- 1. Dashboard -->
+      <a href="surgical-command-center-page1.html" class="card" data-color="red">
+        <span class="card-icon">📊</span>
+        <div class="badge badge-core">DASHBOARD</div>
+        <div class="card-title">Patient Lists</div>
+        <div class="card-desc">Pre-op queue, today's OR schedule, and unsigned documentation.</div>
+      </a>
+
+      <!-- 2. Tasks -->
+      <a href="surgical-command-center-tasks.html" class="card" data-color="red">
+        <span class="card-icon">✅</span>
+        <div class="badge badge-core">TASK MANAGER</div>
+        <div class="card-title">Pre-Op Tasks</div>
+        <div class="card-desc">Track clearances, orders, scheduling barriers, and daily calls.</div>
+      </a>
+
+      <!-- 3. General Workspace / PAD -->
+      <a href="surgical-command-center-workspace.html" class="card" data-color="blue">
+        <span class="card-icon">🦵</span>
+        <div class="badge badge-spec">PAD WORKSPACE</div>
+        <div class="card-title">Leg Bypass / PAD</div>
+        <div class="card-desc">Lower extremity arterial disease planning and documentation.</div>
+      </a>
+
+      <!-- 4. Carotid -->
+      <a href="workspace-carotid.html" class="card" data-color="cyan">
+        <span class="card-icon">🧠</span>
+        <div class="badge badge-spec" style="color:#06B6D4; border-color:rgba(6,182,212,0.3); background:rgba(6,182,212,0.15)">CAROTID</div>
+        <div class="card-title">TCAR / CEA</div>
+        <div class="card-desc">Stenosis mapping, high-risk criteria, and TCAR planning.</div>
+      </a>
+
+      <!-- 5. Aneurysm -->
+      <a href="workspace-aortic-aneurysm.html" class="card" data-color="orange">
+        <span class="card-icon">🫀</span>
+        <div class="badge badge-spec" style="color:#F97316; border-color:rgba(249,115,22,0.3); background:rgba(249,115,22,0.15)">ANEURYSM</div>
+        <div class="card-title">AAA / EVAR</div>
+        <div class="card-desc">Aortic neck measurements, growth charts, and graft sizing.</div>
+      </a>
+
+      <!-- 6. Venous -->
+      <a href="workspace-venous.html" class="card" data-color="indigo">
+        <span class="card-icon">🩸</span>
+        <div class="badge badge-spec" style="color:#6366F1; border-color:rgba(99,102,241,0.3); background:rgba(99,102,241,0.15)">VENOUS</div>
+        <div class="card-title">Varicose / Ablation</div>
+        <div class="card-desc">CEAP classification, VCSS scoring, and reflux mapping.</div>
+      </a>
+
+      <!-- 7. VQI Workspace -->
+      <a href="surgical-command-center-workspace-vqi.html" class="card" data-color="purple">
+        <span class="card-icon">🏥</span>
+        <div class="badge badge-util">VQI REGISTRY</div>
+        <div class="card-title">VQI Data Entry</div>
+        <div class="card-desc">Detailed VQI form auto-population and registry submission.</div>
+      </a>
+
+      <!-- 8. Settings -->
+      <a href="ORCC-settings.html" class="card" data-color="purple">
+        <span class="card-icon">⚙️</span>
+        <div class="badge badge-util">ADMIN</div>
+        <div class="card-title">Settings & Analytics</div>
+        <div class="card-desc">Volume metrics, LCD configs, user profile, and preferences.</div>
+      </a>
+    </div>
+
+    <p class="version">ORCC v0.1.0 — UI Prototype</p>
+  </div>
+</body>
+</html>

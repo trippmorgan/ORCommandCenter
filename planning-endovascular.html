@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endovascular Planning | OR Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #0d0d0d;
+            --bg-tertiary: #111111;
+            --bg-card: #1a1a1a;
+            --border: #333333;
+            --border-active: #BA0C2F;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --text-muted: #666666;
+            --uga-red: #BA0C2F;
+            --accent-blue: #3B82F6;
+            --accent-cyan: #06B6D4;
+            --accent-green: #22C55E;
+            --accent-orange: #F97316;
+            --accent-red: #EF4444;
+            --accent-purple: #8B5CF6;
+            --patent: #22C55E;
+            --stenosis-mild: #F59E0B;
+            --stenosis-severe: #EF4444;
+            --occluded: #6B7280;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            border-color: var(--uga-red);
+            color: var(--text-primary);
+        }
+
+        .page-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-title .badge {
+            background: var(--accent-blue);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--uga-red);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #9a0a27;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--uga-red);
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: grid;
+            grid-template-columns: 340px 1fr 400px;
+            gap: 1.5rem;
+        }
+
+        /* Panels */
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: var(--bg-tertiary);
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .panel-badge {
+            background: var(--uga-red);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .panel-body {
+            padding: 1.25rem;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        /* Patient Header */
+        .patient-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .patient-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--uga-red);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .patient-info h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .patient-mrn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--uga-red);
+            box-shadow: 0 0 0 2px rgba(186, 12, 47, 0.2);
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888888' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            padding-right: 2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        /* Section Headers */
+        .section-header {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--uga-red);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 1.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Anatomy Diagram */
+        .anatomy-container {
+            position: relative;
+            height: calc(100vh - 240px);
+            min-height: 600px;
+        }
+
+        .anatomy-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .vessel {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .vessel:hover {
+            filter: brightness(1.3);
+        }
+
+        .vessel.patent { stroke: var(--patent); }
+        .vessel.stenosis-mild { stroke: var(--stenosis-mild); stroke-dasharray: 8 4; }
+        .vessel.stenosis-severe { stroke: var(--stenosis-severe); stroke-dasharray: 4 4; }
+        .vessel.occluded { stroke: var(--occluded); stroke-dasharray: 2 6; }
+
+        .vessel-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            fill: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .legend-line.patent { background: var(--patent); }
+        .legend-line.mild { background: var(--stenosis-mild); }
+        .legend-line.severe { background: var(--stenosis-severe); }
+        .legend-line.occluded { background: var(--occluded); }
+
+        /* Intervention Cards */
+        .intervention-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .intervention-card.active {
+            border-color: var(--accent-green);
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .intervention-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .intervention-vessel {
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .vessel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .intervention-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0.25rem;
+            border-radius: 4px;
+        }
+
+        .intervention-remove:hover {
+            color: var(--accent-red);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .intervention-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .intervention-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .detail-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        /* Output Preview */
+        .output-preview {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .output-preview strong {
+            color: var(--text-primary);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90vw;
+            animation: modalSlide 0.2s ease;
+        }
+
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1.25rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* Side Toggle */
+        .side-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .side-btn {
+            flex: 1;
+            padding: 0.6rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .side-btn.active {
+            background: var(--uga-red);
+            border-color: var(--uga-red);
+            color: white;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="surgical-command-center-page1.html" class="back-btn">← Back to List</a>
+                <h1 class="page-title">
+                    Endovascular Planning
+                    <span class="badge">PAD/CLI</span>
+                </h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+                <button class="btn btn-primary" onclick="saveAndOpenWorkspace()">Save & Open Workspace →</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Left Panel: Patient & Procedure Info -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">PROCEDURE DETAILS</span>
+            </div>
+            <div class="panel-body">
+                <!-- Patient Header -->
+                <div class="patient-header">
+                    <div class="patient-avatar" id="patientAvatar">S</div>
+                    <div class="patient-info">
+                        <h2 id="patientName">Smith, John</h2>
+                        <div class="patient-mrn" id="patientMRN">MRN: 123456</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Procedure Type</label>
+                    <select class="form-select" id="procedureType">
+                        <option value="lea_angio">Lower Extremity Arteriogram</option>
+                        <option value="lea_pta" selected>LEA with Angioplasty</option>
+                        <option value="lea_stent">LEA with Stenting</option>
+                        <option value="lea_atherectomy">LEA with Atherectomy</option>
+                        <option value="lea_combined">LEA with PTA/Stent/Atherectomy</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Procedure Date</label>
+                        <input type="date" class="form-input" id="procDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Side</label>
+                        <select class="form-select" id="procSide">
+                            <option value="right" selected>Right</option>
+                            <option value="left">Left</option>
+                            <option value="bilateral">Bilateral</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-header">Access & Technique</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Access Site</label>
+                        <select class="form-select" id="accessSite">
+                            <option value="r_cfa">R Common Femoral</option>
+                            <option value="l_cfa">L Common Femoral</option>
+                            <option value="r_radial">R Radial</option>
+                            <option value="l_radial">L Radial</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sheath Size</label>
+                        <select class="form-select" id="sheathSize">
+                            <option value="5fr">5 Fr</option>
+                            <option value="6fr" selected>6 Fr</option>
+                            <option value="7fr">7 Fr</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Anesthesia</label>
+                    <select class="form-select" id="anesthesia">
+                        <option value="mac_local" selected>MAC + Local</option>
+                        <option value="local">Local Only</option>
+                        <option value="general">General</option>
+                    </select>
+                </div>
+
+                <div class="section-header">Indication</div>
+
+                <div class="form-group">
+                    <label class="form-label">Pre-Op Diagnosis</label>
+                    <textarea class="form-textarea" id="preOpDx" rows="2">PAD with CLI, right lower extremity</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Rutherford Classification</label>
+                    <select class="form-select" id="rutherford">
+                        <option value="r3">R3 - Severe Claudication</option>
+                        <option value="r4" selected>R4 - Rest Pain</option>
+                        <option value="r5">R5 - Minor Tissue Loss</option>
+                        <option value="r6">R6 - Major Tissue Loss</option>
+                    </select>
+                </div>
+
+                <div class="section-header">Inflow Status (by Ultrasound)</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Aorto-Iliac</label>
+                        <select class="form-select" id="inflowAortoiliac">
+                            <option value="normal" selected>Normal</option>
+                            <option value="stenosis">Stenosis</option>
+                            <option value="occluded">Occluded</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CFA</label>
+                        <select class="form-select" id="inflowCFA">
+                            <option value="normal" selected>Normal</option>
+                            <option value="stenosis">Stenosis</option>
+                            <option value="occluded">Occluded</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-header">Outflow Status</div>
+
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label class="form-label">AT</label>
+                        <select class="form-select" id="outflowAT">
+                            <option value="patent">Patent</option>
+                            <option value="stenosis">Stenosis</option>
+                            <option value="occluded" selected>Occluded</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">PT</label>
+                        <select class="form-select" id="outflowPT">
+                            <option value="patent" selected>Patent</option>
+                            <option value="stenosis">Stenosis</option>
+                            <option value="occluded">Occluded</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Peroneal</label>
+                        <select class="form-select" id="outflowPeroneal">
+                            <option value="patent" selected>Patent</option>
+                            <option value="stenosis">Stenosis</option>
+                            <option value="occluded">Occluded</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Panel: Anatomy Diagram -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">VASCULAR ANATOMY</span>
+                <span class="panel-badge">Click Vessels</span>
+            </div>
+            <div class="panel-body" style="padding: 0.75rem;">
+                <!-- Side Toggle -->
+                <div class="side-toggle">
+                    <button class="side-btn" onclick="showSide('left')">Left</button>
+                    <button class="side-btn active" onclick="showSide('right')">Right</button>
+                    <button class="side-btn" onclick="showSide('bilateral')">Bilateral</button>
+                </div>
+
+                <!-- Legend -->
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-line patent"></div> Patent</div>
+                    <div class="legend-item"><div class="legend-line mild"></div> &lt;70%</div>
+                    <div class="legend-item"><div class="legend-line severe"></div> &gt;70%</div>
+                    <div class="legend-item"><div class="legend-line occluded"></div> Occluded</div>
+                </div>
+
+                <!-- Anatomy SVG -->
+                <div class="anatomy-container">
+                    <svg class="anatomy-svg" viewBox="0 0 400 700" id="anatomySvg">
+                        <defs>
+                            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1a1a1a" stroke-width="0.5"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid)"/>
+
+                        <!-- Aorta -->
+                        <path id="aorta" class="vessel patent" d="M 200 20 L 200 100"
+                              stroke-width="12" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('Infrarenal Aorta', 'aorta')"/>
+                        <text class="vessel-label" x="220" y="60">Aorta</text>
+
+                        <!-- Common Iliacs (Anatomic Position: R on viewer's left, L on viewer's right) -->
+                        <path id="r_cia" class="vessel patent" d="M 200 100 Q 160 120 140 160"
+                              stroke-width="10" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('R Common Iliac', 'iliac')"/>
+                        <path id="l_cia" class="vessel patent" d="M 200 100 Q 240 120 260 160"
+                              stroke-width="10" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('L Common Iliac', 'iliac')"/>
+                        <text class="vessel-label" x="95" y="140">R CIA</text>
+                        <text class="vessel-label" x="270" y="140">L CIA</text>
+
+                        <!-- External Iliacs -->
+                        <path id="r_eia" class="vessel patent" d="M 140 160 L 125 220"
+                              stroke-width="9" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('R External Iliac', 'iliac')"/>
+                        <path id="l_eia" class="vessel patent" d="M 260 160 L 275 220"
+                              stroke-width="9" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('L External Iliac', 'iliac')"/>
+                        <text class="vessel-label" x="80" y="195">R EIA</text>
+                        <text class="vessel-label" x="285" y="195">L EIA</text>
+
+                        <!-- Common Femorals -->
+                        <path id="r_cfa" class="vessel patent" d="M 125 220 L 120 270"
+                              stroke-width="8" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('R Common Femoral', 'femoral')"/>
+                        <path id="l_cfa" class="vessel patent" d="M 275 220 L 280 270"
+                              stroke-width="8" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('L Common Femoral', 'femoral')"/>
+                        <text class="vessel-label" x="70" y="250">R CFA</text>
+                        <text class="vessel-label" x="290" y="250">L CFA</text>
+
+                        <!-- Profunda -->
+                        <path id="r_profunda" class="vessel patent" d="M 120 270 Q 90 290 85 340"
+                              stroke-width="5" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('R Profunda', 'femoral')"/>
+                        <path id="l_profunda" class="vessel patent" d="M 280 270 Q 310 290 315 340"
+                              stroke-width="5" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('L Profunda', 'femoral')"/>
+                        <text class="vessel-label" x="45" y="310">R Prof</text>
+                        <text class="vessel-label" x="320" y="310">L Prof</text>
+
+                        <!-- SFA -->
+                        <path id="r_sfa" class="vessel patent" d="M 120 270 L 130 420"
+                              stroke-width="7" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('R SFA', 'femoral')"/>
+                        <path id="l_sfa" class="vessel patent" d="M 280 270 L 270 420"
+                              stroke-width="7" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('L SFA', 'femoral')"/>
+                        <text class="vessel-label" x="85" y="350">R SFA</text>
+                        <text class="vessel-label" x="285" y="350">L SFA</text>
+
+                        <!-- Popliteal -->
+                        <path id="r_popliteal" class="vessel patent" d="M 130 420 L 135 500"
+                              stroke-width="6" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('R Popliteal', 'popliteal')"/>
+                        <path id="l_popliteal" class="vessel patent" d="M 270 420 L 265 500"
+                              stroke-width="6" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('L Popliteal', 'popliteal')"/>
+                        <text class="vessel-label" x="90" y="465">R Pop</text>
+                        <text class="vessel-label" x="275" y="465">L Pop</text>
+
+                        <!-- Tibial Vessels - Right (viewer's left) -->
+                        <path id="r_at" class="vessel patent" d="M 135 500 L 110 620"
+                              stroke-width="4" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('R Anterior Tibial', 'tibial')"/>
+                        <path id="r_pt" class="vessel patent" d="M 135 500 L 150 620"
+                              stroke-width="4" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('R Posterior Tibial', 'tibial')"/>
+                        <path id="r_peroneal" class="vessel patent" d="M 135 500 L 130 590"
+                              stroke-width="3" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('R Peroneal', 'tibial')"/>
+                        <text class="vessel-label" x="70" y="570">R AT</text>
+                        <text class="vessel-label" x="155" y="580">R PT</text>
+
+                        <!-- Tibial Vessels - Left (viewer's right) -->
+                        <path id="l_at" class="vessel patent" d="M 265 500 L 290 620"
+                              stroke-width="4" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('L Anterior Tibial', 'tibial')"/>
+                        <path id="l_pt" class="vessel patent" d="M 265 500 L 250 620"
+                              stroke-width="4" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('L Posterior Tibial', 'tibial')"/>
+                        <path id="l_peroneal" class="vessel patent" d="M 265 500 L 270 590"
+                              stroke-width="3" fill="none" stroke-linecap="round"
+                              onclick="openVesselModal('L Peroneal', 'tibial')"/>
+                        <text class="vessel-label" x="295" y="570">L AT</text>
+                        <text class="vessel-label" x="225" y="580">L PT</text>
+
+                        <!-- Feet -->
+                        <ellipse cx="130" cy="650" rx="30" ry="18" fill="none" stroke="#333" stroke-width="1"/>
+                        <ellipse cx="270" cy="650" rx="30" ry="18" fill="none" stroke="#333" stroke-width="1"/>
+                        <text class="vessel-label" x="115" y="655">R Foot</text>
+                        <text class="vessel-label" x="255" y="655">L Foot</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Interventions & Summary -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="panel-title">INTERVENTIONS</span>
+                <span class="panel-badge" id="interventionCount">0</span>
+            </div>
+            <div class="panel-body">
+                <!-- Interventions List -->
+                <div id="interventionsList" style="margin-bottom: 1.5rem; min-height: 150px;">
+                    <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 2rem 0;">
+                        Click vessels in the diagram to add findings and interventions
+                    </p>
+                </div>
+
+                <div class="section-header">Planned Procedure Summary</div>
+
+                <div class="output-preview" id="procedureSummary">
+                    <strong>Patient:</strong> Smith, John (MRN: 123456)<br>
+                    <strong>Procedure:</strong> R Lower Extremity Arteriogram with possible angioplasty/stenting/atherectomy<br><br>
+                    <strong>Indication:</strong> PAD with CLI (Rutherford 4)<br><br>
+                    <strong>Inflow:</strong> Normal by ultrasound<br>
+                    <strong>Outflow:</strong> PT and Peroneal patent, AT occluded (single vessel runoff)<br><br>
+                    <strong>Planned Interventions:</strong><br>
+                    - Diagnostic arteriogram<br>
+                    - Possible SFA angioplasty/stenting<br>
+                    - Possible tibial intervention as needed<br>
+                </div>
+
+                <div class="section-header" style="margin-top: 1.5rem;">CPT Codes (Estimated)</div>
+
+                <div class="output-preview" id="cptCodes">
+                    <strong>Diagnostic:</strong><br>
+                    • 36247 - Selective catheter placement, arterial, 2nd order<br>
+                    • 75716 - Bilateral lower extremity arteriogram<br><br>
+                    <strong>Intervention (if performed):</strong><br>
+                    • 37224 - Femoral/popliteal angioplasty<br>
+                    • 37226 - Femoral/popliteal stent<br>
+                    • 37228 - Tibial angioplasty<br>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Vessel Modal -->
+    <div class="modal-overlay" id="vesselModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalVesselName">Vessel Name</h3>
+                <button class="modal-close" onclick="closeVesselModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Vessel Status</label>
+                    <select class="form-select" id="modalStatus">
+                        <option value="patent">Patent / Normal</option>
+                        <option value="stenosis_mild">&lt;50% Stenosis</option>
+                        <option value="stenosis_mod">50-69% Stenosis</option>
+                        <option value="stenosis_severe">70-99% Stenosis</option>
+                        <option value="occluded">Occluded (100%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Lesion Length</label>
+                    <select class="form-select" id="modalLength">
+                        <option value="">N/A</option>
+                        <option value="<5cm">&lt;5 cm</option>
+                        <option value="5-10cm">5-10 cm</option>
+                        <option value="10-20cm">10-20 cm</option>
+                        <option value=">20cm">&gt;20 cm (CTO)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Planned Intervention</label>
+                    <select class="form-select" id="modalIntervention">
+                        <option value="none">None (Diagnostic)</option>
+                        <option value="pta">Balloon Angioplasty (PTA)</option>
+                        <option value="stent">Stent Placement</option>
+                        <option value="atherectomy">Atherectomy</option>
+                        <option value="pta_stent">PTA + Stent</option>
+                        <option value="ath_pta">Atherectomy + PTA</option>
+                        <option value="ath_pta_stent">Atherectomy + PTA + Stent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes / Calcification</label>
+                    <textarea class="form-textarea" id="modalNotes" rows="2" placeholder="Heavy calcification, chronic total occlusion, etc."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeVesselModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveVesselData()">Save Finding</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let interventions = [];
+        let currentVessel = null;
+        let vesselData = {};
+        let currentSide = 'right';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load patient from localStorage
+            const patient = JSON.parse(localStorage.getItem('selectedPatient') || '{}');
+            if (patient.name) {
+                document.getElementById('patientName').textContent = patient.name;
+                document.getElementById('patientAvatar').textContent = patient.name.charAt(0);
+                document.getElementById('patientMRN').textContent = 'MRN: ' + (patient.mrn || '—');
+            }
+
+            // Set today's date
+            document.getElementById('procDate').value = new Date().toISOString().split('T')[0];
+
+            // Set default vessel states for John Smith case
+            setVesselStatus('r_sfa', 'occluded');
+            setVesselStatus('r_at', 'occluded');
+
+            updateSummary();
+        });
+
+        function setVesselStatus(vesselId, status) {
+            const vessel = document.getElementById(vesselId);
+            if (vessel) {
+                vessel.classList.remove('patent', 'stenosis-mild', 'stenosis-severe', 'occluded');
+                if (status === 'patent') vessel.classList.add('patent');
+                else if (status === 'stenosis_mild' || status === 'stenosis_mod') vessel.classList.add('stenosis-mild');
+                else if (status === 'stenosis_severe') vessel.classList.add('stenosis-severe');
+                else if (status === 'occluded') vessel.classList.add('occluded');
+
+                vesselData[vesselId] = { status: status };
+            }
+        }
+
+        function showSide(side) {
+            currentSide = side;
+            document.querySelectorAll('.side-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('procSide').value = side;
+        }
+
+        function openVesselModal(vesselName, category) {
+            currentVessel = {
+                name: vesselName,
+                category: category,
+                id: vesselName.toLowerCase().replace(/ /g, '_')
+            };
+            document.getElementById('modalVesselName').textContent = vesselName;
+
+            // Reset form
+            document.getElementById('modalStatus').value = 'patent';
+            document.getElementById('modalLength').value = '';
+            document.getElementById('modalIntervention').value = 'none';
+            document.getElementById('modalNotes').value = '';
+
+            document.getElementById('vesselModal').classList.add('visible');
+        }
+
+        function closeVesselModal() {
+            document.getElementById('vesselModal').classList.remove('visible');
+            currentVessel = null;
+        }
+
+        function saveVesselData() {
+            if (!currentVessel) return;
+
+            const status = document.getElementById('modalStatus').value;
+            const length = document.getElementById('modalLength').value;
+            const intervention = document.getElementById('modalIntervention').value;
+            const notes = document.getElementById('modalNotes').value;
+
+            // Update vessel appearance
+            const vesselId = currentVessel.id.replace(/_/g, '_').replace('r_', 'r_').replace('l_', 'l_');
+            // Map vessel names to IDs
+            const vesselMap = {
+                'r_common_iliac': 'r_cia',
+                'l_common_iliac': 'l_cia',
+                'r_external_iliac': 'r_eia',
+                'l_external_iliac': 'l_eia',
+                'r_common_femoral': 'r_cfa',
+                'l_common_femoral': 'l_cfa',
+                'r_anterior_tibial': 'r_at',
+                'l_anterior_tibial': 'l_at',
+                'r_posterior_tibial': 'r_pt',
+                'l_posterior_tibial': 'l_pt',
+                'infrarenal_aorta': 'aorta'
+            };
+
+            const svgId = vesselMap[currentVessel.id] || currentVessel.id;
+            setVesselStatus(svgId, status);
+
+            // Store vessel data
+            vesselData[svgId] = {
+                name: currentVessel.name,
+                status: status,
+                length: length,
+                intervention: intervention,
+                notes: notes
+            };
+
+            // Add to interventions if intervention planned
+            if (intervention !== 'none') {
+                const existing = interventions.findIndex(i => i.vessel === currentVessel.name);
+                const interventionData = {
+                    vessel: currentVessel.name,
+                    vesselId: svgId,
+                    status: status,
+                    length: length,
+                    intervention: intervention,
+                    notes: notes
+                };
+
+                if (existing >= 0) {
+                    interventions[existing] = interventionData;
+                } else {
+                    interventions.push(interventionData);
+                }
+
+                updateInterventionsList();
+            }
+
+            updateSummary();
+            closeVesselModal();
+        }
+
+        function updateInterventionsList() {
+            const list = document.getElementById('interventionsList');
+            document.getElementById('interventionCount').textContent = interventions.length;
+
+            if (interventions.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 2rem 0;">Click vessels in the diagram to add findings and interventions</p>';
+                return;
+            }
+
+            const interventionLabels = {
+                'pta': 'Angioplasty',
+                'stent': 'Stent',
+                'atherectomy': 'Atherectomy',
+                'pta_stent': 'PTA + Stent',
+                'ath_pta': 'Atherectomy + PTA',
+                'ath_pta_stent': 'Athx + PTA + Stent'
+            };
+
+            const statusLabels = {
+                'stenosis_mild': '<50%',
+                'stenosis_mod': '50-69%',
+                'stenosis_severe': '70-99%',
+                'occluded': 'Occluded'
+            };
+
+            list.innerHTML = interventions.map((int, idx) => `
+                <div class="intervention-card active">
+                    <div class="intervention-header">
+                        <span class="intervention-vessel">
+                            <span class="vessel-dot" style="background: var(--accent-green);"></span>
+                            ${int.vessel}
+                        </span>
+                        <button class="intervention-remove" onclick="removeIntervention(${idx})">×</button>
+                    </div>
+                    <div class="intervention-details">
+                        <div class="intervention-detail">
+                            <span class="detail-label">Finding</span>
+                            <span class="detail-value">${statusLabels[int.status] || int.status}</span>
+                        </div>
+                        <div class="intervention-detail">
+                            <span class="detail-label">Intervention</span>
+                            <span class="detail-value">${interventionLabels[int.intervention] || int.intervention}</span>
+                        </div>
+                        ${int.length ? `
+                        <div class="intervention-detail">
+                            <span class="detail-label">Length</span>
+                            <span class="detail-value">${int.length}</span>
+                        </div>
+                        ` : ''}
+                        ${int.notes ? `
+                        <div class="intervention-detail" style="grid-column: span 2;">
+                            <span class="detail-label">Notes</span>
+                            <span class="detail-value">${int.notes}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeIntervention(idx) {
+            interventions.splice(idx, 1);
+            updateInterventionsList();
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const patient = JSON.parse(localStorage.getItem('selectedPatient') || '{}');
+            const procType = document.getElementById('procedureType').value;
+            const side = document.getElementById('procSide').value;
+            const rutherford = document.getElementById('rutherford').value;
+            const inflowAI = document.getElementById('inflowAortoiliac').value;
+            const inflowCFA = document.getElementById('inflowCFA').value;
+            const outAT = document.getElementById('outflowAT').value;
+            const outPT = document.getElementById('outflowPT').value;
+            const outPeroneal = document.getElementById('outflowPeroneal').value;
+
+            // Count patent outflow vessels
+            const patentOutflow = [outAT, outPT, outPeroneal].filter(v => v === 'patent').length;
+            const outflowDesc = patentOutflow === 3 ? '3-vessel runoff' :
+                               patentOutflow === 2 ? '2-vessel runoff' :
+                               patentOutflow === 1 ? 'single vessel runoff' : 'no direct runoff';
+
+            const sideLabel = side === 'right' ? 'R' : side === 'left' ? 'L' : 'Bilateral';
+
+            let summary = `<strong>Patient:</strong> ${patient.name || 'Smith, John'} (MRN: ${patient.mrn || '123456'})<br>`;
+            summary += `<strong>Procedure:</strong> ${sideLabel} Lower Extremity Arteriogram with possible angioplasty/stenting/atherectomy<br><br>`;
+            summary += `<strong>Indication:</strong> PAD with CLI (${rutherford.toUpperCase()})<br><br>`;
+            summary += `<strong>Inflow:</strong> ${inflowAI === 'normal' && inflowCFA === 'normal' ? 'Normal by ultrasound' : 'Abnormal - needs evaluation'}<br>`;
+            summary += `<strong>Outflow:</strong> `;
+
+            const outflowParts = [];
+            if (outPT === 'patent') outflowParts.push('PT patent');
+            if (outPeroneal === 'patent') outflowParts.push('Peroneal patent');
+            if (outAT === 'patent') outflowParts.push('AT patent');
+            if (outAT === 'occluded') outflowParts.push('AT occluded');
+
+            summary += outflowParts.join(', ') + ` (${outflowDesc})<br><br>`;
+
+            if (interventions.length > 0) {
+                summary += '<strong>Planned Interventions:</strong><br>';
+                interventions.forEach(int => {
+                    const intLabel = {
+                        'pta': 'Angioplasty',
+                        'stent': 'Stenting',
+                        'atherectomy': 'Atherectomy',
+                        'pta_stent': 'PTA + Stent',
+                        'ath_pta': 'Atherectomy + PTA',
+                        'ath_pta_stent': 'Atherectomy + PTA + Stent'
+                    }[int.intervention];
+                    summary += `• ${int.vessel}: ${intLabel}<br>`;
+                });
+            } else {
+                summary += '<strong>Planned Interventions:</strong><br>';
+                summary += '• Diagnostic arteriogram<br>';
+                summary += '• Possible SFA angioplasty/stenting<br>';
+                summary += '• Possible tibial intervention as needed<br>';
+            }
+
+            document.getElementById('procedureSummary').innerHTML = summary;
+        }
+
+        function clearAll() {
+            interventions = [];
+            vesselData = {};
+
+            // Reset all vessels to patent
+            document.querySelectorAll('.vessel').forEach(v => {
+                v.classList.remove('stenosis-mild', 'stenosis-severe', 'occluded');
+                v.classList.add('patent');
+            });
+
+            updateInterventionsList();
+            updateSummary();
+        }
+
+        function saveAndOpenWorkspace() {
+            // Get current patient
+            const patient = JSON.parse(localStorage.getItem('selectedPatient') || '{}');
+
+            // Build anatomy data for workspace
+            const anatomyData = {
+                vesselData: vesselData,
+                interventions: interventions,
+                procedure: {
+                    type: document.getElementById('procedureType').value,
+                    side: document.getElementById('procSide').value,
+                    accessSite: document.getElementById('accessSite').value,
+                    sheathSize: document.getElementById('sheathSize').value,
+                    anesthesia: document.getElementById('anesthesia').value,
+                    preOpDx: document.getElementById('preOpDx').value,
+                    rutherford: document.getElementById('rutherford').value,
+                    inflow: {
+                        aortoiliac: document.getElementById('inflowAortoiliac').value,
+                        cfa: document.getElementById('inflowCFA').value
+                    },
+                    outflow: {
+                        at: document.getElementById('outflowAT').value,
+                        pt: document.getElementById('outflowPT').value,
+                        peroneal: document.getElementById('outflowPeroneal').value
+                    }
+                },
+                procDate: document.getElementById('procDate').value
+            };
+
+            // Build anatomy string for workspace
+            const findings = [];
+            Object.entries(vesselData).forEach(([id, data]) => {
+                if (data.status !== 'patent') {
+                    const statusLabel = {
+                        'stenosis_mild': '<50% stenosis',
+                        'stenosis_mod': '50-69% stenosis',
+                        'stenosis_severe': '70-99% stenosis',
+                        'occluded': 'occlusion'
+                    }[data.status];
+                    findings.push(`${data.name || id}: ${statusLabel}`);
+                }
+            });
+
+            // Update patient with planning data
+            patient.anatomyData = anatomyData;
+            patient.anatomy = findings.length > 0 ? findings.join(', ') : 'No significant disease';
+            patient.procedure = `${document.getElementById('procSide').value === 'right' ? 'R' : 'L'} LE Arteriogram with Intervention`;
+            patient.dos = document.getElementById('procDate').value;
+
+            // Save back to localStorage
+            localStorage.setItem('selectedPatient', JSON.stringify(patient));
+            localStorage.setItem('planningData', JSON.stringify(anatomyData));
+
+            // Navigate to workspace
+            window.location.href = 'surgical-command-center-workspace.html';
+        }
+
+        // Listen for form changes
+        document.querySelectorAll('select, input, textarea').forEach(el => {
+            el.addEventListener('change', updateSummary);
+        });
+    </script>
+</body>
+</html>

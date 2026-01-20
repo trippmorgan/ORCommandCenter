@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surgical Command Center - Venous</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --uga-red: #BA0C2F; --uga-red-dark: #8a0923; --uga-red-light: rgba(186, 12, 47, 0.12);
+      --black: #0A0A0A; --gray-900: #0D0D0D; --gray-800: #141414; --gray-700: #1A1A1A;
+      --gray-600: #222222; --gray-500: #333333; --gray-400: #555555; --gray-300: #777777;
+      --gray-200: #999999; --gray-100: #CCCCCC; --white: #FFFFFF;
+      --ready: #22C55E; --ready-bg: rgba(34, 197, 94, 0.12);
+      --warning: #F59E0B; --warning-bg: rgba(245, 158, 11, 0.12);
+      --danger: #EF4444; --danger-bg: rgba(239, 68, 68, 0.12);
+      --info: #3B82F6; --info-bg: rgba(59, 130, 246, 0.12);
+      --purple: #8B5CF6; --purple-bg: rgba(139, 92, 246, 0.12);
+      --indigo: #6366F1; --indigo-bg: rgba(99, 102, 241, 0.12);
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--black); color: var(--white); min-height: 100vh; display: flex; flex-direction: column; }
+    
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-bottom: 1px solid var(--gray-600); background: var(--gray-900); }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo { width: 36px; height: 36px; background: var(--uga-red); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .logo svg { width: 20px; height: 20px; }
+    .title { font-size: 13px; font-weight: 700; letter-spacing: 1.5px; }
+    .workspace-badge { padding: 4px 10px; font-size: 10px; font-weight: 700; background: var(--indigo-bg); color: var(--indigo); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 4px; }
+    .nav-tabs { display: flex; gap: 2px; background: var(--gray-800); padding: 3px; border-radius: 6px; }
+    .nav-btn { padding: 6px 12px; font-size: 10px; font-weight: 600; color: var(--gray-300); background: transparent; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; }
+    .nav-btn:hover { color: var(--white); background: var(--gray-700); }
+    .nav-btn.active { color: var(--white); background: var(--uga-red); }
+    .logo { text-decoration: none; transition: transform 0.2s; }
+    .logo:hover { transform: scale(1.05); }
+    .patient-selector { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--gray-800); border: 1px solid var(--gray-500); border-radius: 6px; }
+    .patient-avatar { width: 26px; height: 26px; background: var(--indigo-bg); border: 2px solid var(--indigo); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--indigo); }
+
+    .main { flex: 1; display: flex; overflow: hidden; }
+    .panel { display: flex; flex-direction: column; border-right: 1px solid var(--gray-600); }
+    .panel:last-child { border-right: none; }
+    .panel-input { width: 300px; }
+    .panel-anatomy { width: 280px; }
+    .panel-output { flex: 1; min-width: 320px; }
+    .panel-vqi { width: 280px; background: var(--gray-900); }
+
+    .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--gray-900); border-bottom: 1px solid var(--gray-600); }
+    .panel-title { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--gray-200); text-transform: uppercase; }
+    .panel-badge { padding: 2px 6px; font-size: 8px; font-weight: 700; background: var(--purple); color: var(--white); border-radius: 3px; margin-left: 6px; }
+    .panel-btn { padding: 4px 8px; font-size: 9px; font-weight: 600; color: var(--gray-300); background: var(--gray-700); border: 1px solid var(--gray-500); border-radius: 3px; cursor: pointer; }
+    .panel-btn:hover { background: var(--gray-600); color: var(--white); }
+    .panel-btn.primary { background: var(--uga-red); border-color: var(--uga-red); color: var(--white); }
+
+    .tabs { display: flex; background: var(--gray-800); border-bottom: 1px solid var(--gray-600); }
+    .tab { flex: 1; padding: 7px; font-size: 9px; font-weight: 600; color: var(--gray-400); background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; }
+    .tab:hover { color: var(--gray-200); }
+    .tab.active { color: var(--white); border-bottom-color: var(--uga-red); }
+
+    .paste-container { flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+    .paste-input { flex: 1; width: 100%; padding: 8px; font-family: 'JetBrains Mono', monospace; font-size: 9px; line-height: 1.5; color: var(--gray-100); background: var(--black); border: 1px solid var(--gray-600); border-radius: 6px; resize: none; }
+    .paste-input:focus { outline: none; border-color: var(--uga-red); }
+    .process-btn { padding: 10px; font-size: 11px; font-weight: 600; color: var(--white); background: var(--uga-red); border: none; border-radius: 6px; cursor: pointer; }
+
+    .anatomy-container { flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+    .side-toggle { display: flex; gap: 2px; background: var(--gray-800); padding: 3px; border-radius: 4px; align-self: center; }
+    .side-btn { padding: 5px 12px; font-size: 9px; font-weight: 600; color: var(--gray-400); background: transparent; border: none; border-radius: 3px; cursor: pointer; }
+    .side-btn.active { color: var(--white); background: var(--indigo); }
+    
+    .anatomy-svg { width: 100%; max-height: 220px; }
+    .vessel-label { font-size: 7px; fill: var(--gray-300); }
+    .measurement-value { font-size: 8px; fill: var(--indigo); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .vein-competent { stroke: var(--ready); }
+    .vein-reflux { stroke: var(--danger); }
+
+    .reflux-box { background: var(--black); border: 1px solid var(--gray-600); border-radius: 6px; overflow: hidden; }
+    .reflux-header { padding: 6px 10px; background: var(--gray-800); font-size: 9px; font-weight: 700; color: var(--indigo); text-transform: uppercase; letter-spacing: 0.8px; display: flex; justify-content: space-between; }
+    .reflux-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid var(--gray-700); font-size: 10px; }
+    .reflux-row:last-child { border-bottom: none; }
+    .reflux-name { color: var(--gray-200); }
+    .reflux-data { font-family: 'JetBrains Mono', monospace; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .reflux-badge { padding: 2px 6px; font-size: 8px; font-weight: 600; border-radius: 3px; }
+    .reflux-positive { background: var(--danger-bg); color: var(--danger); }
+    .reflux-negative { background: var(--ready-bg); color: var(--ready); }
+
+    .vcss-box { background: var(--black); border: 1px solid var(--gray-600); border-radius: 6px; padding: 10px; }
+    .vcss-header { font-size: 9px; font-weight: 700; color: var(--indigo); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .vcss-score { font-size: 18px; font-weight: 700; color: var(--warning); font-family: 'JetBrains Mono', monospace; }
+    .vcss-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .vcss-item { display: flex; justify-content: space-between; font-size: 9px; padding: 4px 6px; background: var(--gray-800); border-radius: 3px; }
+    .vcss-label { color: var(--gray-300); }
+    .vcss-value { color: var(--white); font-weight: 600; }
+
+    .output-container { flex: 1; padding: 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .output-section { background: var(--black); border: 1px solid var(--gray-600); border-radius: 6px; overflow: hidden; }
+    .output-section-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--gray-800); border-bottom: 1px solid var(--gray-600); }
+    .output-section-title { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--uga-red); text-transform: uppercase; }
+    .output-section-status { font-size: 8px; font-weight: 600; padding: 2px 6px; border-radius: 3px; }
+    .status-valid { background: var(--ready-bg); color: var(--ready); }
+    .status-warn { background: var(--warning-bg); color: var(--warning); }
+    .output-section-body { padding: 8px; }
+
+    .code-tag { display: inline-block; padding: 2px 6px; font-size: 9px; font-weight: 500; background: var(--gray-700); border-radius: 3px; font-family: 'JetBrains Mono', monospace; margin: 2px; }
+    .code-tag.primary { background: var(--uga-red-light); color: var(--uga-red); border: 1px solid rgba(186, 12, 47, 0.3); }
+
+    .ceap-box { background: var(--gray-800); padding: 10px; border-radius: 6px; margin-bottom: 8px; }
+    .ceap-title { font-size: 9px; font-weight: 700; color: var(--indigo); text-transform: uppercase; margin-bottom: 6px; }
+    .ceap-display { font-size: 14px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--white); letter-spacing: 1px; }
+    .ceap-breakdown { display: flex; gap: 10px; margin-top: 6px; font-size: 9px; color: var(--gray-300); }
+
+    .treatment-plan { background: var(--gray-800); padding: 10px; border-radius: 6px; }
+    .treatment-title { font-size: 9px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; margin-bottom: 6px; }
+    .treatment-steps { display: flex; flex-direction: column; gap: 6px; }
+    .treatment-step { display: flex; align-items: flex-start; gap: 8px; font-size: 10px; }
+    .step-number { width: 18px; height: 18px; background: var(--indigo); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; }
+    .step-content { color: var(--gray-100); }
+    .step-detail { font-size: 9px; color: var(--gray-400); margin-top: 2px; }
+
+    .compression-box { background: var(--info-bg); border: 1px solid rgba(59, 130, 246, 0.3); padding: 8px; border-radius: 4px; margin-top: 8px; }
+    .compression-title { font-size: 9px; font-weight: 700; color: var(--info); margin-bottom: 4px; }
+    .compression-detail { font-size: 10px; color: var(--gray-100); }
+
+    .vqi-container { flex: 1; padding: 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .vqi-section { background: var(--black); border: 1px solid var(--gray-600); border-radius: 6px; overflow: hidden; }
+    .vqi-section-header { padding: 6px 10px; background: var(--purple-bg); border-bottom: 1px solid rgba(139, 92, 246, 0.2); }
+    .vqi-section-title { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--purple); text-transform: uppercase; }
+    .vqi-section-body { padding: 8px; }
+    .vqi-field { margin-bottom: 8px; }
+    .vqi-field:last-child { margin-bottom: 0; }
+    .vqi-label { font-size: 8px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; display: block; }
+    .vqi-select, .vqi-input { width: 100%; padding: 5px 8px; font-size: 10px; color: var(--white); background: var(--gray-800); border: 1px solid var(--gray-600); border-radius: 4px; }
+    .vqi-select:focus, .vqi-input:focus { outline: none; border-color: var(--purple); }
+    .vqi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .vqi-autofill { display: inline-flex; padding: 1px 4px; font-size: 7px; font-weight: 600; color: var(--ready); background: var(--ready-bg); border-radius: 2px; margin-left: 4px; }
+    .vqi-checkbox-group { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+    .vqi-checkbox { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--gray-100); }
+    .vqi-checkbox input { accent-color: var(--purple); }
+
+    .action-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--gray-900); border-top: 1px solid var(--gray-600); }
+    .action-status { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--gray-300); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ready); }
+    .btn { padding: 7px 12px; font-size: 10px; font-weight: 600; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .btn-vqi { color: var(--white); background: var(--purple); border: 1px solid var(--purple); }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--gray-800); }
+    ::-webkit-scrollbar-thumb { background: var(--gray-600); border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <a href="ORCC-index.html" class="logo" title="Back to Hub"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 3v18M5 8c3-3 11-3 14 0M5 16c3 3 11 3 14 0"/></svg></a>
+      <h1 class="title">OR COMMAND CENTER</h1>
+      <span class="workspace-badge">🩸 VENOUS</span>
+    </div>
+    <nav class="nav-tabs">
+      <a href="surgical-command-center-page1.html" class="nav-btn">LISTS</a>
+      <a href="surgical-command-center-tasks.html" class="nav-btn">TASKS</a>
+      <a href="workspace-venous.html" class="nav-btn active">WORKSPACE</a>
+      <a href="ORCC-settings.html" class="nav-btn">SETTINGS</a>
+    </nav>
+    <div class="patient-selector">
+      <div class="patient-avatar">SM</div>
+      <span style="font-size: 11px; font-weight: 600;">Mitchell, Susan — LEFT GSV Ablation</span>
+      <span style="color: var(--gray-400); font-size: 10px;">▼</span>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Input Panel -->
+    <div class="panel panel-input">
+      <div class="panel-header">
+        <span class="panel-title">📋 Venous Input</span>
+        <button class="panel-btn">Clear</button>
+      </div>
+      <div class="tabs">
+        <button class="tab active">Duplex</button>
+        <button class="tab">Photos</button>
+        <button class="tab">Prior Tx</button>
+        <button class="tab">Consult</button>
+      </div>
+      <div class="paste-container">
+        <textarea class="paste-input" placeholder="Paste venous duplex report...">VENOUS DUPLEX - LOWER EXTREMITY REFLUX:
+
+LEFT LEG:
+
+GREAT SAPHENOUS VEIN (GSV):
+- SFJ: Reflux >500ms (2.1 seconds)
+- Proximal thigh: 8.2mm diameter, reflux present
+- Mid-thigh: 7.5mm diameter, reflux present  
+- Distal thigh: 6.8mm diameter, reflux present
+- Knee: Competent below knee
+- GSV length with reflux: 35cm
+
+SMALL SAPHENOUS VEIN (SSV):
+- SPJ: Competent, no reflux
+- SSV: 3.2mm, competent throughout
+
+DEEP SYSTEM:
+- CFV: Competent
+- FV: Competent
+- Popliteal: Competent
+- No DVT identified
+
+PERFORATORS:
+- Incompetent perforator mid-thigh (Dodd's)
+- Hunterian perforator: Competent
+
+IMPRESSION:
+1. LEFT GSV reflux from SFJ to above-knee
+2. Incompetent Dodd's perforator
+3. Deep system competent, no DVT
+4. SSV competent
+
+CLINICAL: C3 disease with edema, varicosities
+VCSS Score: 8</textarea>
+        <button class="process-btn" id="process-btn">⚡ Process Duplex</button>
+      </div>
+    </div>
+
+    <!-- Anatomy Panel -->
+    <div class="panel panel-anatomy">
+      <div class="panel-header">
+        <span class="panel-title">🦵 Venous Anatomy</span>
+      </div>
+      <div class="anatomy-container">
+        <div class="side-toggle">
+          <button class="side-btn active">LEFT</button>
+          <button class="side-btn">RIGHT</button>
+        </div>
+
+        <svg class="anatomy-svg" viewBox="0 0 160 200" fill="none">
+          <!-- Leg outline -->
+          <path d="M80 10 L90 60 L95 120 L90 180 L70 180 L65 120 L70 60 L80 10" fill="none" stroke="#333" stroke-width="1"/>
+          
+          <!-- CFV/Deep -->
+          <path d="M80 15 L80 50" stroke="#22C55E" stroke-width="5" stroke-linecap="round"/>
+          <text x="90" y="35" class="vessel-label">CFV ✓</text>
+          
+          <!-- SFJ (junction point) -->
+          <circle cx="80" cy="50" r="5" fill="#EF4444" stroke="#EF4444"/>
+          <text x="95" y="50" class="vessel-label" style="fill: #EF4444; font-weight: 600;">SFJ</text>
+          <text x="95" y="60" class="measurement-value" style="fill: #EF4444;">REFLUX</text>
+          
+          <!-- GSV with reflux (superficial, lateral) -->
+          <path d="M80 50 L75 80 L70 120 L68 150" stroke="#EF4444" stroke-width="4" stroke-linecap="round"/>
+          <text x="45" y="75" class="vessel-label" style="fill: #EF4444;">GSV</text>
+          <text x="45" y="85" class="measurement-value" style="fill: #EF4444;">8.2mm</text>
+          <text x="45" y="95" class="measurement-value" style="fill: #EF4444;">Reflux</text>
+          
+          <!-- GSV below knee (competent) -->
+          <path d="M68 150 L65 180" stroke="#22C55E" stroke-width="3" stroke-linecap="round"/>
+          
+          <!-- Dodd's perforator (incompetent) -->
+          <line x1="70" y1="100" x2="80" y2="100" stroke="#F59E0B" stroke-width="2" stroke-dasharray="3"/>
+          <circle cx="70" cy="100" r="3" fill="#F59E0B"/>
+          <text x="45" y="105" class="vessel-label" style="fill: #F59E0B; font-size: 6px;">Dodd's ⚠</text>
+          
+          <!-- FV (deep) -->
+          <path d="M80 50 L80 90 L82 140 L82 180" stroke="#22C55E" stroke-width="4" stroke-linecap="round"/>
+          <text x="90" y="100" class="vessel-label">FV ✓</text>
+          
+          <!-- Pop vein -->
+          <text x="90" y="145" class="vessel-label">Pop ✓</text>
+          
+          <!-- SSV (competent) -->
+          <path d="M95 140 L100 180" stroke="#22C55E" stroke-width="3" stroke-linecap="round"/>
+          <text x="105" y="165" class="vessel-label">SSV ✓</text>
+          
+          <!-- Treatment zone indicator -->
+          <rect x="63" y="45" width="20" height="110" fill="rgba(239, 68, 68, 0.1)" stroke="#EF4444" stroke-width="1" stroke-dasharray="4" rx="4"/>
+          <text x="55" y="42" class="vessel-label" style="fill: #EF4444; font-size: 7px;">TREAT</text>
+        </svg>
+
+        <div class="reflux-box">
+          <div class="reflux-header">
+            <span>📊 Reflux Mapping</span>
+            <span style="font-size: 8px; color: var(--indigo);">LEFT</span>
+          </div>
+          <div class="reflux-row">
+            <span class="reflux-name">GSV (SFJ)</span>
+            <span class="reflux-data">
+              <span class="reflux-badge reflux-positive">REFLUX</span>
+              2.1s
+            </span>
+          </div>
+          <div class="reflux-row">
+            <span class="reflux-name">GSV Diameter</span>
+            <span class="reflux-data">8.2 mm</span>
+          </div>
+          <div class="reflux-row">
+            <span class="reflux-name">Reflux Length</span>
+            <span class="reflux-data">35 cm</span>
+          </div>
+          <div class="reflux-row">
+            <span class="reflux-name">SSV (SPJ)</span>
+            <span class="reflux-data">
+              <span class="reflux-badge reflux-negative">Competent</span>
+            </span>
+          </div>
+          <div class="reflux-row">
+            <span class="reflux-name">Deep System</span>
+            <span class="reflux-data">
+              <span class="reflux-badge reflux-negative">Competent</span>
+            </span>
+          </div>
+          <div class="reflux-row">
+            <span class="reflux-name">Perforators</span>
+            <span class="reflux-data">
+              <span class="reflux-badge reflux-positive">1 Incomp</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="vcss-box">
+          <div class="vcss-header">
+            <span>📈 VCSS Score</span>
+            <span class="vcss-score">8</span>
+          </div>
+          <div class="vcss-grid">
+            <div class="vcss-item"><span class="vcss-label">Pain</span><span class="vcss-value">2</span></div>
+            <div class="vcss-item"><span class="vcss-label">Varicose</span><span class="vcss-value">2</span></div>
+            <div class="vcss-item"><span class="vcss-label">Edema</span><span class="vcss-value">2</span></div>
+            <div class="vcss-item"><span class="vcss-label">Pigment</span><span class="vcss-value">1</span></div>
+            <div class="vcss-item"><span class="vcss-label">Inflam</span><span class="vcss-value">0</span></div>
+            <div class="vcss-item"><span class="vcss-label">Indur</span><span class="vcss-value">1</span></div>
+            <div class="vcss-item"><span class="vcss-label">Ulcer #</span><span class="vcss-value">0</span></div>
+            <div class="vcss-item"><span class="vcss-label">Ulcer dur</span><span class="vcss-value">0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Panel -->
+    <div class="panel panel-output">
+      <div class="panel-header">
+        <span class="panel-title">📄 Treatment Planning</span>
+        <div style="display: flex; gap: 4px;">
+          <button class="panel-btn">Copy</button>
+          <button class="panel-btn primary">PDF</button>
+        </div>
+      </div>
+      <div class="output-container">
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">Diagnosis (ICD-10)</span>
+            <span class="output-section-status status-valid">✓ Valid</span>
+          </div>
+          <div class="output-section-body">
+            <span class="code-tag primary">I83.812</span>
+            <span class="code-tag">Varicose veins of left LE with pain</span><br>
+            <span class="code-tag primary">I83.892</span>
+            <span class="code-tag">Varicose veins with other complications</span><br>
+            <span class="code-tag">I87.2</span>
+            <span class="code-tag">Venous insufficiency (chronic)</span>
+          </div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">CEAP Classification</span>
+            <span class="output-section-status status-valid">✓ C3</span>
+          </div>
+          <div class="output-section-body">
+            <div class="ceap-box">
+              <div class="ceap-title">CEAP Score</div>
+              <div class="ceap-display">C3, Ep, As, Pr</div>
+              <div class="ceap-breakdown">
+                <span><strong>C3:</strong> Edema</span>
+                <span><strong>Ep:</strong> Primary</span>
+                <span><strong>As:</strong> Superficial</span>
+                <span><strong>Pr:</strong> Reflux</span>
+              </div>
+            </div>
+            <div style="padding: 6px; background: var(--warning-bg); border-radius: 4px; font-size: 9px; color: var(--warning);">
+              ⚠ Symptomatic venous disease — intervention indicated after failed compression trial
+            </div>
+          </div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">Treatment Plan</span>
+          </div>
+          <div class="output-section-body">
+            <div class="treatment-plan">
+              <div class="treatment-title">Staged Approach</div>
+              <div class="treatment-steps">
+                <div class="treatment-step">
+                  <span class="step-number">1</span>
+                  <div>
+                    <span class="step-content">GSV Ablation (RFA or Laser)</span>
+                    <div class="step-detail">Endovenous thermal ablation SFJ to above-knee • 35cm treatment length</div>
+                  </div>
+                </div>
+                <div class="treatment-step">
+                  <span class="step-number">2</span>
+                  <div>
+                    <span class="step-content">Phlebectomy (if needed)</span>
+                    <div class="step-detail">Stab avulsion of residual varicosities • 4-6 weeks post-ablation</div>
+                  </div>
+                </div>
+                <div class="treatment-step">
+                  <span class="step-number">3</span>
+                  <div>
+                    <span class="step-content">Perforator Treatment (if persistent)</span>
+                    <div class="step-detail">Consider Dodd's perforator ablation if symptoms persist</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="compression-box">
+              <div class="compression-title">📋 Pre-Op Compression Trial Required</div>
+              <div class="compression-detail">
+                Document 3-month trial of 20-30 mmHg compression stockings before ablation per LCD requirements
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-section-header">
+            <span class="output-section-title">Procedure (CPT)</span>
+            <span class="output-section-status status-valid">✓ LCD Met</span>
+          </div>
+          <div class="output-section-body">
+            <span class="code-tag primary">36475</span>
+            <span class="code-tag">Endovenous ablation (RFA), first vein</span><br>
+            <span class="code-tag">36476</span>
+            <span class="code-tag">Endovenous ablation, add'l vein (if SSV)</span><br>
+            <span class="code-tag">37765</span>
+            <span class="code-tag">Stab phlebectomy, 10-20 incisions</span>
+            <div style="margin-top: 8px; padding: 6px; background: var(--ready-bg); border-radius: 4px; font-size: 9px; color: var(--ready);">
+              ✓ LCD L35057: Symptomatic CVI, C3+, reflux >500ms, diameter >5mm, compression trial documented
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VQI Panel -->
+    <div class="panel panel-vqi">
+      <div class="panel-header">
+        <span class="panel-title">🏥 VQI VVR<span class="panel-badge">Auto</span></span>
+      </div>
+      <div class="vqi-container">
+        <div class="vqi-section">
+          <div class="vqi-section-header"><span class="vqi-section-title">Indication</span></div>
+          <div class="vqi-section-body">
+            <div class="vqi-field">
+              <label class="vqi-label">CEAP Clinical<span class="vqi-autofill">✓</span></label>
+              <select class="vqi-select">
+                <option>C2 - Varicose veins</option>
+                <option selected>C3 - Edema</option>
+                <option>C4a - Pigmentation/eczema</option>
+                <option>C4b - Lipodermatosclerosis</option>
+                <option>C5 - Healed ulcer</option>
+                <option>C6 - Active ulcer</option>
+              </select>
+            </div>
+            <div class="vqi-row">
+              <div class="vqi-field">
+                <label class="vqi-label">VCSS Score<span class="vqi-autofill">✓</span></label>
+                <input class="vqi-input" type="text" value="8">
+              </div>
+              <div class="vqi-field">
+                <label class="vqi-label">Side</label>
+                <select class="vqi-select"><option selected>Left</option><option>Right</option><option>Bilateral</option></select>
+              </div>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Symptoms</label>
+              <div class="vqi-checkbox-group">
+                <label class="vqi-checkbox"><input type="checkbox" checked> Pain/aching</label>
+                <label class="vqi-checkbox"><input type="checkbox" checked> Swelling/edema</label>
+                <label class="vqi-checkbox"><input type="checkbox"> Skin changes</label>
+                <label class="vqi-checkbox"><input type="checkbox" checked> Heaviness/fatigue</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="vqi-section">
+          <div class="vqi-section-header"><span class="vqi-section-title">Anatomy<span class="vqi-autofill">✓</span></span></div>
+          <div class="vqi-section-body">
+            <div class="vqi-field">
+              <label class="vqi-label">Target Vein</label>
+              <select class="vqi-select">
+                <option selected>GSV - Above knee</option>
+                <option>GSV - Full length</option>
+                <option>SSV</option>
+                <option>AASV</option>
+                <option>Perforator</option>
+              </select>
+            </div>
+            <div class="vqi-row">
+              <div class="vqi-field">
+                <label class="vqi-label">Max Diameter</label>
+                <input class="vqi-input" type="text" value="8.2 mm">
+              </div>
+              <div class="vqi-field">
+                <label class="vqi-label">Reflux Time</label>
+                <input class="vqi-input" type="text" value="2.1 sec">
+              </div>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Treatment Length</label>
+              <input class="vqi-input" type="text" value="35 cm">
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Deep System</label>
+              <select class="vqi-select">
+                <option selected>Competent, no DVT</option>
+                <option>Deep reflux present</option>
+                <option>Prior DVT</option>
+                <option>Acute DVT</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="vqi-section">
+          <div class="vqi-section-header"><span class="vqi-section-title">Procedure</span></div>
+          <div class="vqi-section-body">
+            <div class="vqi-field">
+              <label class="vqi-label">Ablation Type</label>
+              <select class="vqi-select">
+                <option selected>RFA (ClosureFast)</option>
+                <option>Laser (EVLT)</option>
+                <option>VenaSeal (Cyanoacrylate)</option>
+                <option>Varithena (Foam)</option>
+                <option>MOCA (ClariVein)</option>
+              </select>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Concomitant Procedures</label>
+              <div class="vqi-checkbox-group">
+                <label class="vqi-checkbox"><input type="checkbox" checked> Phlebectomy planned</label>
+                <label class="vqi-checkbox"><input type="checkbox"> Sclerotherapy</label>
+                <label class="vqi-checkbox"><input type="checkbox"> Perforator ablation</label>
+              </div>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Anesthesia</label>
+              <select class="vqi-select">
+                <option selected>Tumescent only</option>
+                <option>Tumescent + sedation</option>
+                <option>General</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="vqi-section">
+          <div class="vqi-section-header"><span class="vqi-section-title">Conservative Tx</span></div>
+          <div class="vqi-section-body">
+            <div class="vqi-field">
+              <label class="vqi-label">Compression Trial</label>
+              <select class="vqi-select">
+                <option selected>Yes, 3+ months</option>
+                <option>Yes, &lt;3 months</option>
+                <option>No/Incomplete</option>
+                <option>Contraindicated</option>
+              </select>
+            </div>
+            <div class="vqi-field">
+              <label class="vqi-label">Compression Level</label>
+              <select class="vqi-select">
+                <option>15-20 mmHg</option>
+                <option selected>20-30 mmHg</option>
+                <option>30-40 mmHg</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="action-bar">
+        <div class="action-status"><div class="status-dot"></div><span>VQI VVR 95% complete</span></div>
+        <button class="btn btn-vqi">📤 Export</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+    document.querySelectorAll('.side-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+    document.getElementById('process-btn').addEventListener('click', function() {
+      this.innerHTML = '⏳ Processing...';
+      setTimeout(() => { this.innerHTML = '✓ Done!'; this.style.background = '#22C55E'; setTimeout(() => { this.innerHTML = '⚡ Process Duplex'; this.style.background = ''; }, 1500); }, 1000);
+    });
+  </script>
+</body>
+</html>
