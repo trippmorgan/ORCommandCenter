@@ -1166,83 +1166,374 @@
     <span>Last sync: just now</span>
   </footer>
 
-  <script>
-    // Set date
-    const now = new Date();
-    document.getElementById('date-day').textContent = now.toLocaleDateString('en-US', { weekday: 'long' });
-    document.getElementById('date-full').textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  <!-- API Client -->
+  <script src="js/api-client.js"></script>
 
-    // Group collapse toggle
-    document.querySelectorAll('.group-header').forEach(header => {
-      header.addEventListener('click', () => {
-        header.classList.toggle('collapsed');
-        header.nextElementSibling.classList.toggle('collapsed');
-      });
+  <script>
+    // ============ STATE ============
+    let patients = {};        // Loaded from API
+    let procedures = [];      // All procedures from API
+    let currentFilter = 'all';
+    let lastSyncTime = null;
+
+    // ============ INITIALIZATION ============
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Set date
+      const now = new Date();
+      document.getElementById('date-day').textContent = now.toLocaleDateString('en-US', { weekday: 'long' });
+      document.getElementById('date-full').textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+      // Load data from API
+      await loadPatientsFromAPI();
+
+      // Setup event listeners
+      setupEventListeners();
     });
 
-    // Patient data for expanded card
-    const patients = {
-      1: { name: 'Roberts, Larry', dob: '11/17/1953', procedure: 'LEFT Femoral–Peroneal Bypass', scheduled: '1/23/26 @ CRH', status: '✅ READY FOR SURGERY', checklist: ['✓ Stress test completed', '✓ Cardiology clearance', '✓ Anatomy defined', '✓ Vein mapping'], action: 'Proceed to surgery' },
-      2: { name: 'Zoellick, Johnathan', dob: '03/20/1960', procedure: 'LEFT TCAR', scheduled: '2/6/26 (rescheduled)', status: '🟡 NEAR-READY', checklist: ['✓ Workup complete', '✓ Prior URI canceled 1/9', '? Confirm URI resolved'], action: 'Confirm URI resolved, proceed' },
-      3: { name: 'Romanesk, Alan', dob: '--', procedure: 'LEFT TCAR', scheduled: 'Pending clearance', status: '🟡 AWAITING CARDIOLOGY', checklist: ['✓ Stress (abnormal 12/15)', '→ Cards visit 12/30', '→ Pending ECHO + Cath'], action: 'Await cardiology clearance' },
-      4: { name: 'Covin, John', dob: '--', procedure: 'LEFT Fem-Pop Bypass + Endarterectomy', scheduled: 'After 1/20 f/u', status: '🟡 NEAR-READY', checklist: ['✓ Arteriogram 12/2', '✓ Stress done', '→ Vein + endarterectomy planning'], action: 'Complete planning at 1/20 visit' },
-      5: { name: 'Porter, Rosalind', dob: '--', procedure: 'LEFT Femoral–Distal Bypass', scheduled: 'Not scheduled', status: '🟠 WORKUP IN PROGRESS', checklist: ['✓ Arteriogram done', '→ Stress pending', '→ Vein map + duplex 1/28'], action: 'Schedule stress, await vein map' },
-      6: { name: 'Bivens, Bessie', dob: '--', procedure: 'RIGHT Femoral–Distal Bypass', scheduled: 'Not scheduled', status: '🟠 WORKUP IN PROGRESS', checklist: ['→ Cardiology evaluation needed', '→ Awaiting decision after clearance'], action: 'Refer to cardiology' },
-      7: { name: 'Taylor, Larry', dob: '--', procedure: 'LEFT Femoral–Distal Bypass', scheduled: 'Not scheduled', status: '🟠 WOUND OPTIMIZATION', checklist: ['✓ Stress completed', '→ Currently in wound care / HBO'], action: 'Continue wound optimization' },
-      8: { name: 'Black, Claudia', dob: '--', procedure: 'LEFT TCAR + AAA', scheduled: '—', status: '🔴 ON HOLD', checklist: ['→ Pending clearance / decision'], action: 'Await multidisciplinary decision' },
-      9: { name: 'Nutt, Roger', dob: '--', procedure: 'LEFT TCAR', scheduled: '—', status: '🔴 UNABLE TO CONTACT', checklist: ['✗ Cannot reach patient'], action: 'Continue contact attempts' },
-      10: { name: 'Hall, Charles', dob: '--', procedure: 'TCAR', scheduled: '—', status: '🔴 NOT CLEARED', checklist: ['✗ High troponins', '→ Requires cardiology stabilization'], action: 'Cardiology must stabilize first' },
-      11: { name: 'Kimsey, Sidney', dob: '--', procedure: 'TCAR', scheduled: '—', status: '🔴 LOST TO FOLLOW-UP', checklist: ['✗ Patient lost to follow-up'], action: 'Attempt to re-engage patient' },
-    };
+    // ============ API DATA LOADING ============
+    async function loadPatientsFromAPI() {
+      try {
+        updateSyncStatus('syncing');
 
-    // Patient row click
-    document.querySelectorAll('.patient-row').forEach(row => {
-      row.addEventListener('click', () => {
-        const id = row.dataset.id;
-        const patient = patients[id];
-        const card = document.getElementById('expanded-card');
+        // Fetch all procedures - API returns patient_name pre-joined
+        const proceduresData = await ORCC_API.getProcedures({ limit: 100 });
+        procedures = proceduresData;
 
-        // Toggle selection
-        if (row.classList.contains('selected')) {
-          row.classList.remove('selected');
-          card.classList.remove('visible');
+        // Build patients lookup by procedure ID
+        patients = {};
+        for (const proc of procedures) {
+          patients[proc.id] = {
+            id: proc.id,
+            patientId: proc.patient_id,
+            name: proc.patient_name || 'Unknown Patient',
+            mrn: proc.mrn || '--',
+            dob: '--', // DOB not in procedure response, could fetch if needed
+            procedure: `${proc.procedure_side ? proc.procedure_side.toUpperCase() + ' ' : ''}${proc.procedure_type || 'Procedure'}`,
+            procedureType: proc.procedure_type,
+            procedureSide: proc.procedure_side,
+            scheduled: formatScheduledDate(proc.procedure_date, proc.scheduled_location),
+            status: formatStatus(proc.surgical_status),
+            surgicalStatus: proc.surgical_status || 'workup',
+            barriers: proc.barriers || [],
+            cardiologyClearance: proc.cardiology_clearance,
+            stressTestStatus: proc.stress_test_status,
+            surgeon: proc.surgeon,
+            checklist: buildChecklist(proc),
+            action: determineNextAction(proc)
+          };
+        }
+
+        // Render the patient list
+        renderPatientList();
+        updateStatsCounts();
+        updateSyncStatus('synced');
+
+      } catch (err) {
+        console.error('Failed to load patients:', err);
+        updateSyncStatus('error');
+        // Fall back to showing empty state or cached data
+      }
+    }
+
+    function formatScheduledDate(date, location) {
+      if (!date) return 'Not scheduled';
+      const d = new Date(date);
+      const formatted = d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
+      return location ? `${formatted} @ ${location}` : formatted;
+    }
+
+    function formatStatus(status) {
+      const statusMap = {
+        'ready': '✅ READY FOR SURGERY',
+        'near_ready': '🟡 NEAR-READY',
+        'workup': '🟠 WORKUP IN PROGRESS',
+        'hold': '🔴 ON HOLD',
+        'scheduled': '📅 SCHEDULED',
+        'completed': '✓ COMPLETED'
+      };
+      return statusMap[status] || '🟠 WORKUP';
+    }
+
+    function buildChecklist(proc) {
+      const items = [];
+
+      // Stress test
+      if (proc.stress_test_status === 'completed') {
+        items.push('✓ Stress test completed');
+      } else if (proc.stress_test_status === 'abnormal') {
+        items.push('✓ Stress (abnormal)');
+      } else if (proc.stress_test_status === 'not_needed') {
+        items.push('✓ Stress not needed');
+      } else {
+        items.push('→ Stress test pending');
+      }
+
+      // Cardiology clearance
+      if (proc.cardiology_clearance) {
+        items.push('✓ Cardiology clearance');
+      } else {
+        items.push('→ Cardiology clearance pending');
+      }
+
+      // Barriers
+      if (proc.barriers && proc.barriers.length > 0) {
+        proc.barriers.forEach(b => items.push(`→ ${b}`));
+      }
+
+      return items;
+    }
+
+    function determineNextAction(proc) {
+      if (proc.surgical_status === 'ready') return 'Proceed to surgery';
+      if (proc.surgical_status === 'scheduled') return 'Surgery scheduled';
+      if (!proc.cardiology_clearance) return 'Obtain cardiology clearance';
+      if (proc.stress_test_status === 'pending') return 'Complete stress test';
+      if (proc.barriers && proc.barriers.length > 0) return `Complete: ${proc.barriers[0]}`;
+      return 'Review workup status';
+    }
+
+    // ============ RENDERING ============
+    function renderPatientList() {
+      const listBody = document.querySelector('.list-body');
+
+      // Group patients by surgical status
+      const groups = {
+        ready: { title: 'READY OR NEAR-READY FOR SURGERY', indicator: 'ready', patients: [] },
+        near_ready: { title: 'LIKELY READY SOON (One Step Left)', indicator: 'near', patients: [] },
+        workup: { title: 'WORKUP IN PROGRESS (Multiple Steps)', indicator: 'workup', patients: [] },
+        hold: { title: 'NOT READY / ON HOLD', indicator: 'hold', patients: [] }
+      };
+
+      // Sort patients into groups
+      Object.values(patients).forEach(p => {
+        const status = p.surgicalStatus || 'workup';
+        if (status === 'ready' || status === 'scheduled') {
+          groups.ready.patients.push(p);
+        } else if (status === 'near_ready') {
+          groups.near_ready.patients.push(p);
+        } else if (status === 'hold') {
+          groups.hold.patients.push(p);
         } else {
-          document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
-          row.classList.add('selected');
-
-          document.getElementById('card-name').textContent = patient.name;
-          document.getElementById('card-meta').textContent = `DOB: ${patient.dob} | MRN: ---`;
-          document.getElementById('card-procedure').textContent = patient.procedure;
-          document.getElementById('card-scheduled').textContent = patient.scheduled;
-          document.getElementById('card-status').textContent = patient.status;
-          document.getElementById('card-action').textContent = patient.action;
-
-          const checklist = document.getElementById('card-checklist');
-          checklist.innerHTML = patient.checklist.map(item => {
-            let cls = 'check-pending';
-            if (item.startsWith('✓')) cls = 'check-done';
-            if (item.startsWith('✗')) cls = 'check-blocked';
-            return `<div class="checklist-item ${cls}">${item}</div>`;
-          }).join('');
-
-          card.classList.add('visible');
+          groups.workup.patients.push(p);
         }
       });
-    });
 
-    // Close button
-    document.getElementById('close-card').addEventListener('click', () => {
-      document.getElementById('expanded-card').classList.remove('visible');
-      document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
-    });
+      // Build HTML
+      let html = '';
+      let rowNum = 1;
 
-    // Stat card filter (visual only for now)
-    document.querySelectorAll('.stat-card').forEach(card => {
-      card.addEventListener('click', () => {
-        document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
+      Object.entries(groups).forEach(([key, group]) => {
+        if (currentFilter !== 'all' && currentFilter !== key) return;
+
+        html += `
+          <div class="status-group" data-group="${key}">
+            <div class="group-header">
+              <div class="group-indicator ${group.indicator}"></div>
+              <span class="group-title">${group.title}</span>
+              <span class="group-count">${group.patients.length}</span>
+              <span class="group-chevron">▼</span>
+            </div>
+            <div class="group-patients">
+        `;
+
+        group.patients.forEach(p => {
+          const statusClass = getStatusClass(p.surgicalStatus);
+          const statusLabel = getStatusLabel(p.surgicalStatus);
+
+          html += `
+            <div class="patient-row" data-id="${p.id}">
+              <span class="row-number">${rowNum++}</span>
+              <div class="patient-info">
+                <span class="patient-name">${p.name}</span>
+                <span class="patient-dob">DOB: ${p.dob}</span>
+              </div>
+              <div class="scheduled-info">
+                ${p.scheduled !== 'Not scheduled'
+                  ? `<span class="scheduled-date">${p.scheduled.split(' @')[0]}</span>
+                     <span class="scheduled-location">${p.scheduled.includes('@') ? '@ ' + p.scheduled.split('@ ')[1] : ''}</span>`
+                  : `<span class="no-schedule">Not scheduled</span>`
+                }
+              </div>
+              <div class="procedure-info">
+                <span class="procedure-name">${p.procedureType || 'Procedure'}</span>
+                <span class="procedure-side">${p.procedureSide || ''}</span>
+              </div>
+              <div class="barriers">
+                ${renderBarriers(p)}
+              </div>
+              <span class="status-badge status-${statusClass}"><span class="status-dot"></span>${statusLabel}</span>
+            </div>
+          `;
+        });
+
+        html += '</div></div>';
       });
-    });
+
+      listBody.innerHTML = html;
+
+      // Re-attach event listeners
+      attachRowListeners();
+      attachGroupListeners();
+    }
+
+    function getStatusClass(status) {
+      const map = { 'ready': 'ready', 'near_ready': 'near', 'workup': 'workup', 'hold': 'hold', 'scheduled': 'ready' };
+      return map[status] || 'workup';
+    }
+
+    function getStatusLabel(status) {
+      const map = {
+        'ready': 'READY',
+        'near_ready': 'NEAR-READY',
+        'workup': 'WORKUP',
+        'hold': 'ON HOLD',
+        'scheduled': 'SCHEDULED'
+      };
+      return map[status] || 'WORKUP';
+    }
+
+    function renderBarriers(patient) {
+      const barriers = [];
+
+      if (patient.cardiologyClearance) {
+        barriers.push('<span class="barrier-tag barrier-done">✓ Cards Cleared</span>');
+      } else {
+        barriers.push('<span class="barrier-tag barrier-pending">Cards Pending</span>');
+      }
+
+      if (patient.stressTestStatus === 'completed') {
+        barriers.push('<span class="barrier-tag barrier-done">✓ Stress</span>');
+      } else if (patient.stressTestStatus === 'abnormal') {
+        barriers.push('<span class="barrier-tag barrier-pending">Stress (abnl)</span>');
+      }
+
+      if (patient.barriers) {
+        patient.barriers.slice(0, 2).forEach(b => {
+          barriers.push(`<span class="barrier-tag barrier-pending">${b}</span>`);
+        });
+      }
+
+      return barriers.join('');
+    }
+
+    function updateStatsCounts() {
+      const counts = { all: 0, ready: 0, near: 0, workup: 0, hold: 0 };
+
+      Object.values(patients).forEach(p => {
+        counts.all++;
+        if (p.surgicalStatus === 'ready' || p.surgicalStatus === 'scheduled') counts.ready++;
+        else if (p.surgicalStatus === 'near_ready') counts.near++;
+        else if (p.surgicalStatus === 'hold') counts.hold++;
+        else counts.workup++;
+      });
+
+      // Update stat card values
+      document.querySelector('[data-filter="all"] .stat-value').textContent = counts.all;
+      document.querySelector('[data-filter="ready"] .stat-value').textContent = counts.ready;
+      document.querySelector('[data-filter="near"] .stat-value').textContent = counts.near || counts.ready;
+      document.querySelector('[data-filter="workup"] .stat-value').textContent = counts.workup;
+      document.querySelector('[data-filter="hold"] .stat-value').textContent = counts.hold;
+    }
+
+    function updateSyncStatus(status) {
+      const footer = document.querySelector('.footer span:last-child');
+      if (status === 'syncing') {
+        footer.textContent = 'Syncing...';
+      } else if (status === 'synced') {
+        lastSyncTime = new Date();
+        footer.textContent = 'Last sync: just now';
+      } else if (status === 'error') {
+        footer.textContent = 'Sync failed - using cached data';
+      }
+    }
+
+    // ============ EVENT LISTENERS ============
+    function setupEventListeners() {
+      // Stat card filter
+      document.querySelectorAll('.stat-card').forEach(card => {
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          currentFilter = card.dataset.filter;
+          renderPatientList();
+        });
+      });
+
+      // Close button for expanded card
+      document.getElementById('close-card').addEventListener('click', () => {
+        document.getElementById('expanded-card').classList.remove('visible');
+        document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
+      });
+
+      // Refresh button
+      document.querySelector('.btn-ghost:nth-child(2)')?.addEventListener('click', loadPatientsFromAPI);
+    }
+
+    function attachGroupListeners() {
+      document.querySelectorAll('.group-header').forEach(header => {
+        header.addEventListener('click', () => {
+          header.classList.toggle('collapsed');
+          header.nextElementSibling.classList.toggle('collapsed');
+        });
+      });
+    }
+
+    function attachRowListeners() {
+      document.querySelectorAll('.patient-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const id = row.dataset.id;
+          const patient = patients[id];
+          if (!patient) return;
+
+          const card = document.getElementById('expanded-card');
+
+          if (row.classList.contains('selected')) {
+            row.classList.remove('selected');
+            card.classList.remove('visible');
+          } else {
+            document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
+            row.classList.add('selected');
+
+            document.getElementById('card-name').textContent = patient.name;
+            document.getElementById('card-meta').textContent = `DOB: ${patient.dob} | MRN: ${patient.mrn}`;
+            document.getElementById('card-procedure').textContent = patient.procedure;
+            document.getElementById('card-scheduled').textContent = patient.scheduled;
+            document.getElementById('card-status').textContent = patient.status;
+            document.getElementById('card-action').textContent = patient.action;
+
+            const checklist = document.getElementById('card-checklist');
+            checklist.innerHTML = patient.checklist.map(item => {
+              let cls = 'check-pending';
+              if (item.startsWith('✓')) cls = 'check-done';
+              if (item.startsWith('✗')) cls = 'check-blocked';
+              return `<div class="checklist-item ${cls}">${item}</div>`;
+            }).join('');
+
+            card.classList.add('visible');
+          }
+        });
+      });
+    }
+
+    // ============ API ACTIONS ============
+    async function updatePatientStatus(procedureId, newStatus) {
+      try {
+        await ORCC_API.updateSurgicalStatus(procedureId, newStatus);
+        await loadPatientsFromAPI(); // Refresh data
+      } catch (err) {
+        console.error('Failed to update status:', err);
+        alert('Failed to update patient status');
+      }
+    }
+
+    async function updateBarriers(procedureId, barriers) {
+      try {
+        await ORCC_API.updateBarriers(procedureId, barriers);
+        await loadPatientsFromAPI();
+      } catch (err) {
+        console.error('Failed to update barriers:', err);
+      }
+    }
   </script>
 </body>
 </html>
