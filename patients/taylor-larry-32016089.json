@@ -1,0 +1,282 @@
+{
+  "patient": {
+    "id": "32016089",
+    "mrn": "32016089",
+    "first_name": "Larry",
+    "last_name": "Taylor",
+    "dob": "1954-10-28",
+    "age": 71,
+    "sex": "M",
+    "allergies": "NKDA"
+  },
+
+  "problems": [
+    { "icd10": "I70.25", "description": "Atherosclerosis of native arteries of extremities with ulceration", "active": true },
+    { "icd10": "I70.212", "description": "Atherosclerosis of native arteries of left leg", "laterality": "left", "active": true },
+    { "icd10": "I70.92", "description": "Critical limb-threatening ischemia", "active": true },
+    { "icd10": "E11.621", "description": "Type 2 diabetes mellitus with foot ulcer", "active": true },
+    { "icd10": "E11.622", "description": "Type 2 diabetes mellitus with other skin ulcer", "active": true },
+    { "icd10": "I10", "description": "Hypertensive disorder", "active": true },
+    { "icd10": "I65.22", "description": "Occlusion and stenosis of left carotid artery", "laterality": "left", "active": true },
+    { "icd10": "I50.9", "description": "Heart failure, unspecified", "active": true },
+    { "icd10": "E11.9", "description": "Type 2 diabetes mellitus", "active": true },
+    { "icd10": "R20.2", "description": "Paresthesia of lower extremity", "active": true },
+    { "icd10": "I73.9", "description": "Peripheral vascular disease", "active": true }
+  ],
+
+  "medical_history": {
+    "chf": true,
+    "diabetes_type2": true,
+    "heart_disease": true,
+    "hypertension": true,
+    "tobacco_status": "former_smoker",
+    "alcohol_use": "occasional"
+  },
+
+  "medications": [
+    { "name": "aspirin", "dose": "81mg", "frequency": "daily", "category": "antiplatelet" },
+    { "name": "clopidogrel (Plavix)", "dose": null, "frequency": "daily", "category": "antiplatelet" },
+    { "name": "ergocalciferol (vitamin D2)", "dose": null, "frequency": null, "category": "vitamin" },
+    { "name": "Janumet XR", "dose": null, "frequency": null, "category": "diabetes" },
+    { "name": "Jardiance", "dose": null, "frequency": null, "category": "diabetes" },
+    { "name": "losartan", "dose": null, "frequency": null, "category": "antihypertensive" },
+    { "name": "rosuvastatin", "dose": null, "frequency": null, "category": "statin" },
+    { "name": "Santyl", "dose": null, "frequency": null, "category": "wound_care" }
+  ],
+
+  "surgical_history": [
+    {
+      "date": "2025-10-27",
+      "procedure": "Debridement, foot",
+      "cpt": null,
+      "surgeon": null,
+      "laterality": null
+    },
+    {
+      "date": "2025-09-24",
+      "procedure": "Peripheral arteriogram",
+      "cpt": "36247",
+      "surgeon": null,
+      "laterality": null
+    },
+    {
+      "date": "2025-09-09",
+      "procedure": "Debridement, skin and subcutaneous tissue",
+      "cpt": null,
+      "surgeon": null,
+      "laterality": null
+    },
+    {
+      "date": "2025-06-27",
+      "procedure": "Femoral-tibial bypass with vein",
+      "cpt": "35566",
+      "surgeon": "Joe Morgan",
+      "laterality": "right",
+      "details": "Right femoral to tibial vein with vein"
+    },
+    {
+      "date": "2025-05-02",
+      "procedure": "TCAR (Transcarotid Artery Revascularization)",
+      "cpt": "37215",
+      "surgeon": "Joe Morgan",
+      "laterality": "left",
+      "details": "Left carotid artery stent with embolic protection"
+    },
+    {
+      "date": "2025-01-28",
+      "procedure": "Peripheral arteriogram",
+      "cpt": "36247",
+      "surgeon": "Joe Morgan",
+      "laterality": "bilateral",
+      "details": "Bilateral arterial/ABI workup"
+    }
+  ],
+
+  "current_case": {
+    "case_id": "CASE-2026-0120-TAYLOR",
+    "dos": "2026-01-20",
+    "location": "asc",
+    "facility": "Albany Vascular Surgery Center",
+    "surgeon": "Joe Harris Morgan III, MD",
+    "case_type": "pad_endovascular",
+    "laterality": "left",
+    "status": "completed",
+    "anesthesia": "mac_local",
+
+    "preop_diagnosis": [
+      { "icd10": "I70.25", "description": "Peripheral arterial disease with wound", "primary": true },
+      { "icd10": "M86.672", "description": "Chronic osteomyelitis, left foot (2nd and 4th toes)" }
+    ],
+
+    "procedures": [
+      {
+        "cpt": "36247",
+        "description": "Left lower extremity arteriogram",
+        "laterality": "left"
+      },
+      {
+        "cpt": "37229",
+        "description": "Atherectomy, popliteal artery",
+        "laterality": "left",
+        "vessel": "popliteal",
+        "details": {
+          "device": "2.0 atherectomy burr",
+          "calcification": "5+",
+          "passes": "multiple",
+          "power": "low and medium"
+        }
+      },
+      {
+        "cpt": "37224",
+        "description": "Balloon angioplasty, popliteal artery",
+        "laterality": "left",
+        "vessel": "popliteal",
+        "details": {
+          "balloon_size": "6mm x 24cm",
+          "segment": "second portion popliteal and proximal SFA"
+        }
+      },
+      {
+        "cpt": "34713",
+        "description": "Vascular closure device, right groin",
+        "laterality": "right"
+      }
+    ],
+
+    "access": {
+      "site": "right_cfa",
+      "sheath": "6F",
+      "sheath_length": "45cm",
+      "closure": "closure_device"
+    },
+
+    "anatomy_findings": {
+      "left_adductor_canal": {
+        "status": "stenosis",
+        "severity": ">80%",
+        "calcification": "severe",
+        "length": "<5cm"
+      },
+      "left_popliteal_p1": {
+        "status": "stenosis",
+        "severity": ">70%",
+        "calcification": "heavy",
+        "description": "rat-bite stenoses"
+      },
+      "left_popliteal_p2": {
+        "status": "patent"
+      },
+      "left_popliteal_p3": {
+        "status": "patent"
+      },
+      "left_anterior_tibial": {
+        "status": "patent",
+        "proximal": "open",
+        "distal": "collateral reconstitution"
+      },
+      "left_posterior_tibial": {
+        "status": "occluded",
+        "location": "mid leg",
+        "proximal": "open",
+        "distal": "collateral reconstitution"
+      },
+      "left_peroneal": {
+        "status": "patent",
+        "notes": "intertibial connection present"
+      },
+      "left_dorsalis_pedis": {
+        "status": "reconstituted",
+        "via": "collaterals near flexor retinaculum"
+      }
+    },
+
+    "runoff": {
+      "vessel_count": 2,
+      "vessels": ["peroneal", "AT (via collaterals)"]
+    },
+
+    "result": {
+      "technical_success": true,
+      "residual_stenosis": "<30%",
+      "outcome": "good",
+      "outflow_improved": true,
+      "perfusion_increased": true,
+      "doppler_signal": "biphasic",
+      "doppler_vessel": "dorsalis pedis",
+      "complications": "none"
+    }
+  },
+
+  "follow_up": [
+    {
+      "date": "2026-01-27",
+      "time": "14:30",
+      "type": "established_patient",
+      "provider": "Joe Harris Morgan III, MD",
+      "location": "GA_AVSC_Albany Office",
+      "reason": "1 week wound care"
+    },
+    {
+      "date": "2026-02-26",
+      "time": "08:00",
+      "type": "ultrasound",
+      "provider": "AVSC Ultrasound",
+      "location": "GA_AVSC_Albany Office",
+      "reason": "Bilateral ABI - S/P LLEA 1/20"
+    },
+    {
+      "date": "2026-02-26",
+      "time": "09:30",
+      "type": "established_patient",
+      "provider": "Joe Harris Morgan III, MD",
+      "location": "GA_AVSC_Albany Office",
+      "reason": "SDFU bilateral ABI - S/P 1 month LLEA 1/20"
+    }
+  ],
+
+  "orcc_display": {
+    "selectedPatient": {
+      "id": "32016089",
+      "name": "Taylor, Larry",
+      "mrn": "32016089",
+      "dos": "01/20/2026",
+      "procedure": "LEFT Popliteal Atherectomy + Angioplasty",
+      "diagnosis": "I70.25 - PAD with wound",
+      "anatomy": "Popliteal stenosis >70%, 2-vessel runoff",
+      "ready": true,
+      "location": "asc"
+    },
+    "planningData": {
+      "procDate": "2026-01-20",
+      "vesselData": {
+        "l_sfa": { "status": "patent", "notes": "" },
+        "l_adductor": { "status": "stenosis", "notes": ">80% calcified" },
+        "l_popliteal": { "status": "stenosis", "notes": ">70% rat-bite lesions" },
+        "l_at": { "status": "patent", "notes": "collateral reconstitution" },
+        "l_pt": { "status": "occluded", "notes": "mid leg" },
+        "l_peroneal": { "status": "patent", "notes": "" }
+      },
+      "procedure": {
+        "side": "left",
+        "rutherford": "r5",
+        "accessSite": "r_cfa",
+        "anesthesia": "mac_local",
+        "outflow": {
+          "at": "patent",
+          "pt": "occluded",
+          "peroneal": "patent"
+        }
+      },
+      "interventions": [
+        { "vessel": "Popliteal", "intervention": "atherectomy" },
+        { "vessel": "Popliteal", "intervention": "pta" }
+      ]
+    }
+  },
+
+  "metadata": {
+    "created": "2026-01-20T19:30:00Z",
+    "source": "Athena EMR export + Op Note",
+    "version": "1.0"
+  }
+}
