@@ -1049,6 +1049,24 @@
 
       <!-- Pre-Op List -->
       <div class="list-body" id="preop-list">
+        <!-- REAL PATIENT: Larry Taylor -->
+        <div class="patient-row" data-id="11" data-location="asc" style="background: rgba(186, 12, 47, 0.08); border-left: 3px solid var(--uga-red);">
+          <div class="patient-col col-patient">
+            <span class="patient-name" style="color: #BA0C2F; font-weight: 700;">Taylor, Larry</span>
+            <span class="patient-diagnosis">I70.25 - PAD with wound, CLI</span>
+          </div>
+          <span class="patient-col col-mrn mrn" style="font-weight: 600;">32016089</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-asc">ASC</span>
+          </div>
+          <span class="patient-col col-date" style="color: #22C55E; font-weight: 600;">01/20/26</span>
+          <span class="patient-col col-procedure procedure">LEFT Popliteal Atherectomy + Angioplasty</span>
+          <span class="patient-col col-anatomy anatomy">Popliteal >70% stenosis (calcified), PT occluded, 2-vessel runoff</span>
+          <div class="patient-col col-status">
+            <span class="status-badge status-ready"><span class="status-dot">●</span> Ready</span>
+          </div>
+        </div>
+        <!-- Test patients -->
         <div class="patient-row" data-id="1" data-location="asc">
           <div class="patient-col col-patient">
             <span class="patient-name">Smith, John</span>
@@ -1133,6 +1151,23 @@
 
       <!-- Today's OR List -->
       <div class="list-body hidden" id="today-list">
+        <!-- REAL PATIENT: Larry Taylor - TODAY 01/20/26 -->
+        <div class="patient-row" data-id="11" data-location="asc" style="background: rgba(186, 12, 47, 0.08); border-left: 3px solid var(--uga-red);">
+          <div class="patient-col col-patient">
+            <span class="patient-name" style="color: #BA0C2F; font-weight: 700;">Taylor, Larry</span>
+            <span class="patient-diagnosis">I70.25 - PAD with wound, CLI</span>
+          </div>
+          <span class="patient-col col-mrn mrn" style="font-weight: 600;">32016089</span>
+          <div class="patient-col col-location">
+            <span class="location-badge location-asc">ASC</span>
+          </div>
+          <span class="patient-col col-date" style="color: #22C55E; font-weight: 600;">01/20/26</span>
+          <span class="patient-col col-procedure procedure">LEFT Popliteal Atherectomy + Angioplasty</span>
+          <span class="patient-col col-anatomy anatomy">Popliteal >70% stenosis (calcified), PT occluded, 2-vessel runoff</span>
+          <div class="patient-col col-status">
+            <span class="status-badge status-ready" style="background: rgba(34, 197, 94, 0.2); color: #22C55E;"><span class="status-dot">●</span> ASC - 0800</span>
+          </div>
+        </div>
         <div class="patient-row" data-id="6" data-location="asc">
           <div class="patient-col col-patient">
             <span class="patient-name">Davis, Patricia</span>
@@ -1394,6 +1429,26 @@
 
     // Patient data with location (hospital = Hospital OR, asc = Albany Vascular Surgery Center)
     const patients = {
+      // === REAL PATIENT: Larry Taylor ===
+      11: {
+        name: 'Taylor, Larry',
+        mrn: '32016089',
+        dos: '01/20/26',
+        procedure: 'LEFT Popliteal Atherectomy + Angioplasty',
+        diagnosis: 'I70.25 - PAD with wound, CLI',
+        anatomy: 'Popliteal >70% stenosis (calcified), PT occluded, 2-vessel runoff',
+        ready: true,
+        location: 'asc',
+        // Extended data for full workflow
+        dob: '1954-10-28',
+        age: 71,
+        sex: 'M',
+        allergies: 'NKDA',
+        rutherford: 'R5',
+        access: 'R CFA, 6F/45cm',
+        anesthesia: 'MAC + Local'
+      },
+      // === Test patients ===
       1: { name: 'Smith, John', mrn: '123456', dos: '01/22/25', procedure: 'SFA Angioplasty + Stent', diagnosis: 'I70.25 - PAD w/ CLI', anatomy: 'SFA Occlusion, single vessel runoff', ready: true, location: 'asc' },
       2: { name: 'Adams, Mary', mrn: '234567', dos: '01/22/25', procedure: 'Carotid Endarterectomy', diagnosis: 'I65.21 - Carotid stenosis', anatomy: 'Pending imaging review', ready: false, location: 'hospital' },
       3: { name: 'Chen, Robert', mrn: '345678', dos: '01/23/25', procedure: 'Fem-Pop Bypass', diagnosis: 'I70.25 - PAD w/ CLI', anatomy: 'SFA/Popliteal occlusion, 2-vessel runoff', ready: false, location: 'hospital' },
