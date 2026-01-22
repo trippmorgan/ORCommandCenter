@@ -652,17 +652,84 @@
                 <div class="section-header">Indication</div>
 
                 <div class="form-group">
-                    <label class="form-label">Pre-Op Diagnosis</label>
-                    <textarea class="form-textarea" id="preOpDx" rows="2">PAD with CLI, right lower extremity</textarea>
+                    <label class="form-label">Primary ICD-10 Diagnosis</label>
+                    <select class="form-select" id="primaryIcd10">
+                        <optgroup label="Claudication (Rutherford 1-3)">
+                            <option value="I70.211">I70.211 - Atherosclerosis of native arteries with intermittent claudication, right leg</option>
+                            <option value="I70.212">I70.212 - Atherosclerosis of native arteries with intermittent claudication, left leg</option>
+                            <option value="I70.213">I70.213 - Atherosclerosis of native arteries with intermittent claudication, bilateral legs</option>
+                        </optgroup>
+                        <optgroup label="Rest Pain (Rutherford 4)">
+                            <option value="I70.221">I70.221 - Atherosclerosis of native arteries with rest pain, right leg</option>
+                            <option value="I70.222" selected>I70.222 - Atherosclerosis of native arteries with rest pain, left leg</option>
+                            <option value="I70.223">I70.223 - Atherosclerosis of native arteries with rest pain, bilateral legs</option>
+                        </optgroup>
+                        <optgroup label="Ulceration / Tissue Loss (Rutherford 5)">
+                            <option value="I70.231">I70.231 - Atherosclerosis of native arteries with ulceration, right leg (thigh)</option>
+                            <option value="I70.232">I70.232 - Atherosclerosis of native arteries with ulceration, left leg (thigh)</option>
+                            <option value="I70.241">I70.241 - Atherosclerosis of native arteries with ulceration, right leg (calf)</option>
+                            <option value="I70.242">I70.242 - Atherosclerosis of native arteries with ulceration, left leg (calf)</option>
+                            <option value="I70.244">I70.244 - Atherosclerosis of native arteries with ulceration, left leg (heel/midfoot)</option>
+                            <option value="I70.245">I70.245 - Atherosclerosis of native arteries with ulceration, right leg (other)</option>
+                        </optgroup>
+                        <optgroup label="Gangrene (Rutherford 6)">
+                            <option value="I70.261">I70.261 - Atherosclerosis of native arteries with gangrene, right leg</option>
+                            <option value="I70.262">I70.262 - Atherosclerosis of native arteries with gangrene, left leg</option>
+                            <option value="I70.263">I70.263 - Atherosclerosis of native arteries with gangrene, bilateral legs</option>
+                        </optgroup>
+                        <optgroup label="In-Stent Restenosis">
+                            <option value="I70.291">I70.291 - Atherosclerosis of native arteries with other CI/CLTI, right leg</option>
+                            <option value="I70.292">I70.292 - Atherosclerosis of native arteries with other CI/CLTI, left leg</option>
+                            <option value="T82.855A">T82.855A - Stenosis of peripheral vascular stent, initial encounter</option>
+                            <option value="T82.856A">T82.856A - Stenosis of peripheral vascular graft, initial encounter</option>
+                        </optgroup>
+                        <optgroup label="Iliac Disease">
+                            <option value="I70.0">I70.0 - Atherosclerosis of aorta</option>
+                            <option value="I70.1">I70.1 - Atherosclerosis of renal artery</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Secondary ICD-10 (Optional)</label>
+                    <select class="form-select" id="secondaryIcd10">
+                        <option value="">-- None --</option>
+                        <optgroup label="Diabetes">
+                            <option value="E11.51">E11.51 - Type 2 DM with diabetic peripheral angiopathy without gangrene</option>
+                            <option value="E11.52">E11.52 - Type 2 DM with diabetic peripheral angiopathy with gangrene</option>
+                            <option value="E11.621">E11.621 - Type 2 DM with foot ulcer</option>
+                            <option value="E11.622">E11.622 - Type 2 DM with other skin ulcer</option>
+                        </optgroup>
+                        <optgroup label="Chronic Kidney Disease">
+                            <option value="N18.3">N18.3 - Chronic kidney disease, stage 3</option>
+                            <option value="N18.4">N18.4 - Chronic kidney disease, stage 4</option>
+                            <option value="N18.5">N18.5 - Chronic kidney disease, stage 5</option>
+                            <option value="N18.6">N18.6 - End stage renal disease</option>
+                        </optgroup>
+                        <optgroup label="Tobacco">
+                            <option value="F17.210">F17.210 - Nicotine dependence, cigarettes, uncomplicated</option>
+                            <option value="Z87.891">Z87.891 - Personal history of nicotine dependence</option>
+                        </optgroup>
+                        <optgroup label="Wound/Ulcer">
+                            <option value="L97.419">L97.419 - Non-pressure chronic ulcer of right heel, unspecified severity</option>
+                            <option value="L97.429">L97.429 - Non-pressure chronic ulcer of left heel, unspecified severity</option>
+                            <option value="L97.519">L97.519 - Non-pressure chronic ulcer of other part of right foot</option>
+                            <option value="L97.529">L97.529 - Non-pressure chronic ulcer of other part of left foot</option>
+                        </optgroup>
+                        <optgroup label="Osteomyelitis">
+                            <option value="M86.671">M86.671 - Other chronic osteomyelitis, right ankle and foot</option>
+                            <option value="M86.672">M86.672 - Other chronic osteomyelitis, left ankle and foot</option>
+                        </optgroup>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Rutherford Classification</label>
                     <select class="form-select" id="rutherford">
                         <option value="r3">R3 - Severe Claudication</option>
-                        <option value="r4" selected>R4 - Rest Pain</option>
-                        <option value="r5">R5 - Minor Tissue Loss</option>
-                        <option value="r6">R6 - Major Tissue Loss</option>
+                        <option value="r4" selected>R4 - Rest Pain (CLI)</option>
+                        <option value="r5">R5 - Minor Tissue Loss (CLTI)</option>
+                        <option value="r6">R6 - Major Tissue Loss (CLTI)</option>
                     </select>
                 </div>
 
@@ -693,9 +760,9 @@
                     <div class="form-group">
                         <label class="form-label">AT</label>
                         <select class="form-select" id="outflowAT">
-                            <option value="patent">Patent</option>
+                            <option value="patent" selected>Patent</option>
                             <option value="stenosis">Stenosis</option>
-                            <option value="occluded" selected>Occluded</option>
+                            <option value="occluded">Occluded</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -880,16 +947,16 @@
                     - Possible tibial intervention as needed<br>
                 </div>
 
-                <div class="section-header" style="margin-top: 1.5rem;">CPT Codes (Estimated)</div>
+                <div class="section-header" style="margin-top: 1.5rem;">CPT Codes (Auto-Generated)</div>
 
                 <div class="output-preview" id="cptCodes">
-                    <strong>Diagnostic:</strong><br>
-                    • 36247 - Selective catheter placement, arterial, 2nd order<br>
-                    • 75716 - Bilateral lower extremity arteriogram<br><br>
-                    <strong>Intervention (if performed):</strong><br>
-                    • 37224 - Femoral/popliteal angioplasty<br>
-                    • 37226 - Femoral/popliteal stent<br>
-                    • 37228 - Tibial angioplasty<br>
+                    <em>CPT codes will populate based on planned interventions...</em>
+                </div>
+
+                <div class="section-header" style="margin-top: 1.5rem;">ICD-10 Diagnosis Codes</div>
+
+                <div class="output-preview" id="icdCodes">
+                    <em>ICD-10 codes will populate based on indication selection...</em>
                 </div>
             </div>
         </div>
@@ -967,9 +1034,8 @@
             // Set today's date
             document.getElementById('procDate').value = new Date().toISOString().split('T')[0];
 
-            // Set default vessel states for John Smith case
-            setVesselStatus('r_sfa', 'occluded');
-            setVesselStatus('r_at', 'occluded');
+            // All vessels start as patent (normal) - user will click to set disease
+            // No default disease states - anatomy is "clean" to start
 
             updateSummary();
         });
@@ -1155,6 +1221,14 @@
             const outPT = document.getElementById('outflowPT').value;
             const outPeroneal = document.getElementById('outflowPeroneal').value;
 
+            // Get ICD-10 codes
+            const primaryIcd = document.getElementById('primaryIcd10');
+            const secondaryIcd = document.getElementById('secondaryIcd10');
+            const primaryIcdCode = primaryIcd.value;
+            const primaryIcdText = primaryIcd.options[primaryIcd.selectedIndex].text;
+            const secondaryIcdCode = secondaryIcd.value;
+            const secondaryIcdText = secondaryIcd.value ? secondaryIcd.options[secondaryIcd.selectedIndex].text : '';
+
             // Count patent outflow vessels
             const patentOutflow = [outAT, outPT, outPeroneal].filter(v => v === 'patent').length;
             const outflowDesc = patentOutflow === 3 ? '3-vessel runoff' :
@@ -1165,7 +1239,7 @@
 
             let summary = `<strong>Patient:</strong> ${patient.name || 'Smith, John'} (MRN: ${patient.mrn || '123456'})<br>`;
             summary += `<strong>Procedure:</strong> ${sideLabel} Lower Extremity Arteriogram with possible angioplasty/stenting/atherectomy<br><br>`;
-            summary += `<strong>Indication:</strong> PAD with CLI (${rutherford.toUpperCase()})<br><br>`;
+            summary += `<strong>Indication:</strong> ${primaryIcdText}<br><br>`;
             summary += `<strong>Inflow:</strong> ${inflowAI === 'normal' && inflowCFA === 'normal' ? 'Normal by ultrasound' : 'Abnormal - needs evaluation'}<br>`;
             summary += `<strong>Outflow:</strong> `;
 
@@ -1198,6 +1272,168 @@
             }
 
             document.getElementById('procedureSummary').innerHTML = summary;
+
+            // Update ICD-10 codes display
+            updateIcdCodes(primaryIcdCode, primaryIcdText, secondaryIcdCode, secondaryIcdText);
+
+            // Update CPT codes display
+            updateCptCodes(side, interventions, inflowAI, inflowCFA);
+        }
+
+        function updateIcdCodes(primaryCode, primaryText, secondaryCode, secondaryText) {
+            let icdHtml = '<strong>Primary Diagnosis:</strong><br>';
+            icdHtml += `<span style="color: var(--accent-green); font-family: 'JetBrains Mono', monospace;">${primaryCode}</span> - ${primaryText.split(' - ')[1] || primaryText}<br>`;
+
+            if (secondaryCode) {
+                icdHtml += '<br><strong>Secondary Diagnosis:</strong><br>';
+                icdHtml += `<span style="color: var(--accent-blue); font-family: 'JetBrains Mono', monospace;">${secondaryCode}</span> - ${secondaryText.split(' - ')[1] || secondaryText}<br>`;
+            }
+
+            document.getElementById('icdCodes').innerHTML = icdHtml;
+        }
+
+        function updateCptCodes(side, interventions, inflowAI, inflowCFA) {
+            // CPT Code Reference for PAD Interventions
+            const cptDatabase = {
+                // Diagnostic
+                'arteriogram_uni': { code: '75710', desc: 'Angiography, extremity, unilateral' },
+                'arteriogram_bi': { code: '75716', desc: 'Angiography, extremity, bilateral' },
+                'catheter_1st': { code: '36245', desc: 'Selective catheterization, arterial, 1st order' },
+                'catheter_2nd': { code: '36246', desc: 'Selective catheterization, arterial, 2nd order' },
+                'catheter_3rd': { code: '36247', desc: 'Selective catheterization, arterial, 3rd order' },
+
+                // Iliac Interventions
+                'iliac_pta': { code: '37220', desc: 'Iliac angioplasty' },
+                'iliac_stent': { code: '37221', desc: 'Iliac stent placement (includes angioplasty)' },
+                'iliac_pta_add': { code: '37222', desc: 'Iliac angioplasty, each additional vessel' },
+                'iliac_stent_add': { code: '37223', desc: 'Iliac stent, each additional vessel' },
+
+                // Femoral/Popliteal Interventions
+                'fempop_pta': { code: '37224', desc: 'Femoral/popliteal angioplasty' },
+                'fempop_ath': { code: '37225', desc: 'Femoral/popliteal atherectomy (includes angioplasty)' },
+                'fempop_stent': { code: '37226', desc: 'Femoral/popliteal stent (includes angioplasty)' },
+                'fempop_ath_stent': { code: '37227', desc: 'Femoral/popliteal atherectomy + stent' },
+
+                // Tibial/Peroneal Interventions
+                'tibial_pta': { code: '37228', desc: 'Tibial/peroneal angioplasty' },
+                'tibial_ath': { code: '37229', desc: 'Tibial/peroneal atherectomy (includes angioplasty)' },
+                'tibial_stent': { code: '37230', desc: 'Tibial/peroneal stent (includes angioplasty)' },
+                'tibial_ath_stent': { code: '37231', desc: 'Tibial/peroneal atherectomy + stent' },
+                'tibial_pta_add': { code: '37232', desc: 'Tibial/peroneal angioplasty, each additional vessel' },
+                'tibial_ath_add': { code: '37233', desc: 'Tibial/peroneal atherectomy, each additional vessel' },
+                'tibial_stent_add': { code: '37234', desc: 'Tibial/peroneal stent, each additional vessel' },
+                'tibial_ath_stent_add': { code: '37235', desc: 'Tibial/peroneal atherectomy + stent, each additional' },
+
+                // Closure
+                'closure_device': { code: '37243', desc: 'Closure device deployment' }
+            };
+
+            let cptHtml = '';
+            let diagnosticCodes = [];
+            let interventionCodes = [];
+
+            // Always add diagnostic codes
+            cptHtml += '<strong style="color: var(--accent-blue);">DIAGNOSTIC:</strong><br>';
+            if (side === 'bilateral') {
+                diagnosticCodes.push(cptDatabase.arteriogram_bi);
+            } else {
+                diagnosticCodes.push(cptDatabase.arteriogram_uni);
+            }
+            diagnosticCodes.push(cptDatabase.catheter_2nd);
+
+            diagnosticCodes.forEach(cpt => {
+                cptHtml += `<span style="font-family: 'JetBrains Mono', monospace; color: var(--accent-cyan);">${cpt.code}</span> - ${cpt.desc}<br>`;
+            });
+
+            // Process interventions
+            if (interventions.length > 0) {
+                cptHtml += '<br><strong style="color: var(--accent-green);">INTERVENTIONS:</strong><br>';
+
+                // Track vessel levels for proper CPT assignment
+                let hasIliac = false;
+                let hasFemPop = false;
+                let tibialCount = 0;
+
+                interventions.forEach(int => {
+                    const vesselLower = int.vessel.toLowerCase();
+                    const intType = int.intervention;
+
+                    // Determine vessel level
+                    if (vesselLower.includes('iliac') || vesselLower.includes('cia') || vesselLower.includes('eia')) {
+                        // Iliac level
+                        if (!hasIliac) {
+                            hasIliac = true;
+                            if (intType.includes('stent')) {
+                                interventionCodes.push(cptDatabase.iliac_stent);
+                            } else {
+                                interventionCodes.push(cptDatabase.iliac_pta);
+                            }
+                        } else {
+                            // Additional iliac
+                            if (intType.includes('stent')) {
+                                interventionCodes.push(cptDatabase.iliac_stent_add);
+                            } else {
+                                interventionCodes.push(cptDatabase.iliac_pta_add);
+                            }
+                        }
+                    } else if (vesselLower.includes('sfa') || vesselLower.includes('femoral') || vesselLower.includes('popliteal') || vesselLower.includes('pop')) {
+                        // Fem-pop level
+                        if (!hasFemPop) {
+                            hasFemPop = true;
+                            if (intType.includes('ath') && intType.includes('stent')) {
+                                interventionCodes.push(cptDatabase.fempop_ath_stent);
+                            } else if (intType.includes('atherectomy') || intType.includes('ath')) {
+                                interventionCodes.push(cptDatabase.fempop_ath);
+                            } else if (intType.includes('stent')) {
+                                interventionCodes.push(cptDatabase.fempop_stent);
+                            } else {
+                                interventionCodes.push(cptDatabase.fempop_pta);
+                            }
+                        }
+                    } else if (vesselLower.includes('tibial') || vesselLower.includes('peroneal') || vesselLower.includes('at') || vesselLower.includes('pt')) {
+                        // Tibial level
+                        tibialCount++;
+                        if (tibialCount === 1) {
+                            // First tibial vessel
+                            if (intType.includes('ath') && intType.includes('stent')) {
+                                interventionCodes.push(cptDatabase.tibial_ath_stent);
+                            } else if (intType.includes('atherectomy') || intType.includes('ath')) {
+                                interventionCodes.push(cptDatabase.tibial_ath);
+                            } else if (intType.includes('stent')) {
+                                interventionCodes.push(cptDatabase.tibial_stent);
+                            } else {
+                                interventionCodes.push(cptDatabase.tibial_pta);
+                            }
+                        } else {
+                            // Additional tibial vessels
+                            if (intType.includes('ath') && intType.includes('stent')) {
+                                interventionCodes.push(cptDatabase.tibial_ath_stent_add);
+                            } else if (intType.includes('atherectomy') || intType.includes('ath')) {
+                                interventionCodes.push(cptDatabase.tibial_ath_add);
+                            } else if (intType.includes('stent')) {
+                                interventionCodes.push(cptDatabase.tibial_stent_add);
+                            } else {
+                                interventionCodes.push(cptDatabase.tibial_pta_add);
+                            }
+                        }
+                    }
+                });
+
+                interventionCodes.forEach(cpt => {
+                    cptHtml += `<span style="font-family: 'JetBrains Mono', monospace; color: var(--accent-green);">${cpt.code}</span> - ${cpt.desc}<br>`;
+                });
+
+            } else {
+                cptHtml += '<br><em style="color: var(--text-muted);">Add interventions to vessels to generate CPT codes</em>';
+            }
+
+            // LCD Note
+            cptHtml += '<br><br><div style="padding: 8px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 4px; font-size: 0.8rem;">';
+            cptHtml += '<strong style="color: var(--accent-green);">LCD L33803 Criteria:</strong><br>';
+            cptHtml += 'Requires documented: (1) CLI symptoms, (2) ABI &lt;0.9 or TBI &lt;0.7, (3) Prior conservative therapy failure, (4) Imaging evidence of disease';
+            cptHtml += '</div>';
+
+            document.getElementById('cptCodes').innerHTML = cptHtml;
         }
 
         function clearAll() {
@@ -1214,9 +1450,20 @@
             updateSummary();
         }
 
-        function saveAndOpenWorkspace() {
+        async function saveAndOpenWorkspace() {
             // Get current patient
             const patient = JSON.parse(localStorage.getItem('selectedPatient') || '{}');
+
+            if (!patient.mrn) {
+                alert('No patient selected. Please select a patient from the Patient List first.');
+                return;
+            }
+
+            // Get ICD-10 data
+            const primaryIcd = document.getElementById('primaryIcd10');
+            const secondaryIcd = document.getElementById('secondaryIcd10');
+            const procSide = document.getElementById('procSide').value;
+            const procDate = document.getElementById('procDate').value;
 
             // Build anatomy data for workspace
             const anatomyData = {
@@ -1224,11 +1471,14 @@
                 interventions: interventions,
                 procedure: {
                     type: document.getElementById('procedureType').value,
-                    side: document.getElementById('procSide').value,
+                    side: procSide,
                     accessSite: document.getElementById('accessSite').value,
                     sheathSize: document.getElementById('sheathSize').value,
                     anesthesia: document.getElementById('anesthesia').value,
-                    preOpDx: document.getElementById('preOpDx').value,
+                    primaryIcd10: primaryIcd.value,
+                    primaryIcd10Text: primaryIcd.options[primaryIcd.selectedIndex].text,
+                    secondaryIcd10: secondaryIcd.value || null,
+                    secondaryIcd10Text: secondaryIcd.value ? secondaryIcd.options[secondaryIcd.selectedIndex].text : null,
                     rutherford: document.getElementById('rutherford').value,
                     inflow: {
                         aortoiliac: document.getElementById('inflowAortoiliac').value,
@@ -1240,7 +1490,7 @@
                         peroneal: document.getElementById('outflowPeroneal').value
                     }
                 },
-                procDate: document.getElementById('procDate').value
+                procDate: procDate
             };
 
             // Build anatomy string for workspace
@@ -1257,24 +1507,104 @@
                 }
             });
 
-            // Update patient with planning data
+            // Update patient with planning data (for localStorage backup)
             patient.anatomyData = anatomyData;
             patient.anatomy = findings.length > 0 ? findings.join(', ') : 'No significant disease';
-            patient.procedure = `${document.getElementById('procSide').value === 'right' ? 'R' : 'L'} LE Arteriogram with Intervention`;
-            patient.dos = document.getElementById('procDate').value;
+            patient.procedure = `${procSide === 'right' ? 'R' : 'L'} LE Arteriogram with Intervention`;
+            patient.dos = procDate;
 
-            // Save back to localStorage
+            // Save to localStorage as backup
             localStorage.setItem('selectedPatient', JSON.stringify(patient));
             localStorage.setItem('planningData', JSON.stringify(anatomyData));
 
-            // Navigate to workspace
-            window.location.href = 'surgical-command-center-workspace.html';
+            // Get CPT codes from the generated list
+            const cptCodes = getCptCodesArray();
+
+            // Build procedure data for API
+            const procedureData = {
+                mrn: patient.mrn,
+                procedure_type: document.getElementById('procedureType').value || 'LEA with Angioplasty',
+                procedure_name: `${procSide === 'left' ? 'Left' : 'Right'} Lower Extremity Arteriogram with ${interventions.map(i => i.intervention.replace('_', ' ')).join(' and ')}`,
+                procedure_side: procSide,
+                procedure_date: procDate || null,
+                scheduled_location: 'ASC',
+                status: 'draft',  // Note: enum only supports draft, in_progress, completed, finalized
+                surgical_status: 'workup',
+                indication: {
+                    primary_icd10: primaryIcd.value,
+                    primary_icd10_text: primaryIcd.options[primaryIcd.selectedIndex].text.split(' - ')[1] || primaryIcd.options[primaryIcd.selectedIndex].text,
+                    secondary_icd10: secondaryIcd.value || null,
+                    rutherford: document.getElementById('rutherford').value
+                },
+                access: {
+                    site: document.getElementById('accessSite').value,
+                    sheath_size: document.getElementById('sheathSize').value,
+                    anesthesia: document.getElementById('anesthesia').value
+                },
+                inflow: {
+                    aortoiliac: document.getElementById('inflowAortoiliac').value,
+                    cfa: document.getElementById('inflowCFA').value
+                },
+                outflow: {
+                    at: document.getElementById('outflowAT').value,
+                    pt: document.getElementById('outflowPT').value,
+                    peroneal: document.getElementById('outflowPeroneal').value
+                },
+                vessel_data: vesselData,
+                interventions: interventions,
+                cpt_codes: cptCodes
+            };
+
+            // Show saving indicator
+            const saveBtn = document.querySelector('.btn-primary');
+            const originalText = saveBtn.textContent;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<svg class="spin" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32"/></svg> Saving to PlaudAI...';
+
+            try {
+                // Call PlaudAI API to create procedure
+                const response = await ORCC_API.createProcedure(procedureData);
+                console.log('Procedure saved to PlaudAI:', response);
+
+                // Store procedure ID for future updates
+                patient.procedureId = response.id;
+                localStorage.setItem('selectedPatient', JSON.stringify(patient));
+
+                // Navigate to workspace
+                window.location.href = 'surgical-command-center-workspace.html';
+
+            } catch (error) {
+                console.error('Failed to save procedure to API:', error);
+
+                // Still navigate - data is saved in localStorage
+                const continueAnyway = confirm(
+                    `Failed to save to PlaudAI database:\n${error.message}\n\n` +
+                    `Data has been saved locally. Continue to workspace anyway?`
+                );
+
+                if (continueAnyway) {
+                    window.location.href = 'surgical-command-center-workspace.html';
+                } else {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = originalText;
+                }
+            }
         }
 
         // Listen for form changes
         document.querySelectorAll('select, input, textarea').forEach(el => {
             el.addEventListener('change', updateSummary);
         });
+
+        // Helper to extract CPT codes as array
+        function getCptCodesArray() {
+            const cptCodesDiv = document.getElementById('cptCodes');
+            const cptMatches = cptCodesDiv.textContent.match(/\b\d{5}\b/g);
+            return cptMatches ? [...new Set(cptMatches)] : [];
+        }
     </script>
+
+    <!-- API Client for PlaudAI -->
+    <script src="js/api-client.js"></script>
 </body>
 </html>

@@ -1047,211 +1047,20 @@
         <span class="col-header col-status">STATUS</span>
       </div>
 
-      <!-- Pre-Op List -->
+      <!-- Pre-Op List - Loaded from PlaudAI API -->
       <div class="list-body" id="preop-list">
-        <!-- REAL PATIENT: Larry Taylor -->
-        <div class="patient-row" data-id="11" data-location="asc" style="background: rgba(186, 12, 47, 0.08); border-left: 3px solid var(--uga-red);">
-          <div class="patient-col col-patient">
-            <span class="patient-name" style="color: #BA0C2F; font-weight: 700;">Taylor, Larry</span>
-            <span class="patient-diagnosis">I70.25 - PAD with wound, CLI</span>
-          </div>
-          <span class="patient-col col-mrn mrn" style="font-weight: 600;">32016089</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-asc">ASC</span>
-          </div>
-          <span class="patient-col col-date" style="color: #22C55E; font-weight: 600;">01/20/26</span>
-          <span class="patient-col col-procedure procedure">LEFT Popliteal Atherectomy + Angioplasty</span>
-          <span class="patient-col col-anatomy anatomy">Popliteal >70% stenosis (calcified), PT occluded, 2-vessel runoff</span>
-          <div class="patient-col col-status">
-            <span class="status-badge status-ready"><span class="status-dot">●</span> Ready</span>
-          </div>
-        </div>
-        <!-- Test patients -->
-        <div class="patient-row" data-id="1" data-location="asc">
-          <div class="patient-col col-patient">
-            <span class="patient-name">Smith, John</span>
-            <span class="patient-diagnosis">I70.25 - PAD w/ CLI</span>
-          </div>
-          <span class="patient-col col-mrn mrn">123456</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-asc">ASC</span>
-          </div>
-          <span class="patient-col col-date">01/22/25</span>
-          <span class="patient-col col-procedure procedure">SFA Angioplasty + Stent</span>
-          <span class="patient-col col-anatomy anatomy">SFA Occlusion, single vessel runoff</span>
-          <div class="patient-col col-status">
-            <span class="status-badge status-ready"><span class="status-dot">●</span> Ready</span>
-          </div>
-        </div>
-        <div class="patient-row" data-id="2" data-location="hospital">
-          <div class="patient-col col-patient">
-            <span class="patient-name">Adams, Mary</span>
-            <span class="patient-diagnosis">I65.21 - Carotid stenosis</span>
-          </div>
-          <span class="patient-col col-mrn mrn">234567</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-hospital">OR</span>
-          </div>
-          <span class="patient-col col-date">01/22/25</span>
-          <span class="patient-col col-procedure procedure">Carotid Endarterectomy</span>
-          <span class="patient-col col-anatomy anatomy">Pending imaging review</span>
-          <div class="patient-col col-status">
-            <span class="status-badge status-needs">Needs CTA</span>
-          </div>
-        </div>
-        <div class="patient-row" data-id="3" data-location="hospital">
-          <div class="patient-col col-patient">
-            <span class="patient-name">Chen, Robert</span>
-            <span class="patient-diagnosis">I70.25 - PAD w/ CLI</span>
-          </div>
-          <span class="patient-col col-mrn mrn">345678</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-hospital">OR</span>
-          </div>
-          <span class="patient-col col-date">01/23/25</span>
-          <span class="patient-col col-procedure procedure">Fem-Pop Bypass</span>
-          <span class="patient-col col-anatomy anatomy">SFA/Popliteal occlusion, 2-vessel runoff</span>
-          <div class="patient-col col-status">
-            <span class="status-badge status-needs">Needs Labs</span>
-          </div>
-        </div>
-        <div class="patient-row" data-id="4" data-location="hospital">
-          <div class="patient-col col-patient">
-            <span class="patient-name">Williams, Ana</span>
-            <span class="patient-diagnosis">N18.6 - ESRD</span>
-          </div>
-          <span class="patient-col col-mrn mrn">456789</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-hospital">OR</span>
-          </div>
-          <span class="patient-col col-date">01/24/25</span>
-          <span class="patient-col col-procedure procedure">AV Fistula Creation</span>
-          <span class="patient-col col-anatomy anatomy">Cephalic vein adequate, radial artery patent</span>
-          <div class="patient-col col-status">
-            <span class="status-badge status-ready"><span class="status-dot">●</span> Ready</span>
-          </div>
-        </div>
-        <div class="patient-row" data-id="5" data-location="hospital">
-          <div class="patient-col col-patient">
-            <span class="patient-name">Johnson, Marcus</span>
-            <span class="patient-diagnosis">I71.4 - AAA</span>
-          </div>
-          <span class="patient-col col-mrn mrn">567890</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-hospital">OR</span>
-          </div>
-          <span class="patient-col col-date">01/24/25</span>
-          <span class="patient-col col-procedure procedure">AAA Repair (EVAR)</span>
-          <span class="patient-col col-anatomy anatomy">5.8cm infrarenal, adequate neck</span>
-          <div class="patient-col col-status">
-            <span class="status-badge status-partial">Needs Cardiac</span>
-          </div>
-        </div>
+        <!-- Patients will be loaded dynamically from PlaudAI -->
+        <div style="padding: 40px; text-align: center; color: #888;">Loading patients...</div>
       </div>
 
       <!-- Today's OR List -->
       <div class="list-body hidden" id="today-list">
-        <!-- REAL PATIENT: Larry Taylor - TODAY 01/20/26 -->
-        <div class="patient-row" data-id="11" data-location="asc" style="background: rgba(186, 12, 47, 0.08); border-left: 3px solid var(--uga-red);">
-          <div class="patient-col col-patient">
-            <span class="patient-name" style="color: #BA0C2F; font-weight: 700;">Taylor, Larry</span>
-            <span class="patient-diagnosis">I70.25 - PAD with wound, CLI</span>
-          </div>
-          <span class="patient-col col-mrn mrn" style="font-weight: 600;">32016089</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-asc">ASC</span>
-          </div>
-          <span class="patient-col col-date" style="color: #22C55E; font-weight: 600;">01/20/26</span>
-          <span class="patient-col col-procedure procedure">LEFT Popliteal Atherectomy + Angioplasty</span>
-          <span class="patient-col col-anatomy anatomy">Popliteal >70% stenosis (calcified), PT occluded, 2-vessel runoff</span>
-          <div class="patient-col col-status">
-            <span class="status-badge status-ready" style="background: rgba(34, 197, 94, 0.2); color: #22C55E;"><span class="status-dot">●</span> ASC - 0800</span>
-          </div>
-        </div>
-        <div class="patient-row" data-id="6" data-location="asc">
-          <div class="patient-col col-patient">
-            <span class="patient-name">Davis, Patricia</span>
-            <span class="patient-diagnosis">I70.25 - PAD w/ CLI</span>
-          </div>
-          <span class="patient-col col-mrn mrn">678901</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-asc">ASC</span>
-          </div>
-          <span class="patient-col col-date">01/18/25</span>
-          <span class="patient-col col-procedure procedure">Tibial Angioplasty</span>
-          <span class="patient-col col-anatomy anatomy">PT occlusion, wound lateral malleolus</span>
-          <div class="patient-col col-status">
-            <span class="status-badge status-ready"><span class="status-dot">●</span> ASC - 0730</span>
-          </div>
-        </div>
-        <div class="patient-row" data-id="7" data-location="hospital">
-          <div class="patient-col col-patient">
-            <span class="patient-name">Brown, William</span>
-            <span class="patient-diagnosis">I65.21 - Carotid stenosis 85%</span>
-          </div>
-          <span class="patient-col col-mrn mrn">789012</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-hospital">OR</span>
-          </div>
-          <span class="patient-col col-date">01/18/25</span>
-          <span class="patient-col col-procedure procedure">TCAR</span>
-          <span class="patient-col col-anatomy anatomy">R ICA 85% stenosis, high bifurcation</span>
-          <div class="patient-col col-status">
-            <span class="status-badge status-ready"><span class="status-dot">●</span> OR 3 - 1100</span>
-          </div>
-        </div>
-        <div class="patient-row" data-id="8" data-location="asc">
-          <div class="patient-col col-patient">
-            <span class="patient-name">Garcia, Elena</span>
-            <span class="patient-diagnosis">I83.811 - Varicose veins w/ pain</span>
-          </div>
-          <span class="patient-col col-mrn mrn">890123</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-asc">ASC</span>
-          </div>
-          <span class="patient-col col-date">01/18/25</span>
-          <span class="patient-col col-procedure procedure">VenaSeal GSV</span>
-          <span class="patient-col col-anatomy anatomy">GSV reflux 4.2 sec, 8mm diameter</span>
-          <div class="patient-col col-status">
-            <span class="status-badge status-ready"><span class="status-dot">●</span> ASC - 1400</span>
-          </div>
-        </div>
+        <div style="padding: 40px; text-align: center; color: #888;">Today's OR schedule will appear here once procedures are scheduled.</div>
       </div>
 
       <!-- Unsigned List -->
       <div class="list-body hidden" id="unsigned-list">
-        <div class="patient-row" data-id="9" data-location="asc">
-          <div class="patient-col col-patient">
-            <span class="patient-name">Miller, Thomas</span>
-            <span class="patient-diagnosis">I70.25</span>
-          </div>
-          <span class="patient-col col-mrn mrn">901234</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-asc">ASC</span>
-          </div>
-          <span class="patient-col col-date">01/17/25</span>
-          <span class="patient-col col-procedure procedure">Angiogram + Intervention</span>
-          <span class="patient-col col-anatomy anatomy">Completed</span>
-          <div class="patient-col col-status">
-            <span class="status-badge" style="background: rgba(117,117,117,0.15); color: #757575; border-color: #757575;">Awaiting signature</span>
-          </div>
-        </div>
-        <div class="patient-row" data-id="10" data-location="hospital">
-          <div class="patient-col col-patient">
-            <span class="patient-name">Wilson, Sandra</span>
-            <span class="patient-diagnosis">N18.6</span>
-          </div>
-          <span class="patient-col col-mrn mrn">012345</span>
-          <div class="patient-col col-location">
-            <span class="location-badge location-hospital">OR</span>
-          </div>
-          <span class="patient-col col-date">01/16/25</span>
-          <span class="patient-col col-procedure procedure">Perm Dialysis Catheter</span>
-          <span class="patient-col col-anatomy anatomy">Completed</span>
-          <div class="patient-col col-status">
-            <span class="status-badge" style="background: rgba(117,117,117,0.15); color: #757575; border-color: #757575;">Awaiting signature</span>
-          </div>
-        </div>
+        <div style="padding: 40px; text-align: center; color: #888;">Unsigned procedures will appear here.</div>
       </div>
     </div>
 
@@ -1421,45 +1230,193 @@
     <span>v0.1.0</span>
   </footer>
 
+  <!-- Include API Client -->
+  <script src="js/api-client.js"></script>
+
   <script>
     // Set current date
-    document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { 
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
 
-    // Patient data with location (hospital = Hospital OR, asc = Albany Vascular Surgery Center)
-    const patients = {
-      // === REAL PATIENT: Larry Taylor ===
-      11: {
-        name: 'Taylor, Larry',
-        mrn: '32016089',
-        dos: '01/20/26',
-        procedure: 'LEFT Popliteal Atherectomy + Angioplasty',
-        diagnosis: 'I70.25 - PAD with wound, CLI',
-        anatomy: 'Popliteal >70% stenosis (calcified), PT occluded, 2-vessel runoff',
-        ready: true,
-        location: 'asc',
-        // Extended data for full workflow
-        dob: '1954-10-28',
-        age: 71,
-        sex: 'M',
-        allergies: 'NKDA',
-        rutherford: 'R5',
-        access: 'R CFA, 6F/45cm',
-        anesthesia: 'MAC + Local'
-      },
-      // === Test patients ===
-      1: { name: 'Smith, John', mrn: '123456', dos: '01/22/25', procedure: 'SFA Angioplasty + Stent', diagnosis: 'I70.25 - PAD w/ CLI', anatomy: 'SFA Occlusion, single vessel runoff', ready: true, location: 'asc' },
-      2: { name: 'Adams, Mary', mrn: '234567', dos: '01/22/25', procedure: 'Carotid Endarterectomy', diagnosis: 'I65.21 - Carotid stenosis', anatomy: 'Pending imaging review', ready: false, location: 'hospital' },
-      3: { name: 'Chen, Robert', mrn: '345678', dos: '01/23/25', procedure: 'Fem-Pop Bypass', diagnosis: 'I70.25 - PAD w/ CLI', anatomy: 'SFA/Popliteal occlusion, 2-vessel runoff', ready: false, location: 'hospital' },
-      4: { name: 'Williams, Ana', mrn: '456789', dos: '01/24/25', procedure: 'AV Fistula Creation', diagnosis: 'N18.6 - ESRD', anatomy: 'Cephalic vein adequate, radial artery patent', ready: true, location: 'hospital' },
-      5: { name: 'Johnson, Marcus', mrn: '567890', dos: '01/24/25', procedure: 'AAA Repair (EVAR)', diagnosis: 'I71.4 - AAA', anatomy: '5.8cm infrarenal, adequate neck', ready: false, location: 'hospital' },
-      6: { name: 'Davis, Patricia', mrn: '678901', dos: '01/18/25', procedure: 'Tibial Angioplasty', diagnosis: 'I70.25 - PAD w/ CLI', anatomy: 'PT occlusion, wound lateral malleolus', ready: true, location: 'asc' },
-      7: { name: 'Brown, William', mrn: '789012', dos: '01/18/25', procedure: 'TCAR', diagnosis: 'I65.21 - Carotid stenosis 85%', anatomy: 'R ICA 85% stenosis, high bifurcation', ready: true, location: 'hospital' },
-      8: { name: 'Garcia, Elena', mrn: '890123', dos: '01/18/25', procedure: 'VenaSeal GSV', diagnosis: 'I83.811 - Varicose veins w/ pain', anatomy: 'GSV reflux 4.2 sec, 8mm diameter', ready: true, location: 'asc' },
-      9: { name: 'Miller, Thomas', mrn: '901234', dos: '01/17/25', procedure: 'Angiogram + Intervention', diagnosis: 'I70.25', anatomy: 'Completed', ready: true, location: 'asc' },
-      10: { name: 'Wilson, Sandra', mrn: '012345', dos: '01/16/25', procedure: 'Perm Dialysis Catheter', diagnosis: 'N18.6', anatomy: 'Completed', ready: true, location: 'hospital' },
-    };
+    // Patient data store - will be populated from API
+    const patients = {};
+
+    // Load patients from PlaudAI API on page load
+    async function loadPatientsFromAPI() {
+      const preopList = document.getElementById('preop-list');
+
+      // Show loading indicator
+      preopList.innerHTML = '<div style="padding: 40px; text-align: center; color: #888;">Loading patients from PlaudAI...</div>';
+
+      try {
+        // Fetch patients from API
+        const response = await ORCC_API.getPatients({ limit: 100 });
+        // Handle both array response and {patients: []} object response
+        const apiPatients = Array.isArray(response) ? response : (response.patients || []);
+
+        console.log('Loaded patients from PlaudAI:', apiPatients);
+
+        // Clear the list
+        preopList.innerHTML = '';
+
+        if (apiPatients.length === 0) {
+          preopList.innerHTML = '<div style="padding: 40px; text-align: center; color: #888;">No patients found. Click "Add Patient" to create one.</div>';
+          updateAllCounts(0, 0, 0);
+          return;
+        }
+
+        // Render each patient
+        let ascCount = 0;
+        let hospitalCount = 0;
+
+        apiPatients.forEach((apiPatient, index) => {
+          // Map API data to our format
+          const patient = {
+            id: apiPatient.id,
+            name: `${apiPatient.last_name}, ${apiPatient.first_name}`,
+            mrn: apiPatient.mrn,
+            dob: apiPatient.date_of_birth,
+            dos: 'TBD',
+            procedure: 'Pending',
+            diagnosis: 'Review needed',
+            anatomy: 'Not yet defined',
+            ready: false,
+            location: 'asc', // Default to ASC for now
+            sex: apiPatient.gender
+          };
+
+          // Check if patient has procedures
+          if (apiPatient.procedures && apiPatient.procedures.length > 0) {
+            const proc = apiPatient.procedures[0];
+            patient.procedure = proc.procedure_type || 'Scheduled';
+            patient.dos = proc.procedure_date ? new Date(proc.procedure_date).toLocaleDateString('en-US', {month: '2-digit', day: '2-digit', year: '2-digit'}) : 'TBD';
+            patient.ready = proc.surgical_status === 'ready';
+            patient.location = proc.scheduled_location === 'CRH' ? 'hospital' : 'asc';
+          }
+
+          // Store in patients object
+          patients[apiPatient.id] = patient;
+
+          // Count by location
+          if (patient.location === 'asc') ascCount++;
+          else hospitalCount++;
+
+          // Create row element
+          const row = createPatientRow(patient, index);
+          preopList.appendChild(row);
+        });
+
+        // Update counts
+        updateAllCounts(apiPatients.length, hospitalCount, ascCount);
+
+        // Re-add row click handlers
+        setupRowClickHandlers();
+
+      } catch (error) {
+        console.error('Failed to load patients:', error);
+        preopList.innerHTML = `<div style="padding: 40px; text-align: center; color: #EF4444;">
+          Failed to load patients from PlaudAI<br>
+          <small style="color: #888;">${error.message}</small><br>
+          <button onclick="loadPatientsFromAPI()" style="margin-top: 16px; padding: 8px 16px; background: #BA0C2F; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
+        </div>`;
+      }
+    }
+
+    // Create a patient row element
+    function createPatientRow(patient, index) {
+      const row = document.createElement('div');
+      row.className = 'patient-row';
+      row.dataset.id = patient.id;
+      row.dataset.location = patient.location || 'asc';
+      row.style.animationDelay = `${index * 50}ms`;
+
+      // Special styling for certain patients (e.g., Larry Taylor, Charles Daniels)
+      const isHighlighted = patient.mrn === '32016089' || patient.mrn === '18890211';
+      if (isHighlighted) {
+        row.style.background = 'rgba(186, 12, 47, 0.08)';
+        row.style.borderLeft = '3px solid var(--uga-red)';
+      }
+
+      const locationBadge = patient.location === 'hospital'
+        ? '<span class="location-badge location-hospital">OR</span>'
+        : '<span class="location-badge location-asc">ASC</span>';
+
+      const statusBadge = patient.ready
+        ? '<span class="status-badge status-ready"><span class="status-dot">●</span> Ready</span>'
+        : '<span class="status-badge status-needs">Needs Review</span>';
+
+      row.innerHTML = `
+        <div class="patient-col col-patient">
+          <span class="patient-name" ${isHighlighted ? 'style="color: #BA0C2F; font-weight: 700;"' : ''}>${patient.name}</span>
+          <span class="patient-diagnosis">${patient.diagnosis}</span>
+        </div>
+        <span class="patient-col col-mrn mrn" ${isHighlighted ? 'style="font-weight: 600;"' : ''}>${patient.mrn}</span>
+        <div class="patient-col col-location">${locationBadge}</div>
+        <span class="patient-col col-date">${patient.dos}</span>
+        <span class="patient-col col-procedure procedure">${patient.procedure}</span>
+        <span class="patient-col col-anatomy anatomy">${patient.anatomy}</span>
+        <div class="patient-col col-status">${statusBadge}</div>
+      `;
+
+      return row;
+    }
+
+    // Update all count displays
+    function updateAllCounts(total, hospital, asc) {
+      document.getElementById('count-all').textContent = total;
+      document.getElementById('count-hospital').textContent = hospital;
+      document.getElementById('count-asc').textContent = asc;
+      document.getElementById('preop-count').textContent = total;
+    }
+
+    // Setup click handlers for patient rows
+    function setupRowClickHandlers() {
+      document.querySelectorAll('.patient-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const id = row.dataset.id;
+          const patient = patients[id];
+          if (!patient) return;
+
+          const card = document.getElementById('expanded-card');
+
+          // Toggle selection
+          if (row.classList.contains('selected')) {
+            row.classList.remove('selected');
+            card.classList.remove('visible');
+          } else {
+            document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
+            row.classList.add('selected');
+            selectedPatientId = id;
+
+            // Update card
+            const locationBadge = patient.location === 'hospital'
+              ? '<span class="location-badge location-hospital">OR</span>'
+              : '<span class="location-badge location-asc">ASC</span>';
+
+            document.getElementById('card-name').innerHTML = patient.name + ' ' + locationBadge;
+            document.getElementById('card-info').textContent = `MRN: ${patient.mrn} | DOS: ${patient.dos} | ${patient.location === 'hospital' ? 'Hospital OR' : 'Albany ASC'}`;
+            document.getElementById('card-diagnosis').textContent = patient.diagnosis;
+            document.getElementById('card-anatomy').textContent = patient.anatomy;
+            document.getElementById('card-procedure').textContent = patient.procedure;
+
+            const lcd = document.getElementById('card-lcd');
+            if (patient.ready) {
+              lcd.textContent = '✓ Medical Necessity Supported';
+              lcd.className = 'lcd-status lcd-supported';
+            } else {
+              lcd.textContent = '⚠ Needs Review';
+              lcd.className = 'lcd-status lcd-incomplete';
+            }
+
+            card.classList.add('visible');
+          }
+        });
+      });
+    }
+
+    // Load patients when page loads
+    document.addEventListener('DOMContentLoaded', loadPatientsFromAPI);
 
     // Current location filter
     let currentLocationFilter = 'all';
@@ -1528,44 +1485,6 @@
       });
     });
 
-    // Patient row click
-    document.querySelectorAll('.patient-row').forEach(row => {
-      row.addEventListener('click', () => {
-        const id = row.dataset.id;
-        const patient = patients[id];
-        const card = document.getElementById('expanded-card');
-        
-        // Toggle selection
-        if (row.classList.contains('selected')) {
-          row.classList.remove('selected');
-          card.classList.remove('visible');
-        } else {
-          document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
-          row.classList.add('selected');
-          
-          // Update card
-          const cardName = document.getElementById('card-name');
-          cardName.innerHTML = patient.name + ' <span id="card-location-badge" class="location-badge ' +
-            (patient.location === 'hospital' ? 'location-hospital">OR' : 'location-asc">ASC') + '</span>';
-          document.getElementById('card-info').textContent = `MRN: ${patient.mrn} | DOS: ${patient.dos} | ${patient.location === 'hospital' ? 'Hospital OR' : 'Albany ASC'}`;
-          document.getElementById('card-diagnosis').textContent = patient.diagnosis;
-          document.getElementById('card-anatomy').textContent = patient.anatomy;
-          document.getElementById('card-procedure').textContent = patient.procedure;
-
-          const lcd = document.getElementById('card-lcd');
-          if (patient.ready) {
-            lcd.textContent = '✓ Medical Necessity Supported';
-            lcd.className = 'lcd-status lcd-supported';
-          } else {
-            lcd.textContent = '⚠ Incomplete Documentation';
-            lcd.className = 'lcd-status lcd-incomplete';
-          }
-
-          card.classList.add('visible');
-        }
-      });
-    });
-
     // Close card button
     document.getElementById('close-card').addEventListener('click', () => {
       document.getElementById('expanded-card').classList.remove('visible');
@@ -1574,13 +1493,6 @@
 
     // Store selected patient for workspace
     let selectedPatientId = null;
-
-    // Update selected patient when row is clicked
-    document.querySelectorAll('.patient-row').forEach(row => {
-      row.addEventListener('click', () => {
-        selectedPatientId = row.dataset.id;
-      });
-    });
 
     // Open in Workspace button
     function openInWorkspace() {
@@ -1776,8 +1688,8 @@
       selectedAI = 'claude';
     }
 
-    // Generate AI Note
-    btnGenerate.addEventListener('click', () => {
+    // Generate AI Note - NOW CALLS PLAUDAI API
+    btnGenerate.addEventListener('click', async () => {
       const name = document.getElementById('patient-name').value.trim();
       const mrn = document.getElementById('patient-mrn').value.trim();
       const dob = document.getElementById('patient-dob').value;
@@ -1808,87 +1720,180 @@
         return;
       }
 
-      // Get patient type labels
-      const typeLabels = {
-        'pad': 'PAD / CLI',
-        'venous': 'Venous Disease',
-        'aaa': 'AAA / Aortic Aneurysm',
-        'carotid': 'Carotid Stenosis'
-      };
+      // Parse name (expecting "Last, First" format)
+      const nameParts = name.split(',').map(p => p.trim());
+      const lastName = nameParts[0] || name;
+      const firstName = nameParts[1] || '';
 
-      const selectedTypeLabels = selectedPatientTypes.map(t => typeLabels[t]);
+      // Disable button and show loading
+      btnGenerate.disabled = true;
+      btnGenerate.innerHTML = '<svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32"/></svg> Creating Patient...';
 
-      // Workspace routes for each patient type
-      const workspaceRoutes = {
-        'pad': { url: 'surgical-command-center-workspace.html', name: 'PAD/CLI Workspace' },
-        'venous': { url: 'workspace-venous.html', name: 'Venous Workspace' },
-        'aaa': { url: 'workspace-aortic-aneurysm.html', name: 'Aortic Workspace' },
-        'carotid': { url: 'workspace-carotid.html', name: 'Carotid Workspace' }
-      };
+      try {
+        // Call PlaudAI API to create patient
+        const apiPatient = await ORCC_API.createPatient({
+          mrn: mrn,
+          first_name: firstName,
+          last_name: lastName,
+          date_of_birth: dob,
+          gender: selectedSex
+        });
 
-      // Get workspaces for selected patient types
-      const patientWorkspaces = selectedPatientTypes.map(type => ({
-        type: type,
-        ...workspaceRoutes[type]
-      }));
+        console.log('Patient created in PlaudAI:', apiPatient);
 
-      // Create patient object
-      const newPatient = {
-        name: name,
-        mrn: mrn,
-        dob: dob,
-        sex: selectedSex,
-        patientTypes: [...selectedPatientTypes],
-        patientTypeLabels: selectedTypeLabels,
-        workspaces: patientWorkspaces,
-        clinicalNotes: clinicalNotes,
-        noteTags: [...selectedNoteTags],
-        aiModel: selectedAI,
-        createdAt: new Date().toISOString()
-      };
+        // Get patient type labels
+        const typeLabels = {
+          'pad': 'PAD / CLI',
+          'venous': 'Venous Disease',
+          'aaa': 'AAA / Aortic Aneurysm',
+          'carotid': 'Carotid Stenosis'
+        };
+        const selectedTypeLabels = selectedPatientTypes.map(t => typeLabels[t]);
 
-      // Store in localStorage for now (would be API call in production)
-      const savedPatients = JSON.parse(localStorage.getItem('orcc_patients') || '[]');
-      savedPatients.push(newPatient);
-      localStorage.setItem('orcc_patients', JSON.stringify(savedPatients));
+        // Workspace routes for each patient type
+        const workspaceRoutes = {
+          'pad': { url: 'surgical-command-center-workspace.html', name: 'PAD/CLI Workspace' },
+          'venous': { url: 'workspace-venous.html', name: 'Venous Workspace' },
+          'aaa': { url: 'workspace-aortic-aneurysm.html', name: 'Aortic Workspace' },
+          'carotid': { url: 'workspace-carotid.html', name: 'Carotid Workspace' }
+        };
 
-      // Show confirmation with AI note simulation
-      const aiNames = { 'claude': 'Claude', 'gemini': 'Gemini', 'gpt': 'GPT-4' };
-      const tagsText = selectedNoteTags.length > 0 ? `Tags: ${selectedNoteTags.join(', ')}\n` : '';
-      const notesPreview = clinicalNotes ? `Notes: ${clinicalNotes.substring(0, 50)}${clinicalNotes.length > 50 ? '...' : ''}\n` : '';
+        const patientWorkspaces = selectedPatientTypes.map(type => ({
+          type: type,
+          ...workspaceRoutes[type]
+        }));
 
-      alert(`Patient Added Successfully!\n\n` +
-        `Name: ${name}\n` +
-        `MRN: ${mrn}\n` +
-        `DOB: ${dob}\n` +
-        `Sex: ${selectedSex.charAt(0).toUpperCase() + selectedSex.slice(1)}\n` +
-        `Type: ${selectedTypeLabels.join(', ')}\n` +
-        `${tagsText}${notesPreview}\n` +
-        `Generating searchable note with ${aiNames[selectedAI]}...\n` +
-        `(AI integration coming in Phase 3)`);
+        // Also save to localStorage for local state
+        const savedPatients = JSON.parse(localStorage.getItem('orcc_patients') || '[]');
+        savedPatients.push({
+          id: apiPatient.id,
+          name: name,
+          mrn: mrn,
+          dob: dob,
+          sex: selectedSex,
+          patientTypes: [...selectedPatientTypes],
+          clinicalNotes: clinicalNotes,
+          noteTags: [...selectedNoteTags],
+          aiModel: selectedAI,
+          createdAt: new Date().toISOString()
+        });
+        localStorage.setItem('orcc_patients', JSON.stringify(savedPatients));
 
-      // Close modal and reset
-      closeModal();
+        // Add patient to the Pre-Op list dynamically
+        addPatientToList({
+          id: apiPatient.id,
+          name: name,
+          mrn: mrn,
+          diagnosis: selectedTypeLabels.join(', '),
+          procedure: 'Pending Planning',
+          anatomy: 'Not yet defined',
+          location: 'asc',
+          status: 'pending'
+        });
 
-      // Store patient for workspace
-      localStorage.setItem('selectedPatient', JSON.stringify({
-        id: 'new-' + Date.now(),
-        name: name,
-        mrn: mrn,
-        dos: 'TBD',
-        procedure: 'Planning',
-        diagnosis: selectedTypeLabels.join(', '),
-        patientTypes: [...selectedPatientTypes],
-        workspaces: patientWorkspaces,
-        anatomy: 'Not yet defined',
-        ready: false,
-        location: 'asc',
-        sex: selectedSex,
-        dob: dob,
-        clinicalNotes: clinicalNotes,
-        noteTags: [...selectedNoteTags]
-      }));
+        // Show success message
+        alert(`Patient Created Successfully!\n\nName: ${name}\nMRN: ${mrn}\nID: ${apiPatient.id}\n\nPatient saved to PlaudAI database and added to Pre-Op Queue.`);
+
+        // Close modal and reset
+        closeModal();
+
+        // Store patient for workspace
+        localStorage.setItem('selectedPatient', JSON.stringify({
+          id: apiPatient.id,
+          name: name,
+          mrn: mrn,
+          dos: 'TBD',
+          procedure: 'Planning',
+          diagnosis: selectedTypeLabels.join(', '),
+          patientTypes: [...selectedPatientTypes],
+          workspaces: patientWorkspaces,
+          anatomy: 'Not yet defined',
+          ready: false,
+          location: 'asc',
+          sex: selectedSex,
+          dob: dob,
+          clinicalNotes: clinicalNotes,
+          noteTags: [...selectedNoteTags]
+        }));
+
+      } catch (error) {
+        console.error('Failed to create patient:', error);
+        alert(`Failed to create patient: ${error.message}\n\nPlease check that PlaudAI is running at ${ORCC_API.baseUrl}`);
+      } finally {
+        // Re-enable button
+        btnGenerate.disabled = false;
+        btnGenerate.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L12 6 M12 18 L12 22 M4.93 4.93 L7.76 7.76 M16.24 16.24 L19.07 19.07 M2 12 L6 12 M18 12 L22 12 M4.93 19.07 L7.76 16.24 M16.24 7.76 L19.07 4.93"/></svg> Generate Searchable AI Note';
+      }
     });
+
+    // Function to dynamically add a patient row to the Pre-Op list
+    function addPatientToList(patient) {
+      const preopList = document.getElementById('preop-list');
+      const newRow = document.createElement('div');
+      newRow.className = 'patient-row';
+      newRow.dataset.id = patient.id;
+      newRow.dataset.location = patient.location || 'asc';
+      newRow.style.background = 'rgba(34, 197, 94, 0.08)';
+      newRow.style.borderLeft = '3px solid #22C55E';
+
+      newRow.innerHTML = `
+        <div class="patient-col col-patient">
+          <span class="patient-name" style="color: #22C55E; font-weight: 700;">${patient.name}</span>
+          <span class="patient-diagnosis">${patient.diagnosis}</span>
+        </div>
+        <span class="patient-col col-mrn mrn" style="font-weight: 600;">${patient.mrn}</span>
+        <div class="patient-col col-location">
+          <span class="location-badge location-asc">ASC</span>
+        </div>
+        <span class="patient-col col-date" style="color: #F59E0B;">NEW</span>
+        <span class="patient-col col-procedure procedure">${patient.procedure}</span>
+        <span class="patient-col col-anatomy anatomy">${patient.anatomy}</span>
+        <div class="patient-col col-status">
+          <span class="status-badge status-needs">Needs Planning</span>
+        </div>
+      `;
+
+      // Add to the beginning of the list
+      preopList.insertBefore(newRow, preopList.firstChild);
+
+      // Add click handler for the new row
+      newRow.addEventListener('click', () => {
+        selectedPatientId = patient.id;
+        document.querySelectorAll('.patient-row').forEach(r => r.classList.remove('selected'));
+        newRow.classList.add('selected');
+
+        // Update expanded card
+        const card = document.getElementById('expanded-card');
+        document.getElementById('card-name').innerHTML = patient.name + ' <span class="location-badge location-asc">ASC</span>';
+        document.getElementById('card-info').textContent = `MRN: ${patient.mrn} | DOS: TBD | Albany ASC`;
+        document.getElementById('card-diagnosis').textContent = patient.diagnosis;
+        document.getElementById('card-anatomy').textContent = patient.anatomy;
+        document.getElementById('card-procedure').textContent = patient.procedure;
+        document.getElementById('card-lcd').textContent = '⚠ Needs Planning';
+        document.getElementById('card-lcd').className = 'lcd-status lcd-incomplete';
+        card.classList.add('visible');
+      });
+
+      // Update counts
+      const preopCount = document.getElementById('preop-count');
+      preopCount.textContent = parseInt(preopCount.textContent) + 1;
+      const countAll = document.getElementById('count-all');
+      countAll.textContent = parseInt(countAll.textContent) + 1;
+      const countAsc = document.getElementById('count-asc');
+      countAsc.textContent = parseInt(countAsc.textContent) + 1;
+
+      // Add to patients object for expanded card functionality
+      patients[patient.id] = {
+        name: patient.name,
+        mrn: patient.mrn,
+        dos: 'TBD',
+        procedure: patient.procedure,
+        diagnosis: patient.diagnosis,
+        anatomy: patient.anatomy,
+        ready: false,
+        location: patient.location || 'asc'
+      };
+    }
   </script>
 </body>
 </html>

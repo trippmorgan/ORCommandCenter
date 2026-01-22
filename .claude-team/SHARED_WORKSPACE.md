@@ -191,42 +191,129 @@ function orccToPlaudaiVessel(orccVessel) {
 
 ---
 
-## Current Priorities (Phase 2)
+## Current Priorities (Phase 2) - Updated 2026-01-21
 
-- [ ] Verify `js/api-client.js` points to PlaudAI:8001
-- [ ] Add `js/websocket-client.js` for real-time sync
-- [ ] Update patient list to fetch from `/api/patients`
-- [ ] Update workspace to save via `/api/procedures`
-- [ ] Test with Larry Taylor patient data
-- [ ] Add task management UI once `/api/tasks` is ready
+### ✅ MIGRATION COMPLETE - Backend Ready
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Verify `js/api-client.js` points to PlaudAI:8001 | ✅ Done | Already configured |
+| Backend Tasks API (`/api/tasks`) | ✅ Done | Server1 implemented |
+| Backend Shadow Coder (`/api/shadow-coder/*`) | ✅ Done | Server1 implemented |
+| Backend WebSocket (`/ws`) | ✅ Done | Server1 implemented |
+| POST /api/patients bug fix | ✅ Done | SQL cast syntax fixed |
+| Larry Taylor in database | ✅ Done | MRN: 32016089 |
+| Charles Daniels in database | ✅ Done | MRN: 18890211 |
+| ICD-10 dropdown in planning page | ✅ Done | Full PAD code set |
+| CPT auto-populate from anatomy | ✅ Done | Iliac/FemPop/Tibial codes |
+
+### ✅ RESOLVED - POST /api/procedures NOW WORKING!
+
+**Server1 Claude implemented the endpoint!**
+
+**Charles Daniels procedure now in database:**
+```json
+{
+  "id": "a344ef90-8c84-4f42-a632-d74625ee030a",
+  "mrn": "18890211",
+  "patient_name": "Daniels, Charles",
+  "indication": {"primary_icd10": "I70.222", "rutherford": "r4"},
+  "vessel_data": {"l_sfa": {"status": "stenosis_severe", "length": "10-20cm"}},
+  "interventions": [{"vessel": "L SFA", "intervention": "ath_pta"}],
+  "cpt_codes": ["75710", "36246", "37225"]
+}
+```
+
+**Working Endpoints:**
+- `POST /api/procedures` - Create procedure with full planning data
+- `GET /api/planning/{mrn}` - Load planning data for workspace
+
+**Note:** Use `status="draft"` (not "planned") - enum: draft, in_progress, completed, finalized
+
+### 🔄 IN PROGRESS - Frontend Integration
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Add TaskAPI methods to `api-client.js` | ⬜ Pending | Backend ready |
+| Add PlanningAPI methods to `api-client.js` | ⬜ Ready | Backend NOW ready! |
+| Add `js/websocket-client.js` | ⬜ Pending | Backend ready |
+| Wire planning page to save to API | ⬜ Ready | POST /api/procedures working |
+| Wire workspace to load from API | ⬜ Ready | GET /api/planning/{mrn} working |
+| Test patient list with live data | ✅ Done | Working |
+
+### Next Actions
+
+1. ✅ ~~@Server1 Claude: Implement POST /api/procedures~~ **DONE!**
+2. ✅ ~~@Server1 Claude: Implement GET /api/planning/{mrn}~~ **DONE!**
+3. **@ORCC:** Wire planning page to call POST /api/procedures on save
+4. **@ORCC:** Wire workspace to call GET /api/planning/{mrn} to load data
+5. **@ORCC:** Test full workflow - data persists across refresh!
 
 ---
 
 ## Messages
 
-### [2026-01-21] Architecture Change - SCC Retired
+### [2026-01-21 ~18:30] ✅ POST /api/procedures IMPLEMENTED!
 
-**Major Update:** ORCC no longer connects to SCC (port 3001).
+**Server1 Claude delivered!** Charles Daniels procedure now persists to database.
 
-**New Backend:** PlaudAI (port 8001) on Server1
+**Verified working:**
+```bash
+curl http://100.75.237.36:8001/api/planning/18890211
+# Returns full procedure with vessel_data, interventions, ICD-10, CPT codes
+```
+
+**Next Steps for ORCC:**
+1. Wire `planning-endovascular.html` to call `POST /api/procedures` on save
+2. Wire workspace to call `GET /api/planning/{mrn}` to load data
+3. Data will now persist across page refreshes!
+
+---
+
+### [2026-01-21 ~18:00] ~~BLOCKING: POST /api/procedures Needed~~ (RESOLVED)
+
+~~Charles Daniels (MRN: 18890211) procedure planning cannot be saved!~~
+
+**RESOLVED** - Server1 implemented the endpoint. Procedure ID: `a344ef90-8c84-4f42-a632-d74625ee030a`
+
+---
+
+### [2026-01-21 ~17:00] 🎉 MIGRATION COMPLETE
+
+**All PlaudAI backend endpoints are now working!**
+
+**Verified Endpoints:**
+| Endpoint | Status |
+|----------|--------|
+| `GET /api/patients` | ✅ Working |
+| `POST /api/patients` | ✅ Fixed! |
+| `GET /api/patients/{mrn}` | ✅ Working |
+| `GET /api/procedures` | ✅ Working |
+| `GET /api/tasks` | ✅ Working |
+| `POST /api/tasks` | ✅ Working |
+| `GET /api/shadow-coder/*` | ✅ Working |
+| `GET /ws/stats` | ✅ Working |
+
+**Larry Taylor Confirmed:**
+```json
+{
+  "id": "4f9dd5b2-b4c6-4605-b824-489c5d73b857",
+  "mrn": "32016089",
+  "first_name": "Larry",
+  "last_name": "Taylor"
+}
+```
+
+**API Base URL:** `http://100.75.237.36:8001/api`
+
+### [2026-01-21 ~12:00] Architecture Change - SCC Retired
+
+**Decision:** ORCC connects to PlaudAI (port 8001), NOT SCC (port 3001).
 
 **Reason:**
 - SCC Node had broken database authentication
 - PlaudAI already has working PostgreSQL connection
 - Simpler architecture with single backend
-
-**API Base URL:** `http://100.75.237.36:8001/api`
-
-**Action Items for ORCC:**
-1. [x] `api-client.js` already points to 8001 - VERIFIED
-2. [ ] Add WebSocket client when PlaudAI adds `/ws` endpoint
-3. [ ] Test patient list with live data
-4. [ ] Test workspace save functionality
-
-**Waiting On PlaudAI (Server1):**
-- [ ] `/api/tasks` endpoints
-- [ ] `/api/planning/{caseId}` endpoints
-- [ ] WebSocket server (`/ws`)
 
 ### [2026-01-20] ORCC-SCC Integration Spec (OUTDATED)
 

@@ -90,6 +90,17 @@ const ORCC_API = {
   },
 
   /**
+   * Create a new procedure with full planning data
+   * @param {Object} procedure - Procedure data including vessel_data, interventions, etc.
+   */
+  async createProcedure(procedure) {
+    return this.request('/api/procedures', {
+      method: 'POST',
+      body: JSON.stringify(procedure)
+    });
+  },
+
+  /**
    * Update procedure (surgical status, barriers, clearance, etc.)
    * @param {number} id - Procedure ID
    * @param {Object} updates - Fields to update
@@ -99,6 +110,17 @@ const ORCC_API = {
       method: 'PATCH',
       body: JSON.stringify(updates)
     });
+  },
+
+  // ============ PLANNING ============
+
+  /**
+   * Get planning data for a patient by MRN
+   * Returns procedure with vessel_data, interventions, CPT codes
+   * @param {string} mrn - Medical Record Number
+   */
+  async getPlanningData(mrn) {
+    return this.request(`/api/planning/${encodeURIComponent(mrn)}`);
   },
 
   // ============ ORCC SPECIFIC ============

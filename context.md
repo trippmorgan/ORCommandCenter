@@ -123,25 +123,61 @@ if (procedure.includes('carotid') || procedure.includes('tcar') || procedure.inc
 
 ---
 
+## Current Architecture (2026-01-21)
+
+### Backend: PlaudAI (100.75.237.36:8001)
+
+ORCC connects to **PlaudAI** on Server1 as the unified backend. The separate SCC Node server (port 3001) is being retired.
+
+```
+ORCC Frontend                PlaudAI Backend              PostgreSQL
+─────────────                ───────────────              ──────────
+js/api-client.js   ──────►   100.75.237.36:8001  ──────►  :5432
+                             Python/FastAPI               surgical_command_center
+                             Gemini 2.0 Flash
+```
+
+**Available API Endpoints:**
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/patients` | GET | List patients |
+| `/api/patients/{mrn}` | GET | Get patient by MRN |
+| `/api/patients` | POST | Create patient |
+| `/api/procedures` | GET | List procedures |
+| `/api/procedures/{id}` | GET | Get procedure |
+| `/api/procedures` | POST | Create procedure with full planning data |
+| `/api/procedures/{id}` | PATCH | Update procedure |
+| `/api/planning/{mrn}` | GET | Get planning data for workspace |
+| `/api/parse` | POST | AI parsing |
+| `/api/synopsis` | POST | AI summaries |
+| `/api/orcc/status` | GET | Health check |
+
+**Now Available (Migration Complete 2026-01-21):**
+| Endpoint | Status |
+|----------|--------|
+| `/api/tasks/*` | ✅ Working |
+| `/api/shadow-coder/*` | ✅ Working |
+| `/ws` WebSocket | ✅ Working |
+| `/api/procedures` POST | ✅ Working (vessel_data, interventions, CPT codes) |
+| `/api/planning/{mrn}` | ✅ Working |
+
+See [MIGRATION_SPEC.md](MIGRATION_SPEC.md) for full details.
+
+---
+
 ## Future Direction
 
-### Phase 1: Perfect the UI (CURRENT)
-- Refine visual design and UX across all pages
-- Ensure consistent navigation and branding
-- Test button functionality and page flows
-- Gather feedback on workspace layouts
+### Phase 1: Backend Integration ✅ COMPLETE
+- ✅ Connect ORCC to PlaudAI backend
+- ✅ Tasks API implemented and working
+- ✅ Shadow Coder migrated to PlaudAI
+- ✅ WebSocket server running
+- ✅ Larry Taylor created as first real patient (MRN: 32016089)
+- ✅ POST /api/procedures with full planning data (vessel_data, interventions, ICD-10, CPT)
+- ✅ GET /api/planning/{mrn} for workspace data loading
+- ✅ Charles Daniels procedure saved and retrievable (MRN: 18890211)
 
-### Phase 2: Connect to Existing Backend
-The existing SCC/VAI system has backend infrastructure that ORCC will connect to:
-
-**Required Integrations:**
-1. **Backend API** - RESTful endpoints for CRUD operations
-2. **Database** - Patient records, tasks, VQI data, surgical planning
-3. **Authentication** - User login, role-based access control
-4. **EHR Integration** - Pull patient demographics, labs, imaging
-
-### Phase 3: Add Intelligence Features
-
+### Phase 2: Intelligence Features
 **NLP Processing:**
 - Parse pasted CTA/imaging reports
 - Extract vessel findings automatically
@@ -152,6 +188,12 @@ The existing SCC/VAI system has backend infrastructure that ORCC will connect to
 - LCD criteria validation
 - Medical necessity checking
 - CPT code suggestions based on anatomy/procedure
+
+### Phase 3: UI Refinement
+- Refine visual design and UX across all pages
+- Ensure consistent navigation and branding
+- Test button functionality and page flows
+- Gather feedback on workspace layouts
 
 ---
 
@@ -318,18 +360,23 @@ Workspace → Complete Case Planning → Open VQI Panel
 ## Notes for Development Team
 
 ### Current Limitations to Address
-1. No data persistence (localStorage only)
+1. ~~No data persistence (localStorage only)~~ ✅ FIXED - Procedures save to PlaudAI database
 2. No authentication/authorization
-3. Hardcoded patient data
+3. ~~Hardcoded patient data~~ ✅ FIXED - Patients load from API
 4. No real NLP processing (Process button is fake)
 5. Filter buttons on tasks page are non-functional
 6. PDF export buttons are non-functional
 7. VQI form submissions are non-functional
 
-### Priority Features for Backend Integration
-1. Patient CRUD operations
-2. Task management with real persistence
-3. Surgical case creation and status tracking
+### Completed Features
+1. ✅ Patient CRUD operations (PlaudAI API)
+2. ✅ Task management with real persistence (PlaudAI API)
+3. ✅ Surgical case creation and status tracking (POST /api/procedures)
+4. ✅ Procedure planning data persistence (vessel_data, interventions, ICD-10, CPT)
+5. ✅ Workspace loads planning data from API (GET /api/planning/{mrn})
+
+### Priority Features Remaining
+1. User authentication
 4. User authentication
 5. NLP processing for CTA reports (can be separate microservice)
 
@@ -338,10 +385,36 @@ Workspace → Complete Case Planning → Open VQI Panel
 ## Contact & Resources
 
 - **Project:** OR Command Center (ORCC)
-- **Replaces:** SCC/VAI UI (backend remains)
-- **Status:** UI Prototype Phase
-- **Version:** 0.1.0
+- **Replaces:** SCC/VAI UI (backend migrated to PlaudAI)
+- **Status:** Backend Integration Phase
+- **Version:** 0.2.0
+- **Backend:** PlaudAI @ `100.75.237.36:8001`
 
 ---
 
-*Last Updated: January 2026*
+## Migration Status (2026-01-21)
+
+### ✅ Completed
+- SCC → PlaudAI migration complete
+- All APIs working (patients, procedures, tasks, shadow-coder)
+- Larry Taylor test patient in database (MRN: 32016089)
+- Charles Daniels procedure saved with full planning data (MRN: 18890211)
+- WebSocket server running
+- POST /api/procedures - Creates procedures with vessel_data, interventions, ICD-10, CPT codes
+- GET /api/planning/{mrn} - Returns planning data for workspace loading
+- ORCC Endovascular Planning page wired to API
+- ORCC Workspace loads planning data from API (persists across refreshes)
+
+### 🚫 Retired
+- SCC Node server (port 3001) - can be stopped
+
+### ✅ All Core Features Working
+- Patient list loads from PlaudAI
+- Add Patient creates in PlaudAI database
+- Endovascular Planning saves to PlaudAI
+- Workspace loads planning data from PlaudAI
+- Data persists across page refreshes
+
+---
+
+*Last Updated: 2026-01-21 17:50*

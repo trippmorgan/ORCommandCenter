@@ -1952,14 +1952,66 @@ The complete note will appear here.</div>
     }
 
     // Load planning data and update workspace
-    function loadPlanningData() {
-      const planningData = localStorage.getItem('planningData');
+    // First tries API, falls back to localStorage
+    async function loadPlanningData() {
       const patientData = localStorage.getItem('selectedPatient');
-
-      if (!planningData) return;
-
-      const planning = JSON.parse(planningData);
       const patient = patientData ? JSON.parse(patientData) : {};
+
+      let planning = null;
+
+      // Try to load from API first if we have an MRN
+      if (patient.mrn && typeof ORCC_API !== 'undefined') {
+        try {
+          console.log('Loading planning data from PlaudAI for MRN:', patient.mrn);
+          const apiResponse = await ORCC_API.getPlanningData(patient.mrn);
+
+          if (apiResponse && apiResponse.procedure) {
+            // Transform API response to planning format
+            // Note: API returns flat structure with separate indication, access, etc.
+            planning = {
+              vesselData: apiResponse.vessel_data || {},
+              interventions: apiResponse.interventions || [],
+              procedure: {
+                type: apiResponse.procedure.type,
+                side: apiResponse.procedure.side,
+                accessSite: apiResponse.access?.site,
+                sheathSize: apiResponse.access?.sheath_size,
+                anesthesia: apiResponse.access?.anesthesia,
+                primaryIcd10: apiResponse.indication?.primary_icd10,
+                primaryIcd10Text: apiResponse.indication?.primary_icd10_text,
+                secondaryIcd10: apiResponse.indication?.secondary_icd10,
+                rutherford: apiResponse.indication?.rutherford,
+                inflow: apiResponse.inflow || {},
+                outflow: apiResponse.outflow || {}
+              },
+              procDate: apiResponse.procedure.date,
+              cptCodes: apiResponse.cpt_codes || []
+            };
+
+            // Update patient info from API
+            if (apiResponse.patient) {
+              patient.name = apiResponse.patient.name;
+              patient.procedure = apiResponse.procedure.name || apiResponse.procedure.type;
+            }
+
+            console.log('Planning data loaded from API:', planning);
+
+            // Also update localStorage so it's cached
+            localStorage.setItem('planningData', JSON.stringify(planning));
+          }
+        } catch (error) {
+          console.warn('Could not load planning data from API:', error.message);
+          // Fall back to localStorage below
+        }
+      }
+
+      // Fall back to localStorage if API didn't return data
+      if (!planning) {
+        const localPlanningData = localStorage.getItem('planningData');
+        if (!localPlanningData) return;
+        planning = JSON.parse(localPlanningData);
+        console.log('Planning data loaded from localStorage:', planning);
+      }
 
       // Map planning vessel IDs to workspace vessel IDs
       const vesselIdMap = {
@@ -2649,5 +2701,8 @@ cc: Joe H. Morgan, M.D.`;
       document.querySelector('.output-section-status').classList.add('status-valid');
     }
   </script>
+
+  <!-- API Client for PlaudAI -->
+  <script src="js/api-client.js"></script>
 </body>
 </html>
