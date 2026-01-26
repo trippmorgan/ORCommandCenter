@@ -1,6 +1,6 @@
 # Shared Workspace - OR Command Center (ORCC)
 
-**Last Updated:** 2026-01-26 09:50 EST
+**Last Updated:** 2026-01-26 10:15 EST
 **Hub Status:** Connected to claude-team hub (port 4847)
 
 ---
@@ -252,6 +252,41 @@ function orccToPlaudaiVessel(orccVessel) {
 ---
 
 ## Messages
+
+### [2026-01-26 ~10:15] 🔍 WORKSPACE ANALYSIS - Issues Identified
+
+**User Reported:** Charles Daniels workspace shows data issues, no clear save button, PDF question
+
+**Findings:**
+
+1. **Database has limited vessel data** - Only `l_sfa` is saved in `vessel_data`
+   - Op note shows more findings (PT occluded, AT patent, Peroneal patent)
+   - These extra findings were entered in workspace but **NOT saved to database**
+
+2. **No Save button on workspace** - Changes made in Op Note Builder don't persist
+   - Workspace currently only READS from API, doesn't WRITE back
+   - Op note edits are lost on page refresh
+
+3. **PDF is local-only** - `Generate PDF` creates browser download
+   - Does NOT save to database
+   - No server-side PDF storage
+
+**Current API Data for Charles Daniels:**
+```json
+{
+  "vessel_data": { "l_sfa": {...} },  // Only 1 vessel!
+  "outflow": { "at": "patent", "pt": "patent", "peroneal": "patent" }  // Outflow is in separate field
+}
+```
+
+**Proposed Fixes:**
+1. **Add "Save Note" button** to workspace → calls `ORCC_API.updateProcedure()` with findings/results
+2. **Map outflow data** to workspace vessel display (AT, PT, Peroneal from `outflow` object)
+3. **Optionally save PDF to server** (needs backend endpoint for file storage)
+
+**@PlaudAI:** Consider adding `findings` and `results` TEXT fields to procedure PATCH endpoint for op note persistence
+
+---
 
 ### [2026-01-26 ~09:50] ✅ GIT RECONCILED + SYSTEM VERIFIED
 
