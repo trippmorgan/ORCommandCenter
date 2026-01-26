@@ -1,7 +1,77 @@
 # Shared Workspace - OR Command Center (ORCC)
 
-**Last Updated:** 2026-01-26 10:50 EST
+**Last Updated:** 2026-01-26 10:30 EST
 **Hub Status:** Connected to claude-team hub (port 4847)
+
+---
+
+## 📋 SESSION HANDOFF (2026-01-26 ~10:30)
+
+### Where We Left Off
+
+**Session completed:** Git reconciliation, testing, documentation, workspace analysis
+
+**Current Status:** Phase 2 Backend Integration COMPLETE ✅
+
+---
+
+### 🔧 NEXT TASKS (To Resume)
+
+1. **Add "Save Note" button to workspace**
+   - File: `surgical-command-center-workspace.html`
+   - Call `ORCC_API.updateProcedure(id, { findings: opNoteText, results: ... })`
+   - Need procedure ID from `localStorage.selectedPatient.procedureId`
+
+2. **Map outflow data to workspace vessel display**
+   - Currently: `outflow: { at: "patent", pt: "patent", peroneal: "patent" }` stored separately
+   - Need: Display AT, PT, Peroneal in workspace findings table from `outflow` object
+   - File: `surgical-command-center-workspace.html` → `loadPlanningData()` function (~line 1990)
+
+3. **Optional: Server-side PDF storage**
+   - Requires PlaudAI endpoint for file upload
+   - Lower priority
+
+---
+
+### Current System State
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| API | ✅ Healthy | `http://100.75.237.36:8001` |
+| Patients | 17 | CRUD working |
+| Procedures | 12 | Full planning data |
+| Git | Clean | All changes pushed |
+
+**Charles Daniels (MRN: 18890211):**
+- 1 procedure saved with L SFA stenosis_severe + ath_pta
+- Outflow: AT patent, PT patent, Peroneal patent
+- Workspace loads correctly, but edits don't save back
+
+---
+
+### Key Files for Resume
+
+| File | Purpose | Notes |
+|------|---------|-------|
+| [surgical-command-center-workspace.html](surgical-command-center-workspace.html) | PAD Workspace | Needs Save button |
+| [js/api-client.js](js/api-client.js) | API Client | `updateProcedure()` ready to use |
+| [planning-endovascular.html](planning-endovascular.html) | Planning Page | Working correctly |
+| [.claude-team/SHARED_WORKSPACE.md](.claude-team/SHARED_WORKSPACE.md) | This file | Team communication |
+
+---
+
+### API Endpoint for Save
+
+```javascript
+// To save op note from workspace:
+const procedureId = patient.procedureId; // from localStorage
+await ORCC_API.updateProcedure(procedureId, {
+  findings: opNoteText,
+  results: resultsSummary
+});
+```
+
+**Note:** PlaudAI may need to verify `findings` and `results` TEXT fields are supported in PATCH
 
 ---
 
@@ -11,24 +81,11 @@
 
 **GitHub Updated:** claude-team repo pushed with final migration status
 
-**Current System Health:**
-| Metric | Value |
-|--------|-------|
-| API Status | healthy |
-| Procedures | 12 |
-| Patients | 17 |
-| Charles Daniels | 1 procedure (cleaned) |
-
 **All Features Working:**
 - `saveOrUpdateProcedure()` - Prevents duplicates ✅
 - `loadExistingPlanningData()` - Pre-populates forms ✅
 - Left-side vessel support in workspace ✅
 - Dynamic vessel ordering by procedure side ✅
-
-**Remaining Work (identified in workspace analysis):**
-1. Add "Save Note" button to workspace
-2. Map outflow data (AT, PT, Peroneal) to vessel display
-3. Optional: Server-side PDF storage
 
 **@Server1/PlaudAI:** Consider supporting `findings` and `results` TEXT fields in PATCH endpoint
 
