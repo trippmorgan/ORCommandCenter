@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ORCC API Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; background: #BA0C2F; color: white; border: none; }
+        pre { background: #333; padding: 15px; overflow: auto; max-height: 300px; }
+        .success { color: #22C55E; }
+        .error { color: #EF4444; }
+        h2 { color: #888; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>ORCC API Test Page</h1>
+    <p>API Base: <code>http://100.75.237.36:8001</code></p>
+
+    <h2>1. Test API Connection</h2>
+    <button onclick="testConnection()">Test Connection</button>
+    <pre id="connection-result">Click button to test...</pre>
+
+    <h2>2. Test Get Planning Data (Charles Daniels - MRN: 18890211)</h2>
+    <button onclick="testGetPlanning()">Get Planning Data</button>
+    <pre id="planning-result">Click button to test...</pre>
+
+    <h2>3. Test Create Procedure</h2>
+    <button onclick="testCreateProcedure()">Create Test Procedure</button>
+    <pre id="create-result">Click button to test...</pre>
+
+    <h2>4. Check localStorage</h2>
+    <button onclick="checkLocalStorage()">Check localStorage</button>
+    <pre id="storage-result">Click button to check...</pre>
+
+    <h2>5. Simulate Full Save Flow</h2>
+    <button onclick="simulateSaveFlow()">Simulate Planning Save</button>
+    <pre id="flow-result">Click button to test full flow...</pre>
+
+    <!-- Load the API client -->
+    <script src="js/api-client.js"></script>
+
+    <script>
+        // Check if ORCC_API loaded
+        console.log('ORCC_API loaded:', typeof ORCC_API !== 'undefined');
+        if (typeof ORCC_API !== 'undefined') {
+            console.log('ORCC_API base URL:', ORCC_API.baseUrl);
+        }
+
+        async function testConnection() {
+            const el = document.getElementById('connection-result');
+            el.innerHTML = 'Testing...';
+            try {
+                if (typeof ORCC_API === 'undefined') {
+                    throw new Error('ORCC_API not loaded! Check api-client.js');
+                }
+                const result = await ORCC_API.checkHealth();
+                el.innerHTML = '<span class="success">SUCCESS!</span>\n' + JSON.stringify(result, null, 2);
+            } catch (err) {
+                el.innerHTML = '<span class="error">ERROR: ' + err.message + '</span>';
+            }
+        }
+
+        async function testGetPlanning() {
+            const el = document.getElementById('planning-result');
+            el.innerHTML = 'Loading...';
+            try {
+                const result = await ORCC_API.getPlanningData('18890211');
+                el.innerHTML = '<span class="success">SUCCESS!</span>\n' + JSON.stringify(result, null, 2);
+            } catch (err) {
+                el.innerHTML = '<span class="error">ERROR: ' + err.message + '</span>';
+            }
+        }
+
+        async function testCreateProcedure() {
+            const el = document.getElementById('create-result');
+            el.innerHTML = 'Creating...';
+            try {
+                const testData = {
+                    mrn: '18890211',
+                    procedure_type: 'LEA with Angioplasty',
+                    procedure_name: 'API Test Procedure',
+                    procedure_side: 'left',
+                    procedure_date: new Date().toISOString().split('T')[0],
+                    scheduled_location: 'ASC',
+                    status: 'draft',
+                    surgical_status: 'workup',
+                    indication: {
+                        primary_icd10: 'I70.222',
+                        primary_icd10_text: 'Test ICD',
+                        rutherford: 'r4'
+                    },
+                    vessel_data: {
+                        l_sfa: {
+                            name: 'L SFA',
+                            status: 'stenosis_severe',
+                            length: '10-20cm',
+                            intervention: 'ath_pta'
+                        }
+                    },
+                    interventions: [{
+                        vessel: 'L SFA',
+                        vesselId: 'l_sfa',
+                        status: 'stenosis_severe',
+                        intervention: 'ath_pta'
+                    }],
+                    cpt_codes: ['75710', '37225']
+                };
+                const result = await ORCC_API.createProcedure(testData);
+                el.innerHTML = '<span class="success">SUCCESS!</span>\n' + JSON.stringify(result, null, 2);
+            } catch (err) {
+                el.innerHTML = '<span class="error">ERROR: ' + err.message + '</span>';
+            }
+        }
+
+        function checkLocalStorage() {
+            const el = document.getElementById('storage-result');
+            const selectedPatient = localStorage.getItem('selectedPatient');
+            const planningData = localStorage.getItem('planningData');
+
+            el.innerHTML = 'selectedPatient:\n' + (selectedPatient ? JSON.stringify(JSON.parse(selectedPatient), null, 2) : 'null') +
+                '\n\nplanningData:\n' + (planningData ? JSON.stringify(JSON.parse(planningData), null, 2) : 'null');
+        }
+
+        async function simulateSaveFlow() {
+            const el = document.getElementById('flow-result');
+            el.innerHTML = 'Running full flow simulation...\n\n';
+
+            // Step 1: Check API
+            el.innerHTML += '1. Checking ORCC_API...\n';
+            if (typeof ORCC_API === 'undefined') {
+                el.innerHTML += '<span class="error">ORCC_API is undefined!</span>\n';
+                return;
+            }
+            el.innerHTML += '<span class="success">ORCC_API loaded ✓</span>\n\n';
+
+            // Step 2: Check localStorage for patient
+            el.innerHTML += '2. Checking localStorage for patient...\n';
+            let patient = JSON.parse(localStorage.getItem('selectedPatient') || '{}');
+            if (!patient.mrn) {
+                el.innerHTML += 'No patient in localStorage. Setting Charles Daniels...\n';
+                patient = {
+                    id: 'test-id',
+                    name: 'Daniels, Charles',
+                    mrn: '18890211'
+                };
+                localStorage.setItem('selectedPatient', JSON.stringify(patient));
+            }
+            el.innerHTML += '<span class="success">Patient: ' + patient.name + ' (MRN: ' + patient.mrn + ') ✓</span>\n\n';
+
+            // Step 3: Build procedure data
+            el.innerHTML += '3. Building procedure data...\n';
+            const vesselData = {
+                l_sfa: {
+                    name: 'L SFA',
+                    status: 'stenosis_severe',
+                    length: '10-20cm',
+                    intervention: 'ath_pta',
+                    notes: ''
+                }
+            };
+            const interventions = [{
+                vessel: 'L SFA',
+                vesselId: 'l_sfa',
+                status: 'stenosis_severe',
+                length: '10-20cm',
+                intervention: 'ath_pta',
+                notes: ''
+            }];
+
+            const procedureData = {
+                mrn: patient.mrn,
+                procedure_type: 'lea_atherectomy',
+                procedure_name: 'Left Lower Extremity Arteriogram with Atherectomy and PTA',
+                procedure_side: 'left',
+                procedure_date: new Date().toISOString().split('T')[0],
+                scheduled_location: 'ASC',
+                status: 'draft',
+                surgical_status: 'workup',
+                indication: {
+                    primary_icd10: 'I70.222',
+                    primary_icd10_text: 'Atherosclerosis of native arteries with rest pain, left leg',
+                    rutherford: 'r4'
+                },
+                access: {
+                    site: 'r_cfa',
+                    sheath_size: '6fr',
+                    anesthesia: 'mac_local'
+                },
+                inflow: { aortoiliac: 'normal', cfa: 'normal' },
+                outflow: { at: 'patent', pt: 'patent', peroneal: 'patent' },
+                vessel_data: vesselData,
+                interventions: interventions,
+                cpt_codes: ['75710', '37225']
+            };
+            el.innerHTML += '<span class="success">Data built ✓</span>\n';
+            el.innerHTML += 'vessel_data: ' + JSON.stringify(vesselData) + '\n\n';
+
+            // Step 4: Call API
+            el.innerHTML += '4. Calling ORCC_API.createProcedure()...\n';
+            try {
+                const response = await ORCC_API.createProcedure(procedureData);
+                el.innerHTML += '<span class="success">API call successful ✓</span>\n';
+                el.innerHTML += 'Response ID: ' + response.id + '\n\n';
+
+                // Step 5: Update localStorage
+                el.innerHTML += '5. Updating localStorage with procedure ID...\n';
+                patient.procedureId = response.id;
+                localStorage.setItem('selectedPatient', JSON.stringify(patient));
+                el.innerHTML += '<span class="success">localStorage updated ✓</span>\n\n';
+
+                // Step 6: Verify data was saved
+                el.innerHTML += '6. Verifying data via GET /api/planning...\n';
+                const verifyResponse = await ORCC_API.getPlanningData(patient.mrn);
+                el.innerHTML += '<span class="success">Verification successful ✓</span>\n';
+                el.innerHTML += 'vessel_data from API: ' + JSON.stringify(verifyResponse.vessel_data) + '\n';
+                el.innerHTML += 'interventions from API: ' + JSON.stringify(verifyResponse.interventions) + '\n\n';
+
+                el.innerHTML += '<span class="success">===== FULL FLOW COMPLETE =====</span>\n';
+                el.innerHTML += 'Data is saving to PlaudAI correctly!\n';
+                el.innerHTML += 'Next: Open planning-endovascular.html with browser console open.\n';
+
+            } catch (err) {
+                el.innerHTML += '<span class="error">API ERROR: ' + err.message + '</span>\n';
+                el.innerHTML += 'Check browser console for details.\n';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1498,11 +1498,17 @@
     function openInWorkspace() {
       if (selectedPatientId) {
         const patient = patients[selectedPatientId];
+        console.log('openInWorkspace - patient:', patient);
+        console.log('openInWorkspace - MRN:', patient.mrn);
+
         // Store patient data in localStorage for workspace to use
-        localStorage.setItem('selectedPatient', JSON.stringify({
+        const patientData = {
           id: selectedPatientId,
           ...patient
-        }));
+        };
+        console.log('Saving to localStorage:', patientData);
+        localStorage.setItem('selectedPatient', JSON.stringify(patientData));
+
         // Navigate to appropriate workspace based on procedure
         const procedure = patient.procedure.toLowerCase();
         if (procedure.includes('carotid') || procedure.includes('tcar') || procedure.includes('cea')) {

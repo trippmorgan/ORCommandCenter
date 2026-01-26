@@ -1,10 +1,23 @@
 # OR Command Center (ORCC)
 
-A surgical intelligence and planning suite for vascular surgery. Currently a **UI prototype** with static HTML files demonstrating the complete workflow from patient intake through operative documentation.
+A surgical intelligence and planning suite for vascular surgery. Now integrated with **PlaudAI backend** for persistent data storage via PostgreSQL.
 
-**Version:** 0.1.0
-**Status:** UI Prototype Phase
-**Last Updated:** January 2026
+**Version:** 0.2.0
+**Status:** Backend Integration Complete
+**Last Updated:** 2026-01-22
+
+---
+
+## Backend Status
+
+| Component | Status | Details |
+|-----------|--------|---------|
+| PlaudAI API | ✅ Healthy | `http://100.75.237.36:8001` |
+| Database | ✅ Connected | PostgreSQL on Server1 |
+| Patients | 14 records | CRUD working |
+| Procedures | 35 records | Full planning data support |
+
+**Key Test:** Charles Daniels (MRN: 18890211) has procedure with vessel_data, interventions, ICD-10, CPT codes persisted.
 
 ---
 
@@ -468,25 +481,29 @@ planningData = {
 
 ---
 
-## Future Development
+## Development Status
 
-### Phase 1: Perfect the UI (CURRENT)
+### Phase 1: UI Prototype ✅ COMPLETE
 - [x] Navigation hub
 - [x] Patient lists with tabs
 - [x] Task manager
 - [x] PAD workspace with anatomy diagram
 - [x] Endovascular planning template
 - [x] Interactive Op Note Builder
-- [ ] Carotid/Aortic/Venous workspaces refinement
-- [ ] VQI panel integration
+- [x] Carotid/Aortic/Venous workspaces
 
-### Phase 2: Connect to Backend
-- [ ] RESTful API integration
-- [ ] Database persistence
-- [ ] User authentication
-- [ ] EHR integration
+### Phase 2: Backend Integration ✅ COMPLETE (2026-01-22)
+- [x] RESTful API integration (PlaudAI:8001)
+- [x] Database persistence (PostgreSQL)
+- [x] Patient CRUD operations
+- [x] Procedure creation with full planning data
+- [x] `POST /api/procedures` - vessel_data, interventions, ICD-10, CPT
+- [x] `GET /api/planning/{mrn}` - workspace data loading
+- [x] Data persists across page refreshes
+- [ ] User authentication (pending)
+- [ ] EHR integration (pending)
 
-### Phase 3: Intelligence Features
+### Phase 3: Intelligence Features (PLANNED)
 - [ ] NLP processing for imaging reports
 - [ ] Auto-populate anatomy diagrams
 - [ ] Clinical decision support

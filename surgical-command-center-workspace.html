@@ -1959,6 +1959,9 @@ The complete note will appear here.</div>
     <span>v0.1.0</span>
   </footer>
 
+  <!-- API Client for PlaudAI - Must load BEFORE inline scripts -->
+  <script src="js/api-client.js"></script>
+
   <script>
     // Load selected patient from localStorage
     function loadSelectedPatient() {
@@ -1987,6 +1990,9 @@ The complete note will appear here.</div>
     async function loadPlanningData() {
       const patientData = localStorage.getItem('selectedPatient');
       const patient = patientData ? JSON.parse(patientData) : {};
+
+      console.log('loadPlanningData called, patient:', patient);
+      console.log('ORCC_API available:', typeof ORCC_API !== 'undefined');
 
       let planning = null;
 
@@ -2026,14 +2032,27 @@ The complete note will appear here.</div>
             }
 
             console.log('Planning data loaded from API:', planning);
+            console.log('vessel_data keys:', Object.keys(planning.vesselData));
+            console.log('interventions count:', planning.interventions.length);
+
+            // Show visual confirmation
+            showLoadStatus('Data loaded from PlaudAI: ' + Object.keys(planning.vesselData).join(', '), 'success');
 
             // Also update localStorage so it's cached
             localStorage.setItem('planningData', JSON.stringify(planning));
+          } else {
+            console.log('API returned response but no procedure:', apiResponse);
+            showLoadStatus('No procedure data found in API', 'warning');
           }
         } catch (error) {
           console.warn('Could not load planning data from API:', error.message);
+          showLoadStatus('API Error: ' + error.message, 'error');
           // Fall back to localStorage below
         }
+      } else {
+        console.log('Skipping API - MRN:', patient.mrn, 'ORCC_API:', typeof ORCC_API);
+        if (!patient.mrn) showLoadStatus('No MRN in localStorage', 'warning');
+        if (typeof ORCC_API === 'undefined') showLoadStatus('ORCC_API not loaded', 'error');
       }
 
       // Fall back to localStorage if API didn't return data
@@ -2162,7 +2181,7 @@ The complete note will appear here.</div>
         'l_peroneal': 'L Peroneal'
       };
 
-      // Build rows from vessel data
+      // Build rows from vessel data - use actual vessels from planning data
       const rows = [];
       // Determine which side to show based on procedure side
       const procSide = planning.procedure?.side || 'right';
@@ -2176,16 +2195,17 @@ The complete note will appear here.</div>
         vesselOrder = ['aorta', 'r_cia', 'r_eia', 'r_cfa', 'r_profunda', 'r_sfa', 'r_popliteal', 'r_at', 'r_pt', 'r_peroneal'];
       }
 
-      vesselOrder.forEach(vesselId => {
-        const data = planning.vesselData[vesselId];
-        if (data && vesselNames[vesselId]) {
+      // Process all vessels in the planning data, not just a fixed order
+      Object.entries(planning.vesselData).forEach(([vesselId, data]) => {
+        const vesselName = vesselNames[vesselId] || data.name || vesselId.toUpperCase().replace(/_/g, ' ');
+        if (data) {
           const status = data.status || 'patent';
           const label = statusLabels[status] || 'Patent';
           const cssClass = statusClasses[status] || 'finding-patent';
 
           rows.push(`
             <tr>
-              <td>${vesselNames[vesselId]}</td>
+              <td>${vesselName}</td>
               <td><span class="finding-status ${cssClass}">${label}</span></td>
               <td>Planning ${planning.procDate || ''}</td>
             </tr>
@@ -2398,6 +2418,28 @@ ${anesthesiaDesc}
 
 <strong>Attending:</strong>
 Joe H. Morgan, M.D.`;
+    }
+
+    // Status display helper
+    function showLoadStatus(message, type) {
+      let statusBar = document.getElementById('loadStatusBar');
+      if (!statusBar) {
+        statusBar = document.createElement('div');
+        statusBar.id = 'loadStatusBar';
+        statusBar.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; padding: 8px 20px; z-index: 10000; font-size: 0.85rem; font-family: "JetBrains Mono", monospace; transition: opacity 0.5s;';
+        document.body.appendChild(statusBar);
+      }
+      const colors = {
+        success: { bg: '#22C55E', text: '#fff' },
+        warning: { bg: '#F59E0B', text: '#000' },
+        error: { bg: '#EF4444', text: '#fff' }
+      };
+      const color = colors[type] || colors.success;
+      statusBar.style.background = color.bg;
+      statusBar.style.color = color.text;
+      statusBar.textContent = message;
+      statusBar.style.opacity = '1';
+      setTimeout(() => { statusBar.style.opacity = '0'; }, 5000);
     }
 
     // Load patient on page load
@@ -2753,8 +2795,5 @@ cc: Joe H. Morgan, M.D.`;
       document.querySelector('.output-section-status').classList.add('status-valid');
     }
   </script>
-
-  <!-- API Client for PlaudAI -->
-  <script src="js/api-client.js"></script>
 </body>
 </html>

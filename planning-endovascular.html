@@ -569,6 +569,7 @@
                 </h1>
             </div>
             <div class="header-actions">
+                <span id="debugStatus" style="font-size: 0.75rem; color: #888; margin-right: 1rem; font-family: 'JetBrains Mono', monospace;"></span>
                 <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
                 <button class="btn btn-primary" onclick="saveAndOpenWorkspace()">Save & Open Workspace →</button>
             </div>
@@ -1014,6 +1015,9 @@
         </div>
     </div>
 
+    <!-- API Client for PlaudAI - Must load BEFORE inline scripts -->
+    <script src="js/api-client.js"></script>
+
     <script>
         // State
         let interventions = [];
@@ -1025,10 +1029,16 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // Load patient from localStorage
             const patient = JSON.parse(localStorage.getItem('selectedPatient') || '{}');
+            console.log('Planning page loaded. Patient from localStorage:', patient);
+            console.log('Patient MRN:', patient.mrn);
+            console.log('ORCC_API available:', typeof ORCC_API !== 'undefined');
+
             if (patient.name) {
                 document.getElementById('patientName').textContent = patient.name;
                 document.getElementById('patientAvatar').textContent = patient.name.charAt(0);
                 document.getElementById('patientMRN').textContent = 'MRN: ' + (patient.mrn || '—');
+            } else {
+                console.warn('No patient loaded! localStorage selectedPatient is empty or missing name');
             }
 
             // Set today's date as default
@@ -1040,6 +1050,7 @@
             }
 
             updateSummary();
+            updateDebugStatus();
         });
 
         // Load existing planning data from API and populate the form
@@ -1240,6 +1251,13 @@
                 notes: notes
             };
 
+            console.log('Vessel data saved:', svgId, vesselData[svgId]);
+            console.log('Current vesselData object:', JSON.stringify(vesselData, null, 2));
+
+            // Show brief toast notification
+            showToast(`${currentVessel.name}: ${status === 'patent' ? 'Patent' : status.replace('stenosis_', '').replace('_', '-') + ' stenosis'}${intervention !== 'none' ? ' + ' + intervention.replace('_', '/') : ''}`);
+
+
             // Add to interventions if intervention planned
             if (intervention !== 'none') {
                 const existing = interventions.findIndex(i => i.vessel === currentVessel.name);
@@ -1262,7 +1280,31 @@
             }
 
             updateSummary();
+            updateDebugStatus();
             closeVesselModal();
+        }
+
+        function updateDebugStatus() {
+            const vesselCount = Object.keys(vesselData).length;
+            const intCount = interventions.length;
+            const el = document.getElementById('debugStatus');
+            if (el) {
+                el.innerHTML = `Vessels: <span style="color: ${vesselCount > 0 ? '#22C55E' : '#EF4444'}">${vesselCount}</span> | Interventions: <span style="color: ${intCount > 0 ? '#22C55E' : '#888'}">${intCount}</span>`;
+            }
+        }
+
+        function showToast(message) {
+            // Create toast element if not exists
+            let toast = document.getElementById('orcc-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'orcc-toast';
+                toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #22C55E; color: white; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; z-index: 10000; opacity: 0; transition: opacity 0.3s; font-family: Inter, sans-serif;';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = '✓ ' + message;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
         }
 
         function updateInterventionsList() {
@@ -1580,6 +1622,23 @@
                 return;
             }
 
+            // Check if any vessel findings have been defined
+            const hasVesselFindings = Object.keys(vesselData).length > 0;
+            const hasInterventions = interventions.length > 0;
+
+            if (!hasVesselFindings && !hasInterventions) {
+                const proceed = confirm(
+                    'No vessel findings or interventions defined!\n\n' +
+                    'To define vessel disease:\n' +
+                    '1. Click on a vessel in the diagram (e.g., SFA)\n' +
+                    '2. Select the stenosis severity\n' +
+                    '3. Choose an intervention if needed\n' +
+                    '4. Click "Save Finding"\n\n' +
+                    'Continue anyway with diagnostic-only procedure?'
+                );
+                if (!proceed) return;
+            }
+
             // Get ICD-10 data
             const primaryIcd = document.getElementById('primaryIcd10');
             const secondaryIcd = document.getElementById('secondaryIcd10');
@@ -1685,12 +1744,21 @@
             try {
                 // Call PlaudAI API to save or update procedure
                 // Uses saveOrUpdateProcedure to avoid creating duplicates
+                console.log('Saving procedure data to PlaudAI:', procedureData);
+
+                if (typeof ORCC_API === 'undefined') {
+                    throw new Error('ORCC_API not loaded - check api-client.js');
+                }
+
                 const response = await ORCC_API.saveOrUpdateProcedure(procedureData);
                 console.log('Procedure saved to PlaudAI:', response);
 
                 // Store procedure ID for future updates
                 patient.procedureId = response.id;
                 localStorage.setItem('selectedPatient', JSON.stringify(patient));
+
+                // Show success and navigate
+                alert(`Saved successfully! Procedure ID: ${response.id}\n\nNavigating to workspace...`);
 
                 // Navigate to workspace
                 window.location.href = 'surgical-command-center-workspace.html';
@@ -1726,7 +1794,5 @@
         }
     </script>
 
-    <!-- API Client for PlaudAI -->
-    <script src="js/api-client.js"></script>
 </body>
 </html>
