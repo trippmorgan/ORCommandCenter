@@ -1,8 +1,8 @@
 # SCC → PlaudAI Migration Specification
 
-**Version:** 1.2
-**Date:** 2026-01-21
-**Status:** ✅ PHASE 1 & 2 COMPLETE
+**Version:** 1.3
+**Date:** 2026-01-25
+**Status:** ✅ MIGRATION COMPLETE - FULL INTEGRATION VERIFIED
 
 ---
 
@@ -22,10 +22,22 @@
 |------|--------|
 | POST /api/procedures | ✅ Working - Full planning data support |
 | GET /api/planning/{mrn} | ✅ Working - Workspace data loading |
+| PATCH /api/procedures/{id} | ✅ Working - Update procedures |
+| DELETE /api/procedures/{id} | ✅ Working - Delete procedures |
 | Charles Daniels procedure | ✅ Saved (MRN: 18890211) |
 | ORCC Planning Page wired | ✅ Saves to API |
 | ORCC Workspace wired | ✅ Loads from API |
 | Data persists on refresh | ✅ Working |
+
+### Phase 3 Results (Frontend Fixes - Jan 25, 2026):
+| Task | Status |
+|------|--------|
+| saveOrUpdateProcedure() | ✅ Prevents duplicate procedure creation |
+| loadExistingPlanningData() | ✅ Planning page loads from API on open |
+| Pre-populate vessel modal | ✅ Shows existing data when editing |
+| LEFT-side vessel SVG paths | ✅ Added l-sfa, l-cfa, l-eia, etc. |
+| Dynamic vesselOrder | ✅ Based on procedure.side |
+| Deleted 26 duplicate procedures | ✅ Cleaned up database |
 
 ### Procedures API Features:
 - **vessel_data**: JSONB storing vessel status (stenosis_severe, occluded, etc.)

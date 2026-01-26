@@ -123,6 +123,63 @@ const ORCC_API = {
     return this.request(`/api/planning/${encodeURIComponent(mrn)}`);
   },
 
+  /**
+   * Get the latest procedure for a patient by MRN
+   * Returns null if no procedure exists
+   * @param {string} mrn - Medical Record Number
+   */
+  async getLatestProcedureByMRN(mrn) {
+    try {
+      const planningData = await this.getPlanningData(mrn);
+      if (planningData && planningData.procedure && planningData.procedure.id) {
+        return planningData.procedure;
+      }
+      return null;
+    } catch (err) {
+      // No procedure found or API error
+      console.log(`No existing procedure found for MRN ${mrn}`);
+      return null;
+    }
+  },
+
+  /**
+   * Create or update a procedure for a patient
+   * Checks if procedure exists for MRN, updates if yes, creates if no
+   * @param {Object} procedureData - Full procedure data
+   * @returns {Object} - Created or updated procedure
+   */
+  async saveOrUpdateProcedure(procedureData) {
+    const mrn = procedureData.mrn;
+
+    // Check for existing procedure
+    const existing = await this.getLatestProcedureByMRN(mrn);
+
+    if (existing && existing.id) {
+      // Update existing procedure
+      console.log(`Updating existing procedure ${existing.id} for MRN ${mrn}`);
+      return this.updateProcedure(existing.id, {
+        procedure_type: procedureData.procedure_type,
+        procedure_name: procedureData.procedure_name,
+        procedure_side: procedureData.procedure_side,
+        procedure_date: procedureData.procedure_date,
+        scheduled_location: procedureData.scheduled_location,
+        status: procedureData.status,
+        surgical_status: procedureData.surgical_status,
+        indication: procedureData.indication,
+        access: procedureData.access,
+        inflow: procedureData.inflow,
+        outflow: procedureData.outflow,
+        vessel_data: procedureData.vessel_data,
+        interventions: procedureData.interventions,
+        cpt_codes: procedureData.cpt_codes
+      });
+    } else {
+      // Create new procedure
+      console.log(`Creating new procedure for MRN ${mrn}`);
+      return this.createProcedure(procedureData);
+    }
+  },
+
   // ============ ORCC SPECIFIC ============
 
   /**

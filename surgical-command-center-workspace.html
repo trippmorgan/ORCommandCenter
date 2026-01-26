@@ -1325,17 +1325,48 @@ IMPRESSION:
             <path d="M60 48 L82 78" stroke="#22C55E" stroke-width="7" stroke-linecap="round" class="vessel-segment patent" data-vessel="l-cia" data-status="patent"/>
             <text x="88" y="62" class="vessel-label">L CIA</text>
 
-            <!-- Left External Iliac (dimmed - not side of interest, on viewer's right) -->
-            <g opacity="0.3">
-              <path d="M82 78 L87 115" stroke="#555" stroke-width="5" stroke-linecap="round"/>
-              <path d="M87 115 L87 145" stroke="#555" stroke-width="5" stroke-linecap="round"/>
-              <path d="M87 145 L84 245" stroke="#555" stroke-width="4" stroke-linecap="round"/>
-              <path d="M84 245 L82 285" stroke="#555" stroke-width="4" stroke-linecap="round"/>
-              <path d="M82 285 L92 345" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M82 285 L77 345" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M82 285 L72 335" stroke="#555" stroke-width="2.5" stroke-linecap="round"/>
-              <text x="85" y="395" class="vessel-label" style="font-size: 9px; opacity: 0.5;">LEFT</text>
-            </g>
+            <!-- LEFT LEG (on viewer's right - Anatomic Position) -->
+            <!-- Left External Iliac - CLICKABLE -->
+            <path d="M82 78 L87 115" stroke="#22C55E" stroke-width="5" stroke-linecap="round" class="vessel-segment patent" data-vessel="l-eia" data-status="patent"/>
+            <text x="95" y="100" class="vessel-label">EIA</text>
+
+            <!-- Left CFA - CLICKABLE -->
+            <path d="M87 115 L87 145" stroke="#22C55E" stroke-width="5" stroke-linecap="round" class="vessel-segment patent" data-vessel="l-cfa" data-status="patent"/>
+            <text x="95" y="135" class="vessel-label">CFA</text>
+
+            <!-- Left Profunda - CLICKABLE -->
+            <path d="M87 140 L97 175" stroke="#22C55E" stroke-width="3" stroke-linecap="round" class="vessel-segment patent" data-vessel="l-profunda" data-status="patent"/>
+            <text x="100" y="165" class="vessel-label">Prof</text>
+
+            <!-- Left SFA - CLICKABLE -->
+            <path d="M87 145 L84 245" stroke="#22C55E" stroke-width="4" stroke-linecap="round" class="vessel-segment patent" data-vessel="l-sfa" data-status="patent"/>
+            <text x="68" y="195" class="vessel-label">SFA</text>
+
+            <!-- Left Popliteal - CLICKABLE -->
+            <path d="M84 245 L82 285" stroke="#22C55E" stroke-width="4" stroke-linecap="round" class="vessel-segment patent" data-vessel="l-pop" data-status="patent"/>
+            <text x="68" y="268" class="vessel-label">Pop</text>
+
+            <!-- Left Tib-Peroneal Trunk - CLICKABLE -->
+            <path d="M82 285 L80 305" stroke="#22C55E" stroke-width="3" stroke-linecap="round" class="vessel-segment patent" data-vessel="l-tpt" data-status="patent"/>
+
+            <!-- Left ATA - CLICKABLE -->
+            <path d="M82 285 L92 350" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" class="vessel-segment patent" data-vessel="l-ata" data-status="patent"/>
+            <text x="95" y="325" class="vessel-label">ATA</text>
+
+            <!-- Left PTA - CLICKABLE -->
+            <path d="M80 305 L77 365" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" class="vessel-segment patent" data-vessel="l-pta" data-status="patent"/>
+            <text x="60" y="345" class="vessel-label">PTA</text>
+
+            <!-- Left Peroneal - CLICKABLE -->
+            <path d="M80 305 L72 355" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" class="vessel-segment patent" data-vessel="l-peroneal" data-status="patent"/>
+            <text x="55" y="340" class="vessel-label">Per</text>
+
+            <!-- Left DP - CLICKABLE -->
+            <path d="M92 350 L97 385" stroke="#22C55E" stroke-width="2" stroke-linecap="round" class="vessel-segment patent" data-vessel="l-dp" data-status="patent"/>
+            <text x="100" y="378" class="vessel-label">DP</text>
+
+            <!-- Side indicator -->
+            <text x="85" y="410" class="vessel-label" style="font-size: 10px; font-weight: 700; fill: #1D4ED8;">LEFT</text>
 
             <!-- RIGHT LEG (side of interest, on viewer's left - Anatomic Position) -->
             <!-- Right External Iliac - CLICKABLE -->
@@ -2109,6 +2140,7 @@ The complete note will appear here.</div>
 
       const vesselNames = {
         'aorta': 'Infrarenal Aorta',
+        // Right side
         'r_cia': 'R CIA',
         'r_eia': 'R EIA',
         'r_cfa': 'R CFA',
@@ -2117,12 +2149,32 @@ The complete note will appear here.</div>
         'r_popliteal': 'R Popliteal',
         'r_at': 'R ATA',
         'r_pt': 'R PTA',
-        'r_peroneal': 'R Peroneal'
+        'r_peroneal': 'R Peroneal',
+        // Left side
+        'l_cia': 'L CIA',
+        'l_eia': 'L EIA',
+        'l_cfa': 'L CFA',
+        'l_profunda': 'L Profunda',
+        'l_sfa': 'L SFA',
+        'l_popliteal': 'L Popliteal',
+        'l_at': 'L ATA',
+        'l_pt': 'L PTA',
+        'l_peroneal': 'L Peroneal'
       };
 
       // Build rows from vessel data
       const rows = [];
-      const vesselOrder = ['aorta', 'r_cia', 'r_eia', 'r_cfa', 'r_profunda', 'r_sfa', 'r_popliteal', 'r_at', 'r_pt', 'r_peroneal'];
+      // Determine which side to show based on procedure side
+      const procSide = planning.procedure?.side || 'right';
+      let vesselOrder;
+      if (procSide === 'left') {
+        vesselOrder = ['aorta', 'l_cia', 'l_eia', 'l_cfa', 'l_profunda', 'l_sfa', 'l_popliteal', 'l_at', 'l_pt', 'l_peroneal'];
+      } else if (procSide === 'bilateral') {
+        vesselOrder = ['aorta', 'r_cia', 'r_eia', 'r_cfa', 'r_profunda', 'r_sfa', 'r_popliteal', 'r_at', 'r_pt', 'r_peroneal',
+                       'l_cia', 'l_eia', 'l_cfa', 'l_profunda', 'l_sfa', 'l_popliteal', 'l_at', 'l_pt', 'l_peroneal'];
+      } else {
+        vesselOrder = ['aorta', 'r_cia', 'r_eia', 'r_cfa', 'r_profunda', 'r_sfa', 'r_popliteal', 'r_at', 'r_pt', 'r_peroneal'];
+      }
 
       vesselOrder.forEach(vesselId => {
         const data = planning.vesselData[vesselId];

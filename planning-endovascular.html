@@ -1022,7 +1022,7 @@
         let currentSide = 'right';
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             // Load patient from localStorage
             const patient = JSON.parse(localStorage.getItem('selectedPatient') || '{}');
             if (patient.name) {
@@ -1031,14 +1031,108 @@
                 document.getElementById('patientMRN').textContent = 'MRN: ' + (patient.mrn || '—');
             }
 
-            // Set today's date
+            // Set today's date as default
             document.getElementById('procDate').value = new Date().toISOString().split('T')[0];
 
-            // All vessels start as patent (normal) - user will click to set disease
-            // No default disease states - anatomy is "clean" to start
+            // Load existing planning data from API if patient has MRN
+            if (patient.mrn && typeof ORCC_API !== 'undefined') {
+                await loadExistingPlanningData(patient.mrn);
+            }
 
             updateSummary();
         });
+
+        // Load existing planning data from API and populate the form
+        async function loadExistingPlanningData(mrn) {
+            try {
+                console.log('Loading existing planning data for MRN:', mrn);
+                const data = await ORCC_API.getPlanningData(mrn);
+
+                if (!data || !data.procedure) {
+                    console.log('No existing planning data found');
+                    return;
+                }
+
+                console.log('Found existing planning data:', data);
+
+                // Populate procedure details
+                if (data.procedure.type) {
+                    document.getElementById('procedureType').value = data.procedure.type;
+                }
+                if (data.procedure.side) {
+                    document.getElementById('procSide').value = data.procedure.side;
+                    currentSide = data.procedure.side;
+                    // Update side toggle buttons
+                    document.querySelectorAll('.side-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.textContent.toLowerCase() === data.procedure.side) {
+                            btn.classList.add('active');
+                        }
+                    });
+                }
+                if (data.procedure.date) {
+                    const dateStr = data.procedure.date.split('T')[0];
+                    document.getElementById('procDate').value = dateStr;
+                }
+
+                // Populate access details
+                if (data.access) {
+                    if (data.access.site) document.getElementById('accessSite').value = data.access.site;
+                    if (data.access.sheath_size) document.getElementById('sheathSize').value = data.access.sheath_size;
+                    if (data.access.anesthesia) document.getElementById('anesthesia').value = data.access.anesthesia;
+                }
+
+                // Populate indication
+                if (data.indication) {
+                    if (data.indication.primary_icd10) document.getElementById('primaryIcd10').value = data.indication.primary_icd10;
+                    if (data.indication.secondary_icd10) document.getElementById('secondaryIcd10').value = data.indication.secondary_icd10;
+                    if (data.indication.rutherford) document.getElementById('rutherford').value = data.indication.rutherford;
+                }
+
+                // Populate inflow
+                if (data.inflow) {
+                    if (data.inflow.aortoiliac) document.getElementById('inflowAortoiliac').value = data.inflow.aortoiliac;
+                    if (data.inflow.cfa) document.getElementById('inflowCFA').value = data.inflow.cfa;
+                }
+
+                // Populate outflow
+                if (data.outflow) {
+                    if (data.outflow.at) document.getElementById('outflowAT').value = data.outflow.at;
+                    if (data.outflow.pt) document.getElementById('outflowPT').value = data.outflow.pt;
+                    if (data.outflow.peroneal) document.getElementById('outflowPeroneal').value = data.outflow.peroneal;
+                }
+
+                // Populate vessel data and update SVG diagram
+                if (data.vessel_data) {
+                    vesselData = data.vessel_data;
+                    Object.entries(data.vessel_data).forEach(([vesselId, vData]) => {
+                        // Update SVG vessel appearance
+                        setVesselStatus(vesselId, vData.status);
+                        // Store full vessel data including intervention info
+                        vesselData[vesselId] = vData;
+                    });
+                }
+
+                // Populate interventions
+                if (data.interventions && data.interventions.length > 0) {
+                    interventions = data.interventions.map(int => ({
+                        vessel: int.vessel,
+                        vesselId: int.vesselId || int.vessel_id,
+                        status: int.status,
+                        length: int.length,
+                        intervention: int.intervention,
+                        notes: int.notes
+                    }));
+                    updateInterventionsList();
+                }
+
+                console.log('Planning data loaded successfully');
+
+            } catch (error) {
+                console.warn('Could not load existing planning data:', error.message);
+                // Continue with blank form - this is okay for new patients
+            }
+        }
 
         function setVesselStatus(vesselId, status) {
             const vessel = document.getElementById(vesselId);
@@ -1068,11 +1162,38 @@
             };
             document.getElementById('modalVesselName').textContent = vesselName;
 
-            // Reset form
-            document.getElementById('modalStatus').value = 'patent';
-            document.getElementById('modalLength').value = '';
-            document.getElementById('modalIntervention').value = 'none';
-            document.getElementById('modalNotes').value = '';
+            // Map vessel name to SVG ID
+            const vesselMap = {
+                'r_common_iliac': 'r_cia',
+                'l_common_iliac': 'l_cia',
+                'r_external_iliac': 'r_eia',
+                'l_external_iliac': 'l_eia',
+                'r_common_femoral': 'r_cfa',
+                'l_common_femoral': 'l_cfa',
+                'r_anterior_tibial': 'r_at',
+                'l_anterior_tibial': 'l_at',
+                'r_posterior_tibial': 'r_pt',
+                'l_posterior_tibial': 'l_pt',
+                'infrarenal_aorta': 'aorta'
+            };
+            const svgId = vesselMap[currentVessel.id] || currentVessel.id;
+
+            // Check if we have existing data for this vessel
+            const existingData = vesselData[svgId];
+
+            if (existingData && existingData.status) {
+                // Pre-populate modal with existing data
+                document.getElementById('modalStatus').value = existingData.status || 'patent';
+                document.getElementById('modalLength').value = existingData.length || '';
+                document.getElementById('modalIntervention').value = existingData.intervention || 'none';
+                document.getElementById('modalNotes').value = existingData.notes || '';
+            } else {
+                // Reset form for new vessel
+                document.getElementById('modalStatus').value = 'patent';
+                document.getElementById('modalLength').value = '';
+                document.getElementById('modalIntervention').value = 'none';
+                document.getElementById('modalNotes').value = '';
+            }
 
             document.getElementById('vesselModal').classList.add('visible');
         }
@@ -1562,8 +1683,9 @@
             saveBtn.innerHTML = '<svg class="spin" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32"/></svg> Saving to PlaudAI...';
 
             try {
-                // Call PlaudAI API to create procedure
-                const response = await ORCC_API.createProcedure(procedureData);
+                // Call PlaudAI API to save or update procedure
+                // Uses saveOrUpdateProcedure to avoid creating duplicates
+                const response = await ORCC_API.saveOrUpdateProcedure(procedureData);
                 console.log('Procedure saved to PlaudAI:', response);
 
                 // Store procedure ID for future updates

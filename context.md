@@ -2,7 +2,9 @@
 
 ## Overview
 
-ORCC is a surgical intelligence and planning suite for vascular surgery. The current implementation is a **UI prototype** consisting of static HTML files with hardcoded patient data. The goal is to perfect the UI/UX first, then connect it to the existing SCC/VAI backend infrastructure.
+ORCC is a surgical intelligence and planning suite for vascular surgery. **As of January 25, 2026, ORCC is fully integrated with the PlaudAI PostgreSQL backend** at `http://100.75.237.36:8001`. All patient data, procedures, and planning information persist to the database.
+
+**Integration Status:** ✅ COMPLETE
 
 ---
 
@@ -51,15 +53,15 @@ Office-based / ambulatory surgery center cases:
 
 ---
 
-## Current State (v0.1.0)
+## Current State (v1.0.0 - Integrated)
 
 ### Technology Stack
 - Pure HTML5 with embedded CSS and JavaScript
 - No framework (vanilla JavaScript)
-- No build system or package managers
-- No external API calls (all data is static/hardcoded)
-- No database connection (data is in-memory JavaScript objects)
-- Patient context passed between pages via localStorage
+- `js/api-client.js` - ORCC_API for PlaudAI backend connectivity
+- **Backend:** PlaudAI FastAPI at http://100.75.237.36:8001
+- **Database:** PostgreSQL with JSONB columns for planning data
+- Patient context passed between pages via localStorage (MRN used to fetch from API)
 
 ### File Structure
 
