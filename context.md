@@ -53,7 +53,7 @@ Office-based / ambulatory surgery center cases:
 
 ---
 
-## Current State (v1.0.0 - Integrated)
+## Current State (v0.2.0 - Integrated)
 
 ### Technology Stack
 - Pure HTML5 with embedded CSS and JavaScript
@@ -77,6 +77,9 @@ Office-based / ambulatory surgery center cases:
 ├── workspace-carotid.html                  # Carotid/TCAR Workspace
 ├── workspace-aortic-aneurysm.html          # AAA/EVAR Workspace
 ├── workspace-venous.html                   # Venous Disease Workspace
+├── planning-endovascular.html              # Endovascular Planning Page
+├── test-api.html                           # API connectivity test page
+├── js/api-client.js                        # PlaudAI API client
 └── context.md                              # This file
 ```
 
@@ -391,11 +394,11 @@ Workspace → Complete Case Planning → Open VQI Panel
 - **Status:** Backend Integration COMPLETE ✅
 - **Version:** 0.2.0
 - **Backend:** PlaudAI @ `100.75.237.36:8001`
-- **Database:** PostgreSQL (14 patients, 35 procedures)
+- **Database:** PostgreSQL (17 patients, 12 procedures)
 
 ---
 
-## Migration Status (2026-01-21)
+## Migration Status (2026-01-26)
 
 ### ✅ Completed
 - SCC → PlaudAI migration complete
@@ -420,4 +423,4 @@ Workspace → Complete Case Planning → Open VQI Panel
 
 ---
 
-*Last Updated: 2026-01-22 16:55*
+*Last Updated: 2026-01-26*
