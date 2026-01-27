@@ -1,33 +1,37 @@
 # Shared Workspace - OR Command Center (ORCC)
 
-**Last Updated:** 2026-01-26 10:30 EST
+**Last Updated:** 2026-01-26 11:00 EST
 **Hub Status:** Connected to claude-team hub (port 4847)
 
 ---
 
-## 📋 SESSION HANDOFF (2026-01-26 ~10:30)
+## 📋 SESSION STATUS (2026-01-26 ~11:00)
 
-### Where We Left Off
+### ✅ COMPLETED TASKS
 
-**Session completed:** Git reconciliation, testing, documentation, workspace analysis
+1. **Add "Save Note" button to workspace** ✅
+   - Added green "Save Note to Database" button below Generate button
+   - Stores procedure ID when loading planning data
+   - `saveOpNote()` calls `ORCC_API.updateProcedure(id, { findings, results })`
+   - Button enables only after note is generated
 
-**Current Status:** Phase 2 Backend Integration COMPLETE ✅
+2. **Map outflow data to workspace vessel display** ✅
+   - AT, PT, Peroneal now display in findings table from `outflow` object
+   - Shows as "Outflow [date]" source column
+   - Only adds if not already in vessel_data
 
----
+3. **Git reconciled and pushed** ✅
+   - Commit `e98172b` - feat: Add Save Note button and outflow data display
 
-### 🔧 NEXT TASKS (To Resume)
+### 🔧 REMAINING TASKS
 
-1. **Add "Save Note" button to workspace**
-   - File: `surgical-command-center-workspace.html`
-   - Call `ORCC_API.updateProcedure(id, { findings: opNoteText, results: ... })`
-   - Need procedure ID from `localStorage.selectedPatient.procedureId`
+1. **Test full save workflow** (pending)
+   - Open Charles Daniels in workspace
+   - Generate op note
+   - Click Save Note to Database
+   - Verify saved in PlaudAI
 
-2. **Map outflow data to workspace vessel display**
-   - Currently: `outflow: { at: "patent", pt: "patent", peroneal: "patent" }` stored separately
-   - Need: Display AT, PT, Peroneal in workspace findings table from `outflow` object
-   - File: `surgical-command-center-workspace.html` → `loadPlanningData()` function (~line 1990)
-
-3. **Optional: Server-side PDF storage**
+2. **Optional: Server-side PDF storage**
    - Requires PlaudAI endpoint for file upload
    - Lower priority
 
@@ -40,12 +44,13 @@
 | API | ✅ Healthy | `http://100.75.237.36:8001` |
 | Patients | 17 | CRUD working |
 | Procedures | 12 | Full planning data |
-| Git | Clean | All changes pushed |
+| Git | ✅ Clean | Commit `e98172b` pushed |
 
 **Charles Daniels (MRN: 18890211):**
 - 1 procedure saved with L SFA stenosis_severe + ath_pta
 - Outflow: AT patent, PT patent, Peroneal patent
-- Workspace loads correctly, but edits don't save back
+- Workspace now displays outflow in findings table ✅
+- Save Note button now available ✅ (pending PlaudAI verification of findings/results fields)
 
 ---
 
