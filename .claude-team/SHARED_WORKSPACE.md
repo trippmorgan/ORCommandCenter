@@ -1,6 +1,6 @@
 # Shared Workspace - OR Command Center (ORCC)
 
-**Last Updated:** 2026-01-26 11:00 EST
+**Last Updated:** 2026-01-26 11:30 EST
 **Hub Status:** Connected to claude-team hub (port 4847)
 
 ---
@@ -23,13 +23,27 @@
 3. **Git reconciled and pushed** ✅
    - Commit `e98172b` - feat: Add Save Note button and outflow data display
 
+### 🚨 BLOCKER: PlaudAI PATCH Missing Fields
+
+**Issue:** `PATCH /api/procedures/{id}` does not accept `findings` or `results` fields.
+- Returns `{"detail":"No fields to update"}`
+- Procedure has `narrative` field in response but it's not updateable either
+
+**Workaround Implemented:** Save to localStorage as fallback
+- Op notes now save to `localStorage.opNote_{mrn}`
+- User sees "Saved Locally" with warning status
+- Will auto-upgrade to API once PlaudAI adds support
+
+**@PlaudAI Action Required:**
+```sql
+ALTER TABLE procedures ADD COLUMN IF NOT EXISTS findings TEXT;
+ALTER TABLE procedures ADD COLUMN IF NOT EXISTS results TEXT;
+```
+Then add these fields to the PATCH endpoint validation.
+
 ### 🔧 REMAINING TASKS
 
-1. **Test full save workflow** (pending)
-   - Open Charles Daniels in workspace
-   - Generate op note
-   - Click Save Note to Database
-   - Verify saved in PlaudAI
+1. **PlaudAI: Add findings/results to PATCH** (BLOCKER)
 
 2. **Optional: Server-side PDF storage**
    - Requires PlaudAI endpoint for file upload
@@ -44,7 +58,7 @@
 | API | ✅ Healthy | `http://100.75.237.36:8001` |
 | Patients | 17 | CRUD working |
 | Procedures | 12 | Full planning data |
-| Git | ✅ Clean | Commit `e98172b` pushed |
+| Git | ✅ Clean | Commit `3a6f451` pushed |
 
 **Charles Daniels (MRN: 18890211):**
 - 1 procedure saved with L SFA stenosis_severe + ath_pta
