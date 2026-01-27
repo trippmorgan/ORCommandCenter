@@ -2519,11 +2519,190 @@ Joe H. Morgan, M.D.`;
       setTimeout(() => { statusBar.style.opacity = '0'; }, 5000);
     }
 
+    // Load existing operative note from database and populate form
+    async function loadExistingOpNote() {
+      if (!currentProcedureId) {
+        console.log('No procedure ID yet, skipping op note load');
+        return;
+      }
+
+      try {
+        console.log('Loading existing op note for procedure:', currentProcedureId);
+        const opNote = await ORCC_API.getOperativeNoteByProcedure(currentProcedureId);
+
+        if (!opNote || !opNote.id) {
+          console.log('No existing operative note found');
+          // Try localStorage fallback
+          const localData = localStorage.getItem(`opNote_${currentMrn}`);
+          if (localData) {
+            const parsed = JSON.parse(localData);
+            console.log('Found local op note data:', parsed);
+            populateOpNoteForm(parsed);
+            showLoadStatus('Op Note loaded from local storage', 'warning');
+          }
+          return;
+        }
+
+        console.log('Loaded op note from database:', opNote);
+        populateOpNoteForm(opNote);
+        showLoadStatus('Operative note loaded from database', 'success');
+
+        // Enable save button since we have data
+        const saveBtn = document.getElementById('btn-save-note');
+        if (saveBtn && opNote.full_note_text) {
+          saveBtn.disabled = false;
+        }
+
+      } catch (err) {
+        console.warn('Could not load operative note:', err.message);
+        // Try localStorage fallback
+        const localData = localStorage.getItem(`opNote_${currentMrn}`);
+        if (localData) {
+          const parsed = JSON.parse(localData);
+          console.log('Using local op note fallback:', parsed);
+          populateOpNoteForm(parsed);
+          showLoadStatus('Op Note loaded from local storage', 'warning');
+        }
+      }
+    }
+
+    // Populate Op Note Builder form from saved data
+    function populateOpNoteForm(data) {
+      // Procedure Info
+      if (data.date_of_service) {
+        document.getElementById('note-proc-date').value = data.date_of_service.split('T')[0];
+      }
+      if (data.procedure_side) {
+        const sideSelect = document.getElementById('note-side');
+        sideSelect.value = data.procedure_side.toLowerCase();
+      }
+      if (data.access_site) {
+        const accessMap = { 'Left CFA': 'l_cfa', 'Right CFA': 'r_cfa', 'Brachial': 'brachial', 'Pedal': 'pedal' };
+        const accessSelect = document.getElementById('note-access');
+        accessSelect.value = accessMap[data.access_site] || data.access_site;
+      }
+      if (data.sheath_size) {
+        const sheathSelect = document.getElementById('note-sheath');
+        sheathSelect.value = data.sheath_size.replace('Fr', '');
+      }
+
+      // Preoperative Diagnosis - select matching checkboxes
+      if (data.preop_diagnosis && Array.isArray(data.preop_diagnosis)) {
+        data.preop_diagnosis.forEach(dx => {
+          document.querySelectorAll('.checkbox-item[data-dx]').forEach(item => {
+            const label = item.querySelector('.checkbox-label').textContent.trim().toLowerCase();
+            if (dx.toLowerCase().includes(label.substring(0, 20))) {
+              item.classList.add('selected');
+            }
+          });
+        });
+      }
+
+      // ABI value
+      if (data.abi_value) {
+        document.getElementById('abi-value').value = data.abi_value;
+      }
+
+      // Target Limb Findings
+      if (data.target_limb_findings) {
+        const f = data.target_limb_findings;
+        if (f.cfa) document.getElementById('finding-cfa').value = f.cfa;
+        if (f.profunda) document.getElementById('finding-profunda').value = f.profunda;
+        if (f.sfa) document.getElementById('finding-sfa').value = f.sfa;
+        if (f.popliteal) document.getElementById('finding-pop').value = f.popliteal;
+        if (f.at) document.getElementById('finding-at').value = f.at;
+        if (f.pt) document.getElementById('finding-pt').value = f.pt;
+        if (f.peroneal) document.getElementById('finding-peroneal').value = f.peroneal;
+        if (f.dp_pt) document.getElementById('finding-foot').value = f.dp_pt;
+      }
+
+      // Procedures performed - select matching checkboxes
+      if (data.procedures_performed && Array.isArray(data.procedures_performed)) {
+        data.procedures_performed.forEach(proc => {
+          const procName = proc.name || proc;
+          document.querySelectorAll('.checkbox-item[data-proc]').forEach(item => {
+            const label = item.querySelector('.checkbox-label').textContent.trim().toLowerCase();
+            if (procName.toLowerCase().includes(label.substring(0, 15))) {
+              item.classList.add('selected');
+            }
+          });
+        });
+      }
+
+      // Balloon angioplasty sizes
+      if (data.balloon_angioplasty && Array.isArray(data.balloon_angioplasty)) {
+        data.balloon_angioplasty.forEach(ba => {
+          if (ba.vessel === 'SFA') {
+            document.getElementById('pta-sfa-size').value = ba.size || '';
+            document.querySelector('.checkbox-item[data-proc="pta_sfa"]')?.classList.add('selected');
+          }
+          if (ba.vessel === 'Popliteal') {
+            document.getElementById('pta-pop-size').value = ba.size || '';
+            document.querySelector('.checkbox-item[data-proc="pta_pop"]')?.classList.add('selected');
+          }
+        });
+      }
+
+      // Atherectomy
+      if (data.atherectomy && Array.isArray(data.atherectomy) && data.atherectomy.length > 0) {
+        const ath = data.atherectomy[0];
+        document.getElementById('atherectomy-vessel').value = ath.vessel || 'SFA';
+        document.getElementById('atherectomy-burr').value = ath.burr_size || '';
+        document.querySelector('.checkbox-item[data-proc="atherectomy"]')?.classList.add('selected');
+      }
+
+      // IVUS
+      if (data.ivus_used) {
+        document.querySelector('.checkbox-item[data-proc="ivus"]')?.classList.add('selected');
+      }
+
+      // Pulse assessment
+      if (data.final_pulse_grade) {
+        document.getElementById('pulse-grade').value = data.final_pulse_grade;
+        document.querySelector('.checkbox-item[data-assess="pulse_dp"]')?.classList.add('selected');
+      }
+      if (data.final_pulse_location) {
+        document.getElementById('pulse-location').value = data.final_pulse_location;
+      }
+
+      // Full note preview
+      if (data.full_note_html || data.full_note_text) {
+        document.getElementById('op-note-preview').innerHTML = data.full_note_html || data.full_note_text.replace(/\n/g, '<br>');
+        // Update status to show note was loaded
+        const statusEl = document.querySelector('.output-section-status');
+        if (statusEl) {
+          statusEl.textContent = '✓ Loaded';
+          statusEl.classList.remove('status-incomplete');
+          statusEl.classList.add('status-valid');
+        }
+      }
+
+      // Clinical notes (paste input)
+      if (data.clinical_notes) {
+        const pasteInput = document.getElementById('paste-input');
+        if (pasteInput) {
+          pasteInput.value = data.clinical_notes;
+        }
+      }
+
+      // Sync side selection across UI
+      if (data.procedure_side) {
+        updateSideSelection(data.procedure_side.toLowerCase());
+      }
+
+      console.log('Op Note form populated from saved data');
+    }
+
     // Load patient on page load
     loadSelectedPatient();
 
-    // Load planning data
-    loadPlanningData();
+    // Load planning data, then load operative note
+    loadPlanningData().then(() => {
+      // Small delay to ensure currentProcedureId is set
+      setTimeout(() => {
+        loadExistingOpNote();
+      }, 500);
+    });
 
     // Tab switching
     document.querySelectorAll('.tab').forEach(tab => {
@@ -2533,12 +2712,25 @@ Joe H. Morgan, M.D.`;
       });
     });
 
-    // Side toggle
+    // Side toggle - sync with Op Note Builder and anatomy diagram
     document.querySelectorAll('.side-toggle-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.side-toggle-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+        const side = btn.textContent.toLowerCase();
+        updateSideSelection(side);
+
+        // Save side selection to localStorage for persistence
+        const patientData = localStorage.getItem('selectedPatient');
+        if (patientData) {
+          const patient = JSON.parse(patientData);
+          patient.procedureSide = side;
+          localStorage.setItem('selectedPatient', JSON.stringify(patient));
+        }
       });
+    });
+
+    // Also sync when Op Note Builder side dropdown changes
+    document.getElementById('note-side').addEventListener('change', (e) => {
+      updateSideSelection(e.target.value);
     });
 
     // Vessel segment click - cycle through states
@@ -2574,23 +2766,267 @@ Joe H. Morgan, M.D.`;
       });
     });
 
-    // Process button animation
-    document.getElementById('process-btn').addEventListener('click', () => {
+    // Process button - parse paste input and save to backend
+    document.getElementById('process-btn').addEventListener('click', async () => {
       const btn = document.getElementById('process-btn');
+      const pasteInput = document.getElementById('paste-input').value.trim();
+
+      if (!pasteInput) {
+        showLoadStatus('No clinical notes to process', 'warning');
+        return;
+      }
+
       btn.innerHTML = '<span>⏳</span> Processing...';
       btn.disabled = true;
 
-      setTimeout(() => {
+      try {
+        // Parse the paste input to extract side and findings
+        const parsedData = parsePasteInput(pasteInput);
+        console.log('Parsed paste input:', parsedData);
+
+        // Update the side toggle and Op Note Builder based on parsed data
+        if (parsedData.side) {
+          updateSideSelection(parsedData.side);
+        }
+
+        // Update anatomy diagram based on parsed vessel findings
+        if (parsedData.vessels) {
+          updateAnatomyFromParsed(parsedData.vessels);
+        }
+
+        // Save clinical notes to operative note in database
+        if (currentProcedureId) {
+          try {
+            // First check if operative note exists, if so update it
+            const existingNote = await ORCC_API.getOperativeNoteByProcedure(currentProcedureId);
+            if (existingNote && existingNote.id) {
+              // Update existing note with clinical notes
+              await ORCC_API.updateOperativeNoteStatus(existingNote.id, {
+                clinical_notes: pasteInput,
+                parsed_findings: parsedData
+              });
+              console.log('Updated operative note with clinical notes');
+            } else {
+              // Create new operative note with clinical notes
+              await ORCC_API.saveOperativeNote({
+                procedure_id: currentProcedureId,
+                mrn: currentMrn,
+                note_type: 'PAD',
+                date_of_service: new Date().toISOString().split('T')[0],
+                procedure_side: parsedData.side || 'right',
+                clinical_notes: pasteInput,
+                parsed_findings: parsedData,
+                target_limb_findings: parsedData.vessels || {}
+              });
+              console.log('Created operative note with clinical notes');
+            }
+            showLoadStatus('Clinical notes saved to database', 'success');
+          } catch (apiErr) {
+            console.warn('API save failed:', apiErr.message);
+            // Save to localStorage as fallback
+            localStorage.setItem(`clinicalNotes_${currentMrn}`, JSON.stringify({
+              text: pasteInput,
+              parsed: parsedData,
+              savedAt: new Date().toISOString()
+            }));
+            showLoadStatus('Saved to local storage (API pending)', 'warning');
+          }
+        }
+
         btn.innerHTML = '<span>✓</span> Processed!';
         btn.style.background = '#22C55E';
 
-        setTimeout(() => {
-          btn.innerHTML = '<span>⚡</span> Process';
-          btn.style.background = '';
-          btn.disabled = false;
-        }, 1500);
-      }, 1000);
+      } catch (error) {
+        console.error('Process error:', error);
+        showLoadStatus('Error processing notes: ' + error.message, 'error');
+        btn.innerHTML = '<span>⚠️</span> Error';
+        btn.style.background = '#EF4444';
+      }
+
+      setTimeout(() => {
+        btn.innerHTML = '<span>⚡</span> Process';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 2000);
     });
+
+    // Parse paste input to extract side and vessel findings
+    function parsePasteInput(text) {
+      const result = {
+        side: null,
+        vessels: {},
+        diagnoses: []
+      };
+
+      const textLower = text.toLowerCase();
+
+      // Detect side from text
+      if (textLower.includes('right sfa') || textLower.includes('right cfa') || textLower.includes('right leg')) {
+        result.side = 'right';
+      } else if (textLower.includes('left sfa') || textLower.includes('left cfa') || textLower.includes('left leg')) {
+        result.side = 'left';
+      }
+
+      // Parse vessel findings
+      const vesselPatterns = [
+        { pattern: /right sfa[:\s]*(patent|occlu|stenos|diseased)/i, vessel: 'sfa', side: 'r' },
+        { pattern: /left sfa[:\s]*(patent|occlu|stenos|diseased)/i, vessel: 'sfa', side: 'l' },
+        { pattern: /right cfa[:\s]*(patent|occlu|stenos|diseased)/i, vessel: 'cfa', side: 'r' },
+        { pattern: /left cfa[:\s]*(patent|occlu|stenos|diseased)/i, vessel: 'cfa', side: 'l' },
+        { pattern: /right popliteal[:\s]*(patent|occlu|stenos|reconsti)/i, vessel: 'popliteal', side: 'r' },
+        { pattern: /left popliteal[:\s]*(patent|occlu|stenos|reconsti)/i, vessel: 'popliteal', side: 'l' },
+        { pattern: /right ata[:\s]*(patent|occlu|stenos)/i, vessel: 'at', side: 'r' },
+        { pattern: /left ata[:\s]*(patent|occlu|stenos)/i, vessel: 'at', side: 'l' },
+        { pattern: /right pta[:\s]*(patent|occlu|stenos)/i, vessel: 'pt', side: 'r' },
+        { pattern: /left pta[:\s]*(patent|occlu|stenos)/i, vessel: 'pt', side: 'l' },
+        { pattern: /right peroneal[:\s]*(patent|occlu|stenos)/i, vessel: 'peroneal', side: 'r' },
+        { pattern: /left peroneal[:\s]*(patent|occlu|stenos)/i, vessel: 'peroneal', side: 'l' }
+      ];
+
+      vesselPatterns.forEach(({ pattern, vessel, side }) => {
+        const match = text.match(pattern);
+        if (match) {
+          const status = match[1].toLowerCase();
+          let normalizedStatus = 'patent';
+          if (status.includes('occlu')) normalizedStatus = 'occluded';
+          else if (status.includes('stenos')) normalizedStatus = 'stenosis';
+          else if (status.includes('reconsti')) normalizedStatus = 'patent';
+
+          result.vessels[vessel] = normalizedStatus;
+          if (!result.side) result.side = side === 'r' ? 'right' : 'left';
+        }
+      });
+
+      // Detect diagnoses
+      if (textLower.includes('claudication')) result.diagnoses.push('claudication');
+      if (textLower.includes('rest pain')) result.diagnoses.push('rest_pain');
+      if (textLower.includes('tissue loss') || textLower.includes('gangrene') || textLower.includes('ulcer')) {
+        result.diagnoses.push('tissue_loss');
+      }
+      if (textLower.includes('clti') || textLower.includes('cli')) result.diagnoses.push('clti');
+
+      return result;
+    }
+
+    // Update side selection across all UI elements
+    function updateSideSelection(side) {
+      // Update side toggle buttons
+      document.querySelectorAll('.side-toggle-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase() === side.toLowerCase()) {
+          btn.classList.add('active');
+        }
+      });
+
+      // Update Op Note Builder side dropdown
+      const sideSelect = document.getElementById('note-side');
+      if (sideSelect) {
+        sideSelect.value = side.toLowerCase();
+      }
+
+      // Update anatomy diagram opacity to highlight relevant side
+      const leftVessels = document.querySelectorAll('[data-vessel^="l-"]');
+      const rightVessels = document.querySelectorAll('[data-vessel^="r-"]');
+
+      if (side.toLowerCase() === 'left') {
+        leftVessels.forEach(v => v.style.opacity = '1');
+        rightVessels.forEach(v => v.style.opacity = '0.3');
+      } else if (side.toLowerCase() === 'right') {
+        rightVessels.forEach(v => v.style.opacity = '1');
+        leftVessels.forEach(v => v.style.opacity = '0.3');
+      } else {
+        // Bilateral - show both
+        leftVessels.forEach(v => v.style.opacity = '1');
+        rightVessels.forEach(v => v.style.opacity = '1');
+      }
+
+      // Update ICD-10 codes based on side
+      updateDiagnosisCodes(side);
+    }
+
+    // Update anatomy diagram from parsed findings
+    function updateAnatomyFromParsed(vessels) {
+      const side = document.querySelector('.side-toggle-btn.active')?.textContent.toLowerCase() || 'right';
+      const prefix = side === 'left' ? 'l' : 'r';
+
+      const vesselMap = {
+        'sfa': `${prefix}-sfa`,
+        'cfa': `${prefix}-cfa`,
+        'popliteal': `${prefix}-pop`,
+        'at': `${prefix}-ata`,
+        'pt': `${prefix}-pta`,
+        'peroneal': `${prefix}-peroneal`
+      };
+
+      const colors = {
+        patent: '#22C55E',
+        stenosis: '#F59E0B',
+        occluded: '#EF4444'
+      };
+
+      Object.entries(vessels).forEach(([vessel, status]) => {
+        const segmentId = vesselMap[vessel];
+        if (segmentId) {
+          const segment = document.querySelector(`[data-vessel="${segmentId}"]`);
+          if (segment) {
+            segment.dataset.status = status;
+            segment.classList.remove('patent', 'stenosis', 'occluded');
+            segment.classList.add(status);
+            segment.setAttribute('stroke', colors[status]);
+          }
+        }
+      });
+
+      // Also update the target limb findings dropdowns in Op Note Builder
+      Object.entries(vessels).forEach(([vessel, status]) => {
+        const findingId = `finding-${vessel === 'popliteal' ? 'pop' : vessel}`;
+        const select = document.getElementById(findingId);
+        if (select) {
+          // Find the best matching option
+          const options = Array.from(select.options);
+          const match = options.find(opt => opt.value.toLowerCase().includes(status));
+          if (match) select.value = match.value;
+        }
+      });
+    }
+
+    // Update ICD-10 diagnosis codes based on side and diagnoses
+    function updateDiagnosisCodes(side) {
+      const sideText = side === 'left' ? 'left leg' : side === 'right' ? 'right leg' : 'unspecified leg';
+      const sideCode = side === 'left' ? '2' : side === 'right' ? '1' : '9';
+
+      // Get selected diagnoses from Op Note Builder
+      const selectedDx = [];
+      document.querySelectorAll('.checkbox-item[data-dx].selected').forEach(item => {
+        selectedDx.push(item.dataset.dx);
+      });
+
+      // Build ICD-10 codes based on actual selections
+      let codes = [];
+
+      if (selectedDx.includes('pvd_claudication')) {
+        codes.push({ code: `I70.21${sideCode}`, desc: `Atherosclerosis with intermittent claudication, ${sideText}` });
+      }
+      if (selectedDx.includes('pvd_rest_pain')) {
+        codes.push({ code: `I70.22${sideCode}`, desc: `Atherosclerosis with rest pain, ${sideText}` });
+      }
+      if (selectedDx.includes('pvd_tissue_loss')) {
+        codes.push({ code: `I70.23${sideCode}`, desc: `Atherosclerosis with ulceration, ${sideText}` });
+      }
+      if (selectedDx.includes('clti')) {
+        codes.push({ code: `I70.26${sideCode}`, desc: `Atherosclerosis with gangrene, ${sideText}` });
+      }
+
+      // Update the diagnosis display in the UI if there's a container for it
+      const dxContainer = document.querySelector('.diagnosis-codes, .icd10-codes');
+      if (dxContainer && codes.length > 0) {
+        dxContainer.innerHTML = codes.map(c =>
+          `<div class="icd-code"><span class="code">${c.code}</span> - ${c.desc}</div>`
+        ).join('');
+      }
+
+      console.log('Updated ICD-10 codes for side:', side, codes);
+    }
 
     // ========== OP NOTE BUILDER ==========
 
@@ -2878,6 +3314,203 @@ cc: Joe H. Morgan, M.D.`;
       }
     }
 
+    // Collect all structured data from the Op Note Builder form
+    function collectOpNoteData() {
+      const side = document.getElementById('note-side').value;
+      const access = document.getElementById('note-access').value;
+      const sheath = document.getElementById('note-sheath').value;
+      const procDate = document.getElementById('note-proc-date').value;
+
+      // Map access codes to readable text
+      const accessSiteMap = {
+        'l_cfa': 'Left CFA',
+        'r_cfa': 'Right CFA',
+        'brachial': 'Brachial',
+        'pedal': 'Pedal'
+      };
+
+      // Collect preoperative diagnoses
+      const preopDiagnosis = [];
+      document.querySelectorAll('.checkbox-item[data-dx].selected').forEach(item => {
+        const dx = item.dataset.dx;
+        let text = item.querySelector('.checkbox-label').textContent.trim();
+        if (dx === 'pvd_tissue_loss') {
+          const loc = document.getElementById('tissue-loss-location').value;
+          if (loc) text += ' of ' + loc;
+        } else if (dx === 'abi') {
+          const val = document.getElementById('abi-value').value;
+          if (val) text += ' ' + val;
+        } else if (dx === 'prior_intervention') {
+          const details = document.getElementById('prior-intervention-details').value;
+          if (details) text += ' (' + details + ')';
+        } else if (dx === 'ckd') {
+          const stage = document.getElementById('ckd-stage').value;
+          if (stage) text += ' ' + stage;
+        }
+        preopDiagnosis.push(text);
+      });
+
+      // Collect procedures performed (as objects with name and optional CPT)
+      const proceduresPerformed = [];
+      const cptMap = {
+        'arteriogram': '75710',
+        'pta_sfa': '37225',
+        'pta_pop': '37224',
+        'pta_tibial': '37228',
+        'atherectomy': '37225',
+        'stent_sfa': '37226',
+        'stent_iliac': '37221',
+        'ivus': '37252'
+      };
+      document.querySelectorAll('.checkbox-item[data-proc].selected').forEach(item => {
+        const proc = item.dataset.proc;
+        let text = item.querySelector('.checkbox-label').textContent.trim();
+        proceduresPerformed.push({ name: text, cpt: cptMap[proc] || null });
+      });
+
+      // Collect balloon angioplasty details
+      const balloonAngioplasty = [];
+      if (document.querySelector('.checkbox-item[data-proc="pta_sfa"].selected')) {
+        const size = document.getElementById('pta-sfa-size').value;
+        balloonAngioplasty.push({ vessel: 'SFA', size: size || '5x200' });
+      }
+      if (document.querySelector('.checkbox-item[data-proc="pta_pop"].selected')) {
+        const size = document.getElementById('pta-pop-size').value;
+        balloonAngioplasty.push({ vessel: 'Popliteal', size: size || '4x120' });
+      }
+      if (document.querySelector('.checkbox-item[data-proc="pta_tibial"].selected')) {
+        const vessel = document.getElementById('pta-tibial-vessel').value;
+        const size = document.getElementById('pta-tibial-size').value;
+        balloonAngioplasty.push({ vessel: vessel, size: size || '2.5x200' });
+      }
+
+      // Collect atherectomy details
+      const atherectomy = [];
+      if (document.querySelector('.checkbox-item[data-proc="atherectomy"].selected')) {
+        const vessel = document.getElementById('atherectomy-vessel').value;
+        const burr = document.getElementById('atherectomy-burr').value;
+        atherectomy.push({ vessel: vessel, burr_size: burr || '1.5' });
+      }
+
+      // Collect stent placement details
+      const stentPlacement = [];
+      if (document.querySelector('.checkbox-item[data-proc="stent_sfa"].selected')) {
+        const size = document.getElementById('stent-sfa-size').value;
+        stentPlacement.push({ vessel: 'SFA', size: size || '6x150' });
+      }
+      if (document.querySelector('.checkbox-item[data-proc="stent_iliac"].selected')) {
+        const size = document.getElementById('stent-iliac-size').value;
+        stentPlacement.push({ vessel: 'Iliac', size: size || '8x60' });
+      }
+
+      // IVUS
+      const ivusUsed = !!document.querySelector('.checkbox-item[data-proc="ivus"].selected');
+
+      // Get aortoiliac findings phrase
+      const aortoiliacEl = document.querySelector('#aortoiliac-phrases .phrase-option.selected .phrase-text');
+      const aortoiliacFindings = aortoiliacEl ? aortoiliacEl.textContent : '';
+
+      // Get target limb findings
+      const targetLimbFindings = {
+        cfa: document.getElementById('finding-cfa').value,
+        profunda: document.getElementById('finding-profunda').value,
+        sfa: document.getElementById('finding-sfa').value,
+        popliteal: document.getElementById('finding-pop').value,
+        at: document.getElementById('finding-at').value,
+        pt: document.getElementById('finding-pt').value,
+        peroneal: document.getElementById('finding-peroneal').value,
+        dp_pt: document.getElementById('finding-foot').value
+      };
+
+      // Get radiographic result phrase
+      const resultEl = document.querySelector('#result-phrases .phrase-option.selected .phrase-text');
+      const radiographicResult = resultEl ? resultEl.textContent : '';
+
+      // Get pulse assessment
+      let finalPulseGrade = '';
+      let finalPulseLocation = '';
+      let dopplerSignalImproved = false;
+      let palpableFemoralPopliteal = false;
+
+      if (document.querySelector('.checkbox-item[data-assess="pulse_dp"].selected')) {
+        finalPulseGrade = document.getElementById('pulse-grade').value;
+        finalPulseLocation = document.getElementById('pulse-location').value;
+      }
+      if (document.querySelector('.checkbox-item[data-assess="doppler_signal"].selected')) {
+        dopplerSignalImproved = true;
+      }
+      if (document.querySelector('.checkbox-item[data-assess="palpable_pulses"].selected')) {
+        palpableFemoralPopliteal = true;
+      }
+
+      // Get closure phrase
+      const closureEl = document.querySelector('#closure-phrases .phrase-option.selected .phrase-text');
+      const closureMethod = closureEl ? closureEl.textContent : '';
+
+      // Get additional form values
+      const abiValue = document.getElementById('abi-value').value;
+      const tissueLocation = document.getElementById('tissue-loss-location').value;
+      const ckdStage = document.getElementById('ckd-stage').value;
+      const hasOsteomyelitis = !!document.querySelector('.checkbox-item[data-dx="osteomyelitis"].selected');
+
+      // Get generated note text
+      const opNoteHtml = document.getElementById('op-note-preview').innerHTML;
+      const opNoteText = opNoteHtml
+        .replace(/<strong>/g, '')
+        .replace(/<\/strong>/g, '')
+        .replace(/<br\s*\/?>/g, '\n')
+        .replace(/<[^>]*>/g, '');
+
+      // Return object with snake_case keys to match PlaudAI API schema
+      return {
+        procedure_id: currentProcedureId,
+        mrn: currentMrn,
+        note_type: 'PAD',
+
+        // Procedure Info (snake_case for PlaudAI)
+        date_of_service: procDate,
+        procedure_side: side.charAt(0).toUpperCase() + side.slice(1),
+        access_site: accessSiteMap[access] || access,
+        sheath_size: sheath + 'Fr',
+        anesthesia_type: 'MAC + Local',
+
+        // Preoperative Diagnosis
+        preop_diagnosis: preopDiagnosis,
+        abi_value: abiValue ? parseFloat(abiValue) : null,
+        tissue_location: tissueLocation || null,
+        ckd_stage: ckdStage ? parseInt(ckdStage) : null,
+        has_osteomyelitis: hasOsteomyelitis,
+
+        // Procedures Performed (array of {name, cpt} objects)
+        procedures_performed: proceduresPerformed,
+        balloon_angioplasty: balloonAngioplasty.length > 0 ? balloonAngioplasty : [],
+        atherectomy: atherectomy.length > 0 ? atherectomy : [],
+        stent_placement: stentPlacement.length > 0 ? stentPlacement : [],
+        ivus_used: ivusUsed,
+
+        // Findings
+        aortoiliac_findings: aortoiliacFindings,
+        target_limb_findings: targetLimbFindings,
+
+        // Results & Closure
+        radiographic_result: radiographicResult,
+        final_pulse_grade: finalPulseGrade || null,
+        final_pulse_location: finalPulseLocation || null,
+        doppler_signal_improved: dopplerSignalImproved,
+        palpable_femoral_popliteal: palpableFemoralPopliteal,
+        closure_method: closureMethod,
+        complications: [],  // Array for PlaudAI
+        patient_condition: 'stable',
+
+        // Full Generated Note
+        full_note_text: opNoteText,
+        full_note_html: opNoteHtml,
+
+        // Clinical Notes (paste input)
+        clinical_notes: document.getElementById('paste-input')?.value || null
+      };
+    }
+
     // Save operative note to database
     async function saveOpNote() {
       const saveBtn = document.getElementById('btn-save-note');
@@ -2893,48 +3526,33 @@ cc: Joe H. Morgan, M.D.`;
         saveBtn.disabled = true;
         saveBtn.innerHTML = '<span>⏳</span> Saving...';
 
-        // Get the generated op note content (strip HTML tags for text storage)
-        const opNoteHtml = document.getElementById('op-note-preview').innerHTML;
-        const opNoteText = opNoteHtml
-          .replace(/<strong>/g, '')
-          .replace(/<\/strong>/g, '')
-          .replace(/<br\s*\/?>/g, '\n')
-          .replace(/<[^>]*>/g, '');
-
-        // Extract a brief results summary from the note
-        let resultsSummary = '';
-        const resultMatch = opNoteText.match(/RADIOGRAPHIC RESULT[:\s]*(.*?)(?:\n|$)/i);
-        if (resultMatch) {
-          resultsSummary = resultMatch[1].trim();
-        }
+        // Collect all structured data from the form
+        const opNoteData = collectOpNoteData();
 
         console.log('Saving op note for procedure:', currentProcedureId);
-        console.log('Findings length:', opNoteText.length);
+        console.log('Op note data:', opNoteData);
 
         let savedToApi = false;
+        let apiNoteId = null;
 
-        // Try to save to database via API
+        // Try to save to database via new operative-notes API
         try {
-          await ORCC_API.updateProcedure(currentProcedureId, {
-            findings: opNoteText,
-            results: resultsSummary
-          });
+          const result = await ORCC_API.saveOperativeNote(opNoteData);
           savedToApi = true;
+          apiNoteId = result.id;
+          console.log('Saved to API, note ID:', apiNoteId);
         } catch (apiError) {
-          console.warn('API save failed (findings field may not be supported yet):', apiError.message);
-          // API doesn't support findings field yet - continue to localStorage fallback
+          console.warn('API save failed (operative-notes endpoint may not exist yet):', apiError.message);
+          // API endpoint not ready yet - continue to localStorage fallback
         }
 
         // Always save to localStorage as backup/fallback
-        const opNoteData = {
-          procedureId: currentProcedureId,
-          mrn: currentMrn,
-          opNoteText: opNoteText,
-          opNoteHtml: opNoteHtml,
-          results: resultsSummary,
+        const localData = {
+          ...opNoteData,
+          apiNoteId: apiNoteId,
           savedAt: new Date().toISOString()
         };
-        localStorage.setItem(`opNote_${currentMrn}`, JSON.stringify(opNoteData));
+        localStorage.setItem(`opNote_${currentMrn}`, JSON.stringify(localData));
 
         // Show appropriate success message
         if (savedToApi) {
@@ -2956,14 +3574,8 @@ cc: Joe H. Morgan, M.D.`;
 
         // Last resort: try localStorage only
         try {
-          const opNoteHtml = document.getElementById('op-note-preview').innerHTML;
-          const opNoteData = {
-            procedureId: currentProcedureId,
-            mrn: currentMrn,
-            opNoteText: opNoteHtml.replace(/<[^>]*>/g, ''),
-            opNoteHtml: opNoteHtml,
-            savedAt: new Date().toISOString()
-          };
+          const opNoteData = collectOpNoteData();
+          opNoteData.savedAt = new Date().toISOString();
           localStorage.setItem(`opNote_${currentMrn}`, JSON.stringify(opNoteData));
           showLoadStatus('Saved to local storage only', 'warning');
         } catch (lsError) {

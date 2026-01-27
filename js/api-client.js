@@ -267,6 +267,73 @@ const ORCC_API = {
     return this.request('/api/orcc/status');
   },
 
+  // ============ OPERATIVE NOTES ============
+
+  /**
+   * Save an operative note for a procedure
+   * @param {Object} noteData - Structured operative note data
+   * @returns {Object} - Created note with ID
+   */
+  async saveOperativeNote(noteData) {
+    return this.request('/api/operative-notes', {
+      method: 'POST',
+      body: JSON.stringify(noteData)
+    });
+  },
+
+  /**
+   * Get operative note by note ID
+   * @param {string} noteId - UUID of the operative note
+   * @returns {Object} - Operative note data
+   */
+  async getOperativeNote(noteId) {
+    return this.request(`/api/operative-notes/${noteId}`);
+  },
+
+  /**
+   * Get operative note for a procedure by procedure ID
+   * @param {string} procedureId - UUID of the procedure
+   * @returns {Object} - Operative note data (or null if none exists)
+   */
+  async getOperativeNoteByProcedure(procedureId) {
+    return this.request(`/api/operative-notes/procedure/${procedureId}`);
+  },
+
+  /**
+   * Update operative note status or review info
+   * @param {string} noteId - UUID of the operative note
+   * @param {Object} updates - Fields to update (noteStatus, signedBy, isBillable, etc.)
+   */
+  async updateOperativeNoteStatus(noteId, updates) {
+    return this.request(`/api/operative-notes/${noteId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates)
+    });
+  },
+
+  // ============ ORCC REPORTS ============
+
+  /**
+   * Compile an ORCC report from procedure + operative note data
+   * @param {string} procedureId - UUID of the procedure
+   * @param {string} reportType - 'surgical_summary' | 'billing_compilation' | 'quality_review'
+   * @returns {Object} - Compiled report with CPT/ICD codes
+   */
+  async compileORCCReport(procedureId, reportType = 'surgical_summary') {
+    return this.request('/api/orcc-reports/compile', {
+      method: 'POST',
+      body: JSON.stringify({ procedureId, reportType })
+    });
+  },
+
+  /**
+   * Get a compiled ORCC report
+   * @param {string} reportId - UUID of the report
+   */
+  async getORCCReport(reportId) {
+    return this.request(`/api/orcc-reports/${reportId}`);
+  },
+
   // ============ UTILITY ============
 
   /**

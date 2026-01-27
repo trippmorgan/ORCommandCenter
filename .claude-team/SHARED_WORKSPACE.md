@@ -1,53 +1,163 @@
 # Shared Workspace - OR Command Center (ORCC)
 
-**Last Updated:** 2026-01-26 11:30 EST
+**Last Updated:** 2026-01-27 ~18:00 EST
 **Hub Status:** Connected to claude-team hub (port 4847)
 
 ---
 
-## 📋 SESSION STATUS (2026-01-26 ~11:00)
+## 📋 SESSION STATUS (2026-01-27 ~18:00) - SAVED FOR LATER
+
+### ✅ CHARLES DANIELS OPERATIVE NOTE - COMPLETE
+
+**Patient:** Charles Daniels (MRN: 18890211)
+**Procedure Date:** 01/26/2026
+**Note ID:** `7ba1d9b2-7764-43f2-907a-804b55ee9bd6`
+**Status:** draft (API doesn't support "signed" status value)
+
+**Procedures Performed:**
+1. Left lower extremity arteriogram (CPT 75710)
+2. Balloon angioplasty of the SFA (CPT 37224)
+3. Atherectomy of the SFA (CPT 37225)
+
+**Full Narrative:** ✅ Saved (2698 characters) - Complete dictated op note with:
+- Header (Procedure Date, diagnoses)
+- PROCEDURE section (access, imaging, findings, interventions)
+- TARGET LIMB FINDINGS (CFA/SFA/popliteal/tibial status)
+- Results (0% residual stenosis, 2+ DP pulse)
+- Footer (JM: jhn, Dictated/Transcribed dates, cc)
+
+---
+
+### ✅ OPERATIVE NOTES API - WORKING
+
+| Endpoint | Method | Status | Notes |
+|----------|--------|--------|-------|
+| `/api/operative-notes` | POST | ✅ Working | Creates operative note |
+| `/api/operative-notes/{id}` | GET | ✅ Working | Returns full note data |
+| `/api/operative-notes/procedure/{id}` | GET | ✅ Working | Get notes by procedure |
+| `/api/operative-notes/{id}` | PATCH | ✅ Working | Update note (except status="signed") |
+| DELETE | ❌ Not supported | Need direct DB access to remove duplicates |
+
+### Frontend Updated for PlaudAI Schema ✅
+
+**Key Changes to `collectOpNoteData()`:**
+
+1. **Snake_case field names** (PlaudAI uses Python conventions):
+   - `procedure_id` not `procedureId`
+   - `date_of_service` not `procedureDate`
+   - `target_limb_findings` not `targetLimbFindings`
+
+2. **`procedures_performed`** now array of objects:
+   ```javascript
+   [{ name: "Lower extremity arteriogram", cpt: "75710" }]
+   ```
+
+3. **`atherectomy`** uses `burr_size` not `burrSize`
+
+4. **`complications`** is `[]` (array) not `"None"` (string)
+
+5. **CPT codes auto-mapped** from procedure type
+
+### Data Flow Verified ✅
+
+```
+SAVE FLOW:
+User fills Op Note Builder → Generate → Save
+        ↓
+collectOpNoteData() → snake_case JSON
+        ↓
+ORCC_API.saveOperativeNote(data)
+        ↓
+POST /api/operative-notes
+        ↓
+PostgreSQL operative_notes table ✅
+
+LOAD FLOW (NEW):
+Page loads → loadPlanningData()
+        ↓
+currentProcedureId set
+        ↓
+loadExistingOpNote()
+        ↓
+ORCC_API.getOperativeNoteByProcedure(id)
+        ↓
+GET /api/operative-notes/procedure/{id}
+        ↓
+populateOpNoteForm(data) ✅
+```
+
+### Fix Applied: Op Note Persistence on Navigation ✅
+
+**Problem:** Op Note data was lost when navigating away from workspace
+**Solution:** Added `loadExistingOpNote()` function that:
+1. Calls `GET /api/operative-notes/procedure/{id}` on page load
+2. Populates Op Note Builder form with saved data
+3. Falls back to localStorage if API fails
+
+**Files Updated:**
+- [surgical-command-center-workspace.html](surgical-command-center-workspace.html) - Added loadExistingOpNote(), populateOpNoteForm()
+- [js/api-client.js](js/api-client.js) - Added getOperativeNoteByProcedure() method
+
+---
+
+### Fix Applied: Data Input & Flow Issues (2026-01-27 ~17:30) ✅
+
+**Issues Fixed:**
+
+1. **Paste Input Now Saves to Backend** ✅
+   - Process button now actually processes text
+   - Calls `parsePasteInput()` to extract side and vessel findings
+   - Saves clinical_notes to operative note via API
+   - Falls back to localStorage if API unavailable
+
+2. **Anatomy/Side Sync Fixed** ✅
+   - Side toggle buttons now sync with:
+     - Op Note Builder side dropdown
+     - Anatomy diagram (dims non-relevant leg)
+     - Vessel findings display
+   - `updateSideSelection(side)` function handles all UI updates
+
+3. **ICD-10 Codes Now Dynamic** ✅
+   - Codes generated based on:
+     - Selected side (left leg = I70.212, right leg = I70.211)
+     - Selected diagnoses in Op Note Builder
+   - `updateDiagnosisCodes(side)` function updates codes
+
+**New Functions Added:**
+- `parsePasteInput(text)` - Extracts side, vessel findings, diagnoses from pasted text
+- `updateSideSelection(side)` - Syncs side across all UI elements
+- `updateAnatomyFromParsed(vessels)` - Updates anatomy diagram from parsed data
+- `updateDiagnosisCodes(side)` - Generates correct ICD-10 codes
+
+**Data Flow Now:**
+```
+Paste clinical notes
+        ↓
+Click "Process"
+        ↓
+parsePasteInput() → Extract side, vessels, diagnoses
+        ↓
+updateSideSelection() → Sync all UI elements
+        ↓
+updateAnatomyFromParsed() → Update diagram
+        ↓
+Save to API → operative_notes.clinical_notes
+```
+
+---
+
+## Previous Session (2026-01-27 AM)
 
 ### ✅ COMPLETED TASKS
 
 1. **Add "Save Note" button to workspace** ✅
-   - Added green "Save Note to Database" button below Generate button
-   - Stores procedure ID when loading planning data
-   - `saveOpNote()` calls `ORCC_API.updateProcedure(id, { findings, results })`
-   - Button enables only after note is generated
-
 2. **Map outflow data to workspace vessel display** ✅
-   - AT, PT, Peroneal now display in findings table from `outflow` object
-   - Shows as "Outflow [date]" source column
-   - Only adds if not already in vessel_data
-
 3. **Git reconciled and pushed** ✅
-   - Commit `e98172b` - feat: Add Save Note button and outflow data display
 
-### 🚨 BLOCKER: PlaudAI PATCH Missing Fields
+### BLOCKER RESOLVED
 
-**Issue:** `PATCH /api/procedures/{id}` does not accept `findings` or `results` fields.
-- Returns `{"detail":"No fields to update"}`
-- Procedure has `narrative` field in response but it's not updateable either
-
-**Workaround Implemented:** Save to localStorage as fallback
-- Op notes now save to `localStorage.opNote_{mrn}`
-- User sees "Saved Locally" with warning status
-- Will auto-upgrade to API once PlaudAI adds support
-
-**@PlaudAI Action Required:**
-```sql
-ALTER TABLE procedures ADD COLUMN IF NOT EXISTS findings TEXT;
-ALTER TABLE procedures ADD COLUMN IF NOT EXISTS results TEXT;
-```
-Then add these fields to the PATCH endpoint validation.
-
-### 🔧 REMAINING TASKS
-
-1. **PlaudAI: Add findings/results to PATCH** (BLOCKER)
-
-2. **Optional: Server-side PDF storage**
-   - Requires PlaudAI endpoint for file upload
-   - Lower priority
+**Old Issue:** PATCH /api/procedures doesn't accept findings/results
+**New Solution:** Dedicated `operative_notes` table instead of modifying procedures
 
 ---
 
