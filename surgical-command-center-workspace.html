@@ -2911,15 +2911,39 @@ cc: Joe H. Morgan, M.D.`;
         console.log('Saving op note for procedure:', currentProcedureId);
         console.log('Findings length:', opNoteText.length);
 
-        // Save to database via API
-        await ORCC_API.updateProcedure(currentProcedureId, {
-          findings: opNoteText,
-          results: resultsSummary
-        });
+        let savedToApi = false;
 
-        // Show success
-        saveBtn.innerHTML = '<span>✅</span> Saved!';
-        showLoadStatus('Operative note saved to database', 'success');
+        // Try to save to database via API
+        try {
+          await ORCC_API.updateProcedure(currentProcedureId, {
+            findings: opNoteText,
+            results: resultsSummary
+          });
+          savedToApi = true;
+        } catch (apiError) {
+          console.warn('API save failed (findings field may not be supported yet):', apiError.message);
+          // API doesn't support findings field yet - continue to localStorage fallback
+        }
+
+        // Always save to localStorage as backup/fallback
+        const opNoteData = {
+          procedureId: currentProcedureId,
+          mrn: currentMrn,
+          opNoteText: opNoteText,
+          opNoteHtml: opNoteHtml,
+          results: resultsSummary,
+          savedAt: new Date().toISOString()
+        };
+        localStorage.setItem(`opNote_${currentMrn}`, JSON.stringify(opNoteData));
+
+        // Show appropriate success message
+        if (savedToApi) {
+          saveBtn.innerHTML = '<span>✅</span> Saved!';
+          showLoadStatus('Operative note saved to database', 'success');
+        } else {
+          saveBtn.innerHTML = '<span>💾</span> Saved Locally';
+          showLoadStatus('Saved to local storage (API pending PlaudAI update)', 'warning');
+        }
 
         // Reset button after 2 seconds
         setTimeout(() => {
@@ -2929,7 +2953,22 @@ cc: Joe H. Morgan, M.D.`;
 
       } catch (error) {
         console.error('Failed to save op note:', error);
-        showLoadStatus('Failed to save: ' + error.message, 'error');
+
+        // Last resort: try localStorage only
+        try {
+          const opNoteHtml = document.getElementById('op-note-preview').innerHTML;
+          const opNoteData = {
+            procedureId: currentProcedureId,
+            mrn: currentMrn,
+            opNoteText: opNoteHtml.replace(/<[^>]*>/g, ''),
+            opNoteHtml: opNoteHtml,
+            savedAt: new Date().toISOString()
+          };
+          localStorage.setItem(`opNote_${currentMrn}`, JSON.stringify(opNoteData));
+          showLoadStatus('Saved to local storage only', 'warning');
+        } catch (lsError) {
+          showLoadStatus('Failed to save: ' + error.message, 'error');
+        }
 
         // Reset button
         saveBtn.innerHTML = originalText;
