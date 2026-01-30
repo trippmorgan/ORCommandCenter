@@ -330,6 +330,164 @@
       background: var(--gray-700);
     }
 
+    /* Tab Content */
+    .tab-content {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Notes List */
+    .notes-list {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .note-item {
+      background: var(--gray-800);
+      border: 1px solid var(--gray-600);
+      border-radius: 6px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .note-item:hover {
+      background: var(--gray-700);
+      border-color: var(--uga-red);
+    }
+
+    .note-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .note-item-title {
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--white);
+    }
+
+    .note-item-date {
+      font-size: 10px;
+      color: var(--gray-400);
+    }
+
+    .note-item-preview {
+      font-size: 11px;
+      color: var(--gray-400);
+      line-height: 1.4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .note-item-status {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .note-item-status.draft {
+      background: var(--gray-600);
+      color: var(--gray-300);
+    }
+
+    .note-item-status.signed {
+      background: var(--green-800);
+      color: var(--green-300);
+    }
+
+    .empty-state {
+      padding: 20px;
+      text-align: center;
+      color: var(--gray-500);
+      font-size: 12px;
+    }
+
+    /* Note Modal */
+    .note-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .note-modal.active {
+      display: flex;
+    }
+
+    .note-modal-content {
+      background: var(--gray-900);
+      border: 1px solid var(--gray-600);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .note-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--gray-600);
+    }
+
+    .note-modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .note-modal-close {
+      background: transparent;
+      border: none;
+      color: var(--gray-400);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .note-modal-close:hover {
+      color: var(--white);
+    }
+
+    .note-modal-body {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--gray-200);
+      white-space: pre-wrap;
+    }
+
     /* Paste Area */
     .paste-area {
       flex: 1;
@@ -1280,8 +1438,10 @@
         <button class="tab" data-tab="opnotes">Op Notes</button>
       </div>
 
-      <div class="paste-area">
-        <textarea class="paste-input" id="paste-input" placeholder="Paste clinical notes, imaging reports, or operative notes here...
+      <!-- Notes Tab Content (default - paste input) -->
+      <div class="tab-content active" id="tab-notes">
+        <div class="paste-area">
+          <textarea class="paste-input" id="paste-input" placeholder="Paste clinical notes, imaging reports, or operative notes here...
 
 Example:
 LOWER EXTREMITY ARTERIOGRAM:
@@ -1294,35 +1454,48 @@ Right ATA: Patent
 Right PTA: Occluded
 Right Peroneal: Patent
 
-IMPRESSION: Right SFA occlusion with 2-vessel runoff (ATA, Peroneal). Suitable for endovascular intervention.">LOWER EXTREMITY ARTERIOGRAM (01/10/25):
+IMPRESSION: Right SFA occlusion with 2-vessel runoff (ATA, Peroneal). Suitable for endovascular intervention."></textarea>
 
-ACCESS: Left common femoral artery, retrograde
-CATHETER: 5Fr Omni Flush, 0.035 Glidewire
+          <div class="paste-footer">
+            <span class="paste-hint">Paste arteriogram, duplex, or clinic notes</span>
+            <button class="process-btn" id="process-btn">
+              <span>⚡</span> Process
+            </button>
+          </div>
+        </div>
+      </div>
 
-FINDINGS:
-Infrarenal Aorta: Patent, no significant disease
-Bilateral Common Iliacs: Patent
-Right External Iliac: Patent
-Right CFA: Patent, mild calcification
-Right Profunda: Patent
-Right SFA: OCCLUSION from origin extending to Hunter's canal (~25cm segment)
-Right Popliteal: Reconstitutes via collaterals, patent through P3
-Right ATA: Patent to ankle
-Right PTA: Occluded proximally
-Right Peroneal: Patent
+      <!-- Imaging Tab Content -->
+      <div class="tab-content" id="tab-imaging">
+        <div class="notes-list" id="imaging-list">
+          <div class="empty-state">No imaging reports available for this patient.</div>
+        </div>
+      </div>
 
-RUNOFF: 2-vessel (ATA, Peroneal)
+      <!-- Labs Tab Content -->
+      <div class="tab-content" id="tab-labs">
+        <div class="notes-list" id="labs-list">
+          <div class="empty-state">No lab results available for this patient.</div>
+        </div>
+      </div>
 
-IMPRESSION:
-1. Right SFA occlusion with reconstitution at popliteal level
-2. Two-vessel tibial runoff
-3. Suitable for endovascular revascularization (angioplasty +/- stent)</textarea>
+      <!-- Op Notes Tab Content -->
+      <div class="tab-content" id="tab-opnotes">
+        <div class="notes-list" id="opnotes-list">
+          <div class="empty-state">Loading operative notes...</div>
+        </div>
+      </div>
+    </div>
 
-        <div class="paste-footer">
-          <span class="paste-hint">Paste arteriogram, duplex, or clinic notes</span>
-          <button class="process-btn" id="process-btn">
-            <span>⚡</span> Process
-          </button>
+    <!-- Note Review Modal -->
+    <div class="note-modal" id="note-modal">
+      <div class="note-modal-content">
+        <div class="note-modal-header">
+          <span class="note-modal-title" id="modal-title">Operative Note</span>
+          <button class="note-modal-close" id="modal-close">&times;</button>
+        </div>
+        <div class="note-modal-body" id="modal-body">
+          <!-- Note content will be inserted here -->
         </div>
       </div>
     </div>
@@ -2704,12 +2877,127 @@ Joe H. Morgan, M.D.`;
       }, 500);
     });
 
-    // Tab switching
-    document.querySelectorAll('.tab').forEach(tab => {
+    // Tab switching for left panel (Notes, Imaging, Labs, Op Notes)
+    document.querySelectorAll('.panel-left .tab').forEach(tab => {
       tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        const tabName = tab.dataset.tab;
+
+        // Update tab active state
+        document.querySelectorAll('.panel-left .tab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
+
+        // Show/hide tab content
+        document.querySelectorAll('.panel-left .tab-content').forEach(content => {
+          content.classList.remove('active');
+        });
+        const targetContent = document.getElementById(`tab-${tabName}`);
+        if (targetContent) {
+          targetContent.classList.add('active');
+        }
+
+        // Load data when Op Notes tab is selected
+        if (tabName === 'opnotes') {
+          loadPatientOpNotes();
+        }
       });
+    });
+
+    // Load operative notes for current patient
+    async function loadPatientOpNotes() {
+      const opnotesList = document.getElementById('opnotes-list');
+      if (!opnotesList) return;
+
+      opnotesList.innerHTML = '<div class="empty-state">Loading operative notes...</div>';
+
+      if (!currentProcedureId) {
+        opnotesList.innerHTML = '<div class="empty-state">No patient selected.</div>';
+        return;
+      }
+
+      try {
+        // Get operative note for current procedure
+        const opNote = await ORCC_API.getOperativeNoteByProcedure(currentProcedureId);
+
+        if (!opNote || !opNote.id) {
+          opnotesList.innerHTML = '<div class="empty-state">No operative notes found for this patient.</div>';
+          return;
+        }
+
+        // Format date
+        const dateStr = opNote.date_of_service ?
+          new Date(opNote.date_of_service).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) :
+          'Unknown date';
+
+        // Get preview text
+        const previewText = opNote.full_narrative ?
+          opNote.full_narrative.substring(0, 150) + '...' :
+          'No narrative available';
+
+        // Build procedures list
+        const procedures = opNote.procedures_performed ?
+          opNote.procedures_performed.map(p => p.name || p).join(', ') :
+          'LEA/PVI';
+
+        opnotesList.innerHTML = `
+          <div class="note-item" data-note-id="${opNote.id}" onclick="openNoteModal('${opNote.id}')">
+            <div class="note-item-header">
+              <span class="note-item-title">${opNote.procedure_side || ''} ${procedures}</span>
+              <span class="note-item-status ${opNote.status || 'draft'}">${opNote.status || 'draft'}</span>
+            </div>
+            <div class="note-item-date">${dateStr}</div>
+            <div class="note-item-preview">${previewText}</div>
+          </div>
+        `;
+
+      } catch (err) {
+        console.error('Failed to load operative notes:', err);
+        opnotesList.innerHTML = '<div class="empty-state">Failed to load operative notes.</div>';
+      }
+    }
+
+    // Open note in modal for review
+    async function openNoteModal(noteId) {
+      const modal = document.getElementById('note-modal');
+      const modalTitle = document.getElementById('modal-title');
+      const modalBody = document.getElementById('modal-body');
+
+      if (!modal || !modalBody) return;
+
+      modalBody.textContent = 'Loading...';
+      modal.classList.add('active');
+
+      try {
+        const opNote = await ORCC_API.getOperativeNote(noteId);
+
+        if (opNote && opNote.full_narrative) {
+          const dateStr = opNote.date_of_service ?
+            new Date(opNote.date_of_service).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) :
+            '';
+          const procedures = opNote.procedures_performed ?
+            opNote.procedures_performed.map(p => p.name || p).join(', ') :
+            'Operative Note';
+
+          modalTitle.textContent = `${opNote.procedure_side || ''} ${procedures} - ${dateStr}`;
+          modalBody.textContent = opNote.full_narrative;
+        } else {
+          modalBody.textContent = 'No operative note content available.';
+        }
+      } catch (err) {
+        console.error('Failed to load note:', err);
+        modalBody.textContent = 'Failed to load operative note.';
+      }
+    }
+
+    // Close modal
+    document.getElementById('modal-close')?.addEventListener('click', () => {
+      document.getElementById('note-modal')?.classList.remove('active');
+    });
+
+    // Close modal on background click
+    document.getElementById('note-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'note-modal') {
+        e.target.classList.remove('active');
+      }
     });
 
     // Side toggle - sync with Op Note Builder and anatomy diagram
