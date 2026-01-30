@@ -1,11 +1,41 @@
 # Shared Workspace - OR Command Center (ORCC)
 
-**Last Updated:** 2026-01-27 ~18:00 EST
+**Last Updated:** 2026-01-29 ~22:05 EST
 **Hub Status:** Connected to claude-team hub (port 4847)
 
 ---
 
-## 📋 SESSION STATUS (2026-01-27 ~18:00) - SAVED FOR LATER
+## 📋 SESSION STATUS (2026-01-29) - CURRENT
+
+### ✅ SESSION TASKS COMPLETED
+
+| Task | Status |
+|------|--------|
+| Clean up duplicate op notes | ✅ Already cleaned by PlaudAI |
+| Fix field names (full_narrative) | ✅ Corrected in workspace |
+| Wire Generate → Save flow | ✅ Working |
+| Test API workflow | ✅ Verified |
+
+### 📝 NEW TODO CAPTURED
+
+**Add clinical data tabs to Paste Input section** (`.planning/todos/pending/`)
+- Notes tab (progress notes, H&P, consults)
+- Imaging tab (CTA, MRA, duplex, angiograms)
+- Labs tab (CBC, BMP, coags, creatinine)
+- Op Notes tab (previous operative notes)
+
+### ⏳ PENDING (Requires PlaudAI Backend)
+
+```sql
+-- Add 'signed' to valid_status constraint
+ALTER TABLE operative_notes DROP CONSTRAINT valid_status;
+ALTER TABLE operative_notes ADD CONSTRAINT valid_status
+  CHECK (status IN ('draft', 'pending_review', 'signed'));
+```
+
+---
+
+## 📋 PREVIOUS SESSION (2026-01-27) - REFERENCE
 
 ### ✅ CHARLES DANIELS OPERATIVE NOTE - COMPLETE
 
