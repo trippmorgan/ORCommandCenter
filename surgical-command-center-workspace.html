@@ -2549,7 +2549,7 @@ Joe H. Morgan, M.D.`;
 
         // Enable save button since we have data
         const saveBtn = document.getElementById('btn-save-note');
-        if (saveBtn && opNote.full_note_text) {
+        if (saveBtn && opNote.full_narrative) {
           saveBtn.disabled = false;
         }
 
@@ -2665,9 +2665,9 @@ Joe H. Morgan, M.D.`;
         document.getElementById('pulse-location').value = data.final_pulse_location;
       }
 
-      // Full note preview
-      if (data.full_note_html || data.full_note_text) {
-        document.getElementById('op-note-preview').innerHTML = data.full_note_html || data.full_note_text.replace(/\n/g, '<br>');
+      // Full note preview (API uses full_narrative/full_html)
+      if (data.full_html || data.full_narrative) {
+        document.getElementById('op-note-preview').innerHTML = data.full_html || data.full_narrative.replace(/\n/g, '<br>');
         // Update status to show note was loaded
         const statusEl = document.querySelector('.output-section-status');
         if (statusEl) {
@@ -3502,9 +3502,9 @@ cc: Joe H. Morgan, M.D.`;
         complications: [],  // Array for PlaudAI
         patient_condition: 'stable',
 
-        // Full Generated Note
-        full_note_text: opNoteText,
-        full_note_html: opNoteHtml,
+        // Full Generated Note (field names match PlaudAI API schema)
+        full_narrative: opNoteText,
+        full_html: opNoteHtml,
 
         // Clinical Notes (paste input)
         clinical_notes: document.getElementById('paste-input')?.value || null

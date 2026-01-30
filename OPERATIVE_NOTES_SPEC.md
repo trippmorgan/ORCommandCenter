@@ -174,8 +174,8 @@ CREATE TABLE operative_notes (
     -- ============================================================
     -- SECTION 7: Full Generated Note Text
     -- ============================================================
-    full_note_text TEXT,                           -- Complete formatted operative note
-    full_note_html TEXT,                           -- HTML version for display
+    full_narrative TEXT,                           -- Complete formatted operative note (plain text)
+    full_html TEXT,                                -- HTML version for display
 
     -- ============================================================
     -- Billing & Compliance Flags
